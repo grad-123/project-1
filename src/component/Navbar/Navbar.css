@@ -1,0 +1,82 @@
+/* ===== Navbar container ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 30px;
+  background: white;
+  border-bottom: 1px solid #eee;
+  font-family: Arial, sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* ===== Logo ===== */
+.logo {
+  font-weight: bold;
+  font-size: 20px;
+  color: #1f4fd8;
+}
+
+/* ===== Links container ===== */
+.nav-link {
+  display: flex;          /* يخليهم جنب بعض */
+  align-items: center;
+  gap: 25px;              /* مسافة بينهم */
+  list-style: none;       /* يشيل النقاط */
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Links style ===== */
+.nav-link a {
+  text-decoration: none;
+  color: #444;
+  font-weight: 500;
+  font-size: 16px;
+  transition: 0.2s;
+}
+
+.nav-link a:hover {
+  color: #1f4fd8;
+}
+
+/* ===== Right section ===== */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* ===== Icon buttons ===== */
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+
+  /* يخلي الإيموجي أبيض وأسود */
+  filter: grayscale(100%);
+  transition: 0.2s;
+}
+
+.icon-btn:hover {
+  filter: grayscale(0%);
+}
+
+
+/* ===== Sign in button ===== */
+.signin-btn {
+  background: #1f4fd8;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.signin-btn:hover {
+  background: #173bb0;
+}
