@@ -1,4 +1,5 @@
 import React from "react";
+import AI from "./Pages/AI/component/AI";
 import Home from "./Pages/Home/component/Home";
 import Browse from "./Pages/Browse/component/Browse";
 import Favorites from "./Pages/Favorites/component/Favorites";
