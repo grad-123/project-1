@@ -37,11 +37,15 @@ const router = createBrowserRouter([
         path: "/SignIn",
         element: <SignIn />,
       },
+      {
+        path: "*",
+        element: <NotFound />,
+      },
+      {
+        path:"/AI",
+        element:<AI/>
+      }
     ],
-  },
-  {
-    path: "*",
-    element: <NotFound />,
   },
 ]);
 function App() {

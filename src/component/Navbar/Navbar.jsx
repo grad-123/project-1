@@ -19,6 +19,9 @@ function Navbar() {
           <li>
             <Link to="/Upload">Upload</Link>
           </li>
+          <li>
+            <Link to="/AI">AI</Link>
+          </li>
         </ul>
         <div className="nav-right">
           <button className="icon-btn">🌙</button>
