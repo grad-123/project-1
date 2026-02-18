@@ -1,10 +1,10 @@
-/* ===== Navbar container ===== */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 30px;
-  background: white;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
   border-bottom: 1px solid #eee;
   font-family: Arial, sans-serif;
   position: sticky;
@@ -12,25 +12,25 @@
   z-index: 1000;
 }
 
-/* ===== Logo ===== */
 .logo {
   font-weight: bold;
   font-size: 20px;
   color: #1f4fd8;
 }
 
-/* ===== Links container ===== */
 .nav-link {
-  display: flex;          /* يخليهم جنب بعض */
+  display: flex;
   align-items: center;
-  gap: 25px;              /* مسافة بينهم */
-  list-style: none;       /* يشيل النقاط */
+  gap: 25px;
+  list-style: none;
   margin: 0;
   padding: 0;
 }
 
-/* ===== Links style ===== */
 .nav-link a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   text-decoration: none;
   color: #444;
   font-weight: 500;
@@ -42,21 +42,17 @@
   color: #1f4fd8;
 }
 
-/* ===== Right section ===== */
 .nav-right {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* ===== Icon buttons ===== */
 .icon-btn {
   background: none;
   border: none;
   font-size: 20px;
   cursor: pointer;
-
-  /* يخلي الإيموجي أبيض وأسود */
   filter: grayscale(100%);
   transition: 0.2s;
 }
@@ -65,8 +61,6 @@
   filter: grayscale(0%);
 }
 
-
-/* ===== Sign in button ===== */
 .signin-btn {
   background: #1f4fd8;
   color: white;

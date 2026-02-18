@@ -1,4 +1,5 @@
 import './Navbar.css'
+import { FiUpload } from "react-icons/fi";
 import React from "react";
 import { Link } from "react-router-dom";
 function Navbar() {
@@ -17,7 +18,7 @@ function Navbar() {
             <Link to="/Favorites">Favorites</Link>
           </li>
           <li>
-            <Link to="/Upload">Upload</Link>
+            <Link to="/Upload"><FiUpload/>Upload</Link>
           </li>
           <li>
             <Link to="/AI">AI</Link>
