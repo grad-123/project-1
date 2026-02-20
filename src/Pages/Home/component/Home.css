@@ -7,6 +7,8 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-main);
 }
 
 .hero {
@@ -26,7 +28,7 @@ body {
   left:0;
   width:100%;
   height:100%;
-  background-color: rgba(0,0,0,0.2);
+background-color: rgba(0,0,0,var(--overlay-opacity));
 }
 
 .content {
@@ -34,7 +36,7 @@ body {
   margin-left: 3%;
   position: relative;
   z-index: 2;
-  color: black;
+  color: var(--text-main);
   padding-top: 140px;
   text-align: left;
 }
@@ -45,7 +47,7 @@ body {
   border-radius: 40px;
   background-color: rgba(25,118,210,0.1);
   border: 2px solid #80a1c3;
-  color: #1976d2;
+  color: var(--primary);
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 25px;
@@ -56,7 +58,7 @@ body {
   gap: 0.5rem;
   font-size: 3.5rem;
   font-weight: 700;
-  color: black;
+  color: var(--text-main);
   line-height: 1.1;
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
@@ -64,7 +66,7 @@ body {
 }
 
 .word-studies {
-  color: #1976d2;
+  color: var(--primary);
   font-weight: 800;
   margin-left: 0.5rem;
   text-shadow: 0 2px 10px rgba(25,118,210,0.5);
@@ -73,7 +75,7 @@ body {
 .sub-title {
   font-size: 3.5rem;
   font-weight: 400;
-  color: black;
+  color: var(--text-main);
   line-height: 1.2;
   margin-bottom: 1.5rem;
   letter-spacing: -0.01em;
@@ -83,7 +85,7 @@ body {
 .description {
   font-size: 1.1rem;
   line-height: 1.6;
-  color: black;
+  color: var(--text-main);
   max-width: 650px;
   text-shadow: 0 2px 5px rgba(0,0,0,0.3);
   opacity: 0.95;
@@ -105,6 +107,7 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
 .arrow {
   margin-left: 8px;
   transition: transform 0.3s ease;
@@ -114,9 +117,8 @@ body {
   transform: translateX(4px);
 }
 
-
 .browse-btn {
-  background-color: #1976d2;
+  background-color: var(--primary);
   color: #ffffff;
 }
 
@@ -125,17 +127,18 @@ body {
 }
 
 .get-started-btn {
-  background-color: #ffffff;
-  color: #000000;
-  border: 2px solid #ffffff;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 2px solid var(--bg-card);
 }
 
 .get-started-btn:hover {
   background-color: rgb(247, 238, 238);
 }
+
 .features-section {
   padding: 100px 8%;
-  background-color: #f8fafc;
+  background-color: var(--bg-secondary);
   text-align: center;
 }
 
@@ -143,12 +146,13 @@ body {
   font-size: 2.2rem;
   font-weight: 700;
   margin-bottom: 15px;
+  color: var(--text-main);
 }
 
 .features-subtitle {
   max-width: 700px;
   margin: 0 auto 60px auto;
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -159,7 +163,7 @@ body {
 }
 
 .feature-card {
-  background: white;
+  background: var(--bg-card);
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.05);
@@ -180,20 +184,23 @@ body {
 .feature-card h3 {
   margin-bottom: 10px;
   font-size: 1.1rem;
+  color: var(--text-main);
 }
 
 .feature-card p {
   font-size: 0.95rem;
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
-.bbox{
-  background: #f2f2f2;
+
+.bbox {
+  background: var(--bg-secondary);
   padding: 80px 20px;
   display:flex;
   justify-content: center;
 }
-.box{
+
+.box {
   background: linear-gradient(135deg, #1e63c6, #1556a8);
   width:80%;
   max-width:1200px;
@@ -202,12 +209,14 @@ body {
   text-align: center;
   color:white;
 }
-.box h1{
+
+.box h1 {
   font-size:48px;
   margin-bottom:20px;
   font-weight: 700;
 }
-.box p{
+
+.box p {
   font-size:18px;
   max-width:700px;
   margin:0 auto 40px auto;
@@ -215,13 +224,14 @@ body {
   opacity: 0.9;
 }
 
-.anotherButtons{
+.anotherButtons {
   display: flex;
   justify-content: center;
   gap: 35px; 
   margin-bottom: 40px;
 }
-.mainbtn{
+
+.mainbtn {
   background: white;
   color: #1e63c6;
   padding: 14px 28px;
@@ -232,9 +242,11 @@ body {
   cursor: pointer;
   transition: 0.3s;
 }
+
 .mainbtn:hover {
   transform: translateY(-3px);
 }
+
 .secbtn {
   background: transparent;
   color: white;
@@ -248,14 +260,13 @@ body {
 }
 
 .secbtn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255,0.1);
 }
 
 .copy {
   font-size: 14px;
   opacity: 0.7;
 }
-
 
 @media (max-width:768px){
   .main-title {
@@ -277,6 +288,7 @@ body {
     gap: 15px;
   }
 }
+
 @media (max-width: 992px) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -288,4 +300,3 @@ body {
     grid-template-columns: 1fr;
   }
 }
-

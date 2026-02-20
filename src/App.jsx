@@ -1,3 +1,4 @@
+import "./Theme.css"
 import React from "react";
 import AI from "./Pages/AI/component/AI";
 import Home from "./Pages/Home/component/Home";

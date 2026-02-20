@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
+
 function Home() {
   const navigate = useNavigate();
 
@@ -21,7 +22,7 @@ function Home() {
 
           <p className="description">
             The intelligent platform for university students to share ideas,
-            summarize complex materials with LLM-AI, and collaborate on global
+            summarize complex materials with LLM-AI, and collaborate on a global
             academic scale.
           </p>
 
@@ -98,15 +99,24 @@ function Home() {
             collective knowledge and artificial intelligence.
           </p>
           <div className="anotherButtons">
-            <button className="mainbtn" onClick={() => navigate("/SignIn")}>Create Free Account</button>
-            <button className="secbtn" onClick={() => navigate("/Upload")}>Share Your Notes</button>
+            <button
+              className="mainbtn"
+              onClick={() => navigate("/SignIn")}
+            >
+              Create Free Account
+            </button>
+            <button
+              className="secbtn"
+              onClick={() => navigate("/Upload")}
+            >
+              Share Your Notes
+            </button>
           </div>
           <span className="copy">
             © 2026 EDUPRO Academic Intelligence Platform. All rights reserved.
           </span>
         </div>
       </div>
-
     </>
   );
 }

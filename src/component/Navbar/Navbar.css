@@ -3,9 +3,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 30px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(var(--bg-rgb), 0.8);
   backdrop-filter: blur(5px);
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
   font-family: Arial, sans-serif;
   position: sticky;
   top: 0;
@@ -15,7 +15,7 @@
 .logo {
   font-weight: bold;
   font-size: 20px;
-  color: #1f4fd8;
+  color: var(--primary);
 }
 
 .nav-link {
@@ -32,14 +32,14 @@
   align-items: center;
   gap: 5px;
   text-decoration: none;
-  color: #444;
+  color: var(--text-main);
   font-weight: 500;
   font-size: 16px;
   transition: 0.2s;
 }
 
 .nav-link a:hover {
-  color: #1f4fd8;
+  color: var(--primary);
 }
 
 .nav-right {
@@ -55,6 +55,7 @@
   cursor: pointer;
   filter: grayscale(100%);
   transition: 0.2s;
+  color: var(--text-main);
 }
 
 .icon-btn:hover {
@@ -62,8 +63,8 @@
 }
 
 .signin-btn {
-  background: #1f4fd8;
-  color: white;
+  background: var(--primary);
+  color: var(--text-light);
   padding: 8px 18px;
   border-radius: 20px;
   text-decoration: none;
@@ -72,5 +73,5 @@
 }
 
 .signin-btn:hover {
-  background: #173bb0;
+  background: var(--primary-dark);
 }
