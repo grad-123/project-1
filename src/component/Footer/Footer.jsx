@@ -13,7 +13,6 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-        {/* Column 1 */}
         <div className="footer-col">
           <div className="logo">
             <div className="logo-icon">
@@ -28,26 +27,40 @@ function Footer() {
           </p>
 
           <div className="social-icons">
-  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-    <FaTwitter />
-  </a>
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaTwitter />
+            </a>
 
-  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-    <FaLinkedinIn />
-  </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaLinkedinIn />
+            </a>
 
-  <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-    <FaGithub />
-  </a>
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaGithub />
+            </a>
 
-  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-    <FaFacebookF />
-  </a>
-</div>
-
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaFacebookF />
+            </a>
+          </div>
         </div>
 
-        {/* Column 2 */}
         <div className="footer-col">
           <h3>Resources</h3>
           <ul>
@@ -58,7 +71,6 @@ function Footer() {
           </ul>
         </div>
 
-        {/* Column 3 */}
         <div className="footer-col">
           <h3>Platform</h3>
           <ul>
@@ -69,7 +81,6 @@ function Footer() {
           </ul>
         </div>
 
-        {/* Column 4 */}
         <div className="footer-col">
           <h3>Legal</h3>
           <ul>

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { HiMoon, HiSun, HiOutlineGlobeAlt } from "react-icons/hi";
+import { HiSun, HiOutlineGlobeAlt } from "react-icons/hi";
 import './Navbar.css'
 import { FiUpload,FiMoon } from "react-icons/fi";
 import { Link } from "react-router-dom";
 function Navbar() {
-  const [theme,setTheme]=useState("light");
+  const [theme,setTheme]=useState(
+    localStorage.getItem("theme")||"light");
   useEffect(()=>{
         document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("theme",theme);
   },[theme]);
 const toggleTheme =()=>{
   setTheme(theme==="light"?"dark":"light");

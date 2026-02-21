@@ -74,4 +74,5 @@
 
 .signin-btn:hover {
   background: var(--primary-dark);
+    color: var(--primary);
 }
