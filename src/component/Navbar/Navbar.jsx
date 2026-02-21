@@ -1,49 +1,62 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useEffect } from "react";
 import { HiSun, HiOutlineGlobeAlt } from "react-icons/hi";
-import './Navbar.css'
-import { FiUpload,FiMoon } from "react-icons/fi";
+import { FiUpload, FiMoon } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "./Navbar.css";
+
 function Navbar() {
-  const [theme,setTheme]=useState(
-    localStorage.getItem("theme")||"light");
-  useEffect(()=>{
-        document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("theme",theme);
-  },[theme]);
-const toggleTheme =()=>{
-  setTheme(theme==="light"?"dark":"light");
-}
+  const { t, i18n } = useTranslation();
+
+  const toggleTheme = () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "light" ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
+  const toggleLang = () => {
+    const newLang = i18n.language === "en" ? "ar" : "en";
+    i18n.changeLanguage(newLang);
+    document.documentElement.setAttribute("dir", newLang === "ar" ? "rtl" : "ltr");
+    localStorage.setItem("lang", newLang);
+  };
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+
+    const savedLang = localStorage.getItem("lang") || "en";
+    document.documentElement.setAttribute("dir", savedLang === "ar" ? "rtl" : "ltr");
+  }, []);
+
   return (
-    <>
-      <nav className="navbar">
-        <div className="logo">EDUPRO</div>
-        <ul className="nav-link">
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/Browse">Browse</Link>
-          </li>
-          <li>
-            <Link to="/Favorites">Favorites</Link>
-          </li>
-          <li>
-            <Link to="/Upload"><FiUpload/>Upload</Link>
-          </li>
-          <li>
-            <Link to="/AI">AI</Link>
-          </li>
-        </ul>
-        <div className="nav-right">
-          <button className="icon-btn" onClick={toggleTheme}>
-            {theme==="light"?<FiMoon/>:<HiSun/>}</button>
-          <button className="icon-btn"><HiOutlineGlobeAlt/></button>
-          <Link to="/SignIn" className="signin-btn">
-            Sign In
-          </Link>
-        </div>
-      </nav>
-    </>
+    <nav className="navbar">
+      <div className="logo">EDUPRO</div>
+
+      <ul className="nav-link">
+        <li><Link to="/">{t("navbar.home")}</Link></li>
+        <li><Link to="/Browse">{t("navbar.browse")}</Link></li>
+        <li><Link to="/Favorites">{t("navbar.favorites")}</Link></li>
+        <li><Link to="/Upload"><FiUpload /> {t("navbar.upload")}</Link></li>
+        <li><Link to="/AI">{t("navbar.ai")}</Link></li>
+      </ul>
+
+      <div className="nav-right">
+        <button className="icon-btn" onClick={toggleTheme}>
+          {document.documentElement.getAttribute("data-theme") === "light" ? <FiMoon /> : <HiSun />}
+        </button>
+
+        <button className="icon-btn" onClick={toggleLang}>
+          <HiOutlineGlobeAlt />
+        </button>
+
+        <Link to="/SignIn" className="signin-btn">
+          {t("navbar.signin")}
+        </Link>
+      </div>
+    </nav>
   );
 }
 

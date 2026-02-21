@@ -1,0 +1,64 @@
+{
+  "footer": {
+    "description": "Empowering university students with AI-driven summaries and a collaborative academic resource platform.",
+    "resources": "Resources",
+    "browse": "Browse Materials",
+    "summaries": "Course Summaries",
+    "pastPapers": "Past Papers",
+    "ai": "AI Summarizer",
+    "platform": "Platform",
+    "upload": "Upload Content",
+    "collection": "My Collection",
+    "qa": "Quality Assurance",
+    "contributor": "Contributor Program",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "integrity": "Academic Integrity",
+    "support": "Contact Support",
+    "copyright": "© 2026 EDUPRO Platform. Developed for Palestine Technical University - Kadoorie.",
+    "engine": "AI Engine: LLaMA 3.1 Online",
+    "madeWith": "Made with ❤ for students"
+  },
+  "navbar": {
+    "home": "Home",
+    "browse": "Browse",
+    "favorites": "Favorites",
+    "upload": "Upload",
+    "ai": "AI",
+    "signin": "Sign In"
+  },
+
+  "home": {
+    "badge": "✨ Empowering Academic Excellence with AI",
+    "master": "Master Your",
+    "studies": "Studies",
+    "subtitle": "With Intelligent Insight",
+    "description": "The intelligent platform for university students to share ideas, summarize complex materials with LLM-AI, and collaborate on a global academic scale.",
+    "browseBtn": "Browse Material",
+    "getStartedBtn": "Get Started",
+    "featuresTitle": "Intelligent Learning Ecosystem",
+    "featuresSubtitle": "Designed specifically for the rigorous demands of modern higher education, combining community knowledge with cutting-edge AI.",
+    "feature1": {
+      "title": "AI-Powered Insights",
+      "desc": "Instantly summarize complex academic papers and textbooks using advanced AI tools."
+    },
+    "feature2": {
+      "title": "Collaborative Learning",
+      "desc": "Share your notes and insights with peers and build a collective academic knowledge base."
+    },
+    "feature3": {
+      "title": "Deep Focus Mode",
+      "desc": "Optimized reading experience designed to reduce eye strain during long study sessions."
+    },
+    "feature4": {
+      "title": "Smart Search",
+      "desc": "Quickly find exactly what you need with intelligent semantic search."
+    },
+    "readyTitle": "Ready to study Smarter?",
+    "readyDesc": "Join the EDUPRO community today and start leveraging the power of collective knowledge and artificial intelligence.",
+    "createAccountBtn": "Create Free Account",
+    "shareNotesBtn": "Share Your Notes",
+    "copyRight": "© 2026 EDUPRO Academic Intelligence Platform. All rights reserved."
+  }
+}

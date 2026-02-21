@@ -76,3 +76,6 @@
   background: var(--primary-dark);
     color: var(--primary);
 }
+html[dir="rtl"] {
+  direction: rtl;
+}
