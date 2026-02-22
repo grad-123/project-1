@@ -33,12 +33,12 @@ background-color: rgba(0,0,0,var(--overlay-opacity));
 
 .content {
   max-width: 800px;
-  margin-left: 3%;
+  margin-inline-start: 3%;
   position: relative;
   z-index: 2;
   color: var(--text-main);
   padding-top: 140px;
-  text-align: left;
+  text-align: start;
 }
 
 .badge {
@@ -68,7 +68,7 @@ background-color: rgba(0,0,0,var(--overlay-opacity));
 .word-studies {
   color: var(--primary);
   font-weight: 800;
-  margin-left: 0.5rem;
+  margin-inline-start: 0.5rem;
   text-shadow: 0 2px 10px rgba(25,118,210,0.5);
 }
 
@@ -109,7 +109,7 @@ background-color: rgba(0,0,0,var(--overlay-opacity));
 }
 
 .arrow {
-  margin-left: 8px;
+  margin-inline-start: 8px;
   transition: transform 0.3s ease;
 }
 
@@ -167,7 +167,7 @@ background-color: rgba(0,0,0,var(--overlay-opacity));
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-  text-align: left;
+  text-align: start;
   transition: 0.3s ease;
 }
 
@@ -268,6 +268,7 @@ background-color: rgba(0,0,0,var(--overlay-opacity));
   opacity: 0.7;
 }
 
+
 @media (max-width:768px){
   .main-title {
     font-size:3rem;
@@ -279,8 +280,7 @@ background-color: rgba(0,0,0,var(--overlay-opacity));
     font-size:1rem;
   }
   .content {
-    margin-left:5%;
-    margin-right:5%;
+    margin-inline: 5%;
     padding-top:100px;
   }
   .home-buttons {

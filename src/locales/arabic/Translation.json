@@ -63,5 +63,8 @@
     "createAccountBtn": "إنشاء حساب مجاني",
     "shareNotesBtn": "شارك ملاحظاتك",
     "copyRight": "© 2026 منصة EDUPRO للذكاء الأكاديمي. جميع الحقوق محفوظة."
+  },
+  "browse":{
+    "categories":"تصفح التصنيفات"
   }
 }
