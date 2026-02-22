@@ -1,7 +1,6 @@
 import "./Theme.css";
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
 import Root from "./routes/Root";
 import Home from "./Pages/Home/component/Home";
 import Browse from "./Pages/Browse/component/Browse";
