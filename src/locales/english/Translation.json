@@ -63,5 +63,71 @@
   },
   "browse":{
     "categories":"Browse Categories"
+  } ,
+
+    "upload": {
+    "title": "Share Your Knowledge",
+    "subtitle": "Upload your academic materials to help thousands of fellow students.",
+    "file": {
+      "clickText": "Click to upload or drag and drop",
+      "subText": "PDF, DOCX up to 50MB",
+      "remove": "Remove"
+    },
+    "form": {
+      "descriptionLabel": "Brief Description",
+      "materialTitleLabel": "Material Title",
+      "categoryLabel": "Category",
+      "universityLabel":"University / Institution",
+      "materialTypeLabel": "Material Type",
+      "materialTitle": "e.g., Intro to Algorithms - Week 1",
+      "university": "e.g., Stanford University",
+      "category": "Select Category",
+      "materialType": "Select Material Type",
+      "description": "Tell us what this material covers...",
+      "submitBtn": "Upload Material",
+      "materialTitleRequired": "Enter the subject title",
+    "universityRequired": "Enter the university or institution name",
+    "categoryRequired": "Select a category",
+    "materialTypeRequired": "Please select a material type",
+    "descriptionRequired": "Please write a short description",
+    "fileRequired": "Choose a file to upload",
+    "categories": {
+    "selectCategory": "Select Category",
+  "computer_science": "Computer Science",
+  "mathematics": "Mathematics",
+  "physics": "Physics",
+  "business": "Business",
+  "engineering": "Engineering",
+  "medicine": "Medicine"
+    },
+    "materialTypes": {
+  "selectMaterialType": "Select Material Type",
+  "lecture_pdf": "Lecture PDF",
+  "handwritten_notes": "Handwritten Notes",
+  "ai_summary": "AI Summary",
+  "research_paper": "Research Paper"
+}
+    },
+    
+    "infoCards": {
+      "guidelines": "Review Guidelines",
+      "whyContribute": "Why Contribute?",
+      "guidelineList": [
+        "Must be original or public domain academic content.",
+        "Clear handwriting or readable digital text is preferred.",
+        "No copyrighted textbooks or exam solutions.."
+            ],
+      "contributeList": [
+        "Build Authority  Showcase your expertise.",
+        "Help Community  Help other students succeed."
+            ]
+    },
+    "alerts": {
+  "successTitle": "Upload Successful! 🎉",
+  "successText": "Your file has been uploaded.",
+  "failTitle": "Upload Failed ❌",
+  "failText": "Something went wrong. Please try again.",
+  "ok": "OK"
+}
   }
 }

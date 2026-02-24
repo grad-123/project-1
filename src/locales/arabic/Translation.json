@@ -66,5 +66,71 @@
   },
   "browse":{
     "categories":"تصفح التصنيفات"
+  } ,
+  "upload": {
+    "title": "شارك معرفتك",
+    "subtitle": "ارفع موادك الأكاديمية لمساعدة آلاف الطلاب الآخرين.",
+    "file": {
+      "clickText": "اضغط للرفع أو اسحب الملف هنا",
+      "subText": "PDF, DOCX حتى 50MB",
+      "remove": "إزالة"
+    },
+    "form": {
+      "descriptionLabel": "وصف مختصر",
+      "materialTitleLabel": "عنوان المادة",
+"categoryLabel": "الفئة",
+"universityLabel": "الجامعة / المؤسسة",
+"materialTypeLabel": "نوع المادة",
+      "materialTitle": "مثال: مقدمة في الخوارزميات - الأسبوع 1",
+      "university": "مثال: جامعة ستانفورد",
+      "category": "اختر الفئة",
+      "materialType": "اختر نوع المادة",
+      "description": "اخبرنا بما تغطي هذه المادة...",
+      "submitBtn": "رفع المادة",
+       "materialTitleRequired": "ادخل عنوان المادة",
+    "universityRequired": "ادخل اسم الجامعة",
+    "categoryRequired": "اختر الفئة",
+    "materialTypeRequired": "اختر نوع المادة",
+    "descriptionRequired": "اكتب وصفاً قصيراً",
+    "fileRequired": "اختر ملف للرفع",
+    "categories": {
+       "selectCategory": "اختر الفئة",
+  "computer_science": "علوم الحاسوب",
+  "mathematics": "الرياضيات",
+  "physics": "الفيزياء",
+  "business": "الأعمال",
+  "engineering": "الهندسة",
+  "medicine": "الطب"
+},
+"materialTypes": {
+  "selectMaterialType": "اختر نوع المادة",
+  "lecture_pdf": "ملف محاضرة PDF",
+  "handwritten_notes": "ملاحظات مكتوبة بخط اليد",
+  "ai_summary": "ملخص بالذكاء الاصطناعي",
+  "research_paper": "بحث علمي"
+}
+    },
+    
+    "infoCards": {
+      "guidelines": "إرشادات المراجعة",
+      "whyContribute": "لماذا تساهم؟",
+      "guidelineList": [
+        "يجب أن تكون المحتويات أصلية أو ضمن الملكية العامة.",
+        "يفضل أن تكون الخطوط واضحة أو النصوص الرقمية قابلة للقراءة.",
+        "لا يُسمح بالكتب المحمية بحقوق الطبع أو المواد المدفوعة."
+      ],
+      "contributeList": [
+        "ابنِ مصداقيتك  أظهر خبرتك.",
+        "ساعد المجتمع  ساعد الطلاب الآخرين على النجاح."
+      ]
+    },
+    "alerts": {
+  "successTitle": "تم رفع الملف بنجاح! 🎉",
+  "successText": "",
+  "failTitle": "فشل رفع الملف ❌",
+  "failText": "حدث خطأ. حاول مرة أخرى.",
+  "ok": "موافق"
+}
   }
+  
 }

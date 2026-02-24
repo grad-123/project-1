@@ -1,0 +1,228 @@
+body {
+  margin: 0; 
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+.page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  flex: 1; 
+  padding: 40px 20px; 
+  box-sizing: border-box;
+   background-color: var(--bg-main);
+  color: var(--text-main);
+}
+.upload-page {
+  max-width: 1250px;
+  margin: auto;
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+.upload-form {
+  background: var(--bg-card);
+  padding: 28px 30px 22px 30px;
+  border-radius: 14px;
+  box-shadow: none;
+    max-width: 640px;   
+}
+
+.upload-form h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.subtitle {
+  font-size: 13px;
+  margin-bottom: 20px;
+  color: var(--text-secondary);
+}
+.file-upload {
+  margin-top: 10px;
+}
+
+.upload-box {
+  background: transparent;
+  border: 2px dashed #d6d9de;
+  border-radius: 12px;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.upload-box:hover {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.upload-box input {
+  display: none;
+}
+
+.upload-icon {
+  width: 65px;
+  height: 65px;
+  background-color: #e5e7eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px auto;
+  font-size: 22px;
+  color: #374151;
+  transition: 0.3s ease;
+}
+
+.upload-box:hover .upload-icon {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.upload-text {
+  font-weight: 500;
+  margin-top: 8px;
+  font-size: 14px;
+   
+}
+
+.upload-subtext {
+  font-size: 12px;
+   color: var(--text-secondary);
+}
+.selected-file {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #2563eb;
+  font-weight: 500;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 20px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+.upload-form input,
+.upload-form select,
+.upload-form textarea {
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  transition: 0.3s ease;
+   background-color: var(--bg-secondary);
+  color: var(--text-main);
+}
+.upload-form input:focus,
+.upload-form select:focus,
+.upload-form textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.form-group label {
+  font-weight: 600; 
+}
+
+.upload-form textarea {
+  min-height: 110px;
+  resize: none;
+}
+.upload-form button {
+  width: 100%;
+  margin-top: 16px;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background-color: var(--primary);
+  color: var(--text-light);
+}
+
+.upload-form button:hover {
+  background-color: #4f73b5;
+}
+.right-section {
+  flex: 1.2;   
+  display: flex;
+  flex-direction: column;
+  align-items: center;   
+  gap: 20px;
+}
+.left-section {
+  flex: 3.5;  
+}
+.info-card {
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+   background-color: var(--bg-card);
+  color: var(--text-main);
+}
+.info-card h3 {
+  margin-top: 0;
+  font-size: 17px;
+   margin-bottom: 16px;
+ color: var(--text-main);
+  }
+
+.info-card ul {
+  font-size: 14px;
+  list-style: none;
+  padding-left: 0;
+    color: var(--text-secondary);
+}
+
+.info-card li {
+  margin-bottom: 10px;
+}
+.error {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 6px;
+}
+@media (max-width: 950px) {
+  .upload-page {
+    grid-template-columns: 1fr;
+    justify-items: center; 
+    gap: 20px;
+  }
+
+  .right-section {
+    width: 100%;
+    max-width: 600px;
+  }
+}
+.swal2-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.swal2-popup {
+  border-radius: 16px !important;
+  padding: 2rem !important;
+}
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+ul {
+  list-style: none;
+  padding-left: 0;
+}

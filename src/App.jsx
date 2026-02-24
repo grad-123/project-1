@@ -8,7 +8,7 @@ import Favorites from "./Pages/Favorites/component/Favorites";
 import Upload from "./Pages/Upload/component/Upload";
 import SignIn from "./Pages/Sign In/component/SignIn";
 import AI from "./Pages/AI/component/AI";
-import NotFound from "./component/NotFound/NotFound";
+import NotFound from "./component/NotFound/NotFound"; 
 
 const router = createBrowserRouter([
   {
@@ -25,9 +25,14 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+ 
 
 function App() {
   return <RouterProvider router={router} />;
+   
+      
 }
+
+
 
 export default App;
