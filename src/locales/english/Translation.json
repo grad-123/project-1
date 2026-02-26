@@ -26,7 +26,7 @@
     "favorites": "Favorites",
     "upload": "Upload",
     "ai": "AI",
-    "signin": "Sign In"
+   "login": "Login"
   },
 
   "home": {
@@ -129,5 +129,33 @@
   "failText": "Something went wrong. Please try again.",
   "ok": "OK"
 }
-  }
+  },
+  "login": {
+  "title": "Welcome Back",
+  "subtitle": "Log in to access your personalized educational dashboard.",
+  "email": "University Email",
+  "password": "Password",
+  "signIn": "Sign In",
+  "forgot": "Forgot password?",
+  "terms": "Terms",
+  "privacy": "Privacy",
+  "contact": "Contact",
+  "footerText": "© 2026 EDUPRO Platform. Developed for Palestine Technical University - Kadoorie."
+},
+"auth": {
+  "noAccount": "Don't have an account?",
+  "register": "Register",
+  "haveAccount": "Already have an account?",
+  "login": "Login"
+},
+"register": {
+  "title": "Create Account",
+  "subtitle": "Create your account to get started",
+  "fullName": "Full Name",
+  "fullNamePlaceholder": "Enter your full name",
+  "email": "Email",
+  "password": "Password",
+  "createAccount": "Create Account",
+  "footerText": "By registering, you agree to the terms and conditions"
+}
 }

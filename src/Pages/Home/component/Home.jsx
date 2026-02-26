@@ -29,7 +29,7 @@ function Home() {
               {t("home.browseBtn")} <span className="arrow">→</span>
             </button>
 
-            <button className="btn get-started-btn" onClick={() => navigate("/SignIn")}>
+            <button className="btn get-started-btn" onClick={() => navigate("/Auth")}>
               {t("home.getStartedBtn")}
             </button>
           </div>
@@ -73,7 +73,7 @@ function Home() {
           <p>{t("home.readyDesc")}</p>
 
           <div className="anotherButtons">
-            <button className="mainbtn" onClick={() => navigate("/SignIn")}>
+            <button className="mainbtn" onClick={() => navigate("/Auth")}>
               {t("home.createAccountBtn")}
             </button>
             <button className="secbtn" onClick={() => navigate("/Upload")}>

@@ -27,7 +27,6 @@ function Navbar() {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "light";
-
     document.documentElement.setAttribute("data-theme", savedTheme);
 
     const savedLang = localStorage.getItem("lang") || "en";
@@ -71,8 +70,8 @@ function Navbar() {
           <HiOutlineGlobeAlt />
         </button>
 
-        <Link to="/SignIn" className="signin-btn">
-          {t("navbar.signin")}
+        <Link to="/Auth" className="signin-btn">
+          {t("navbar.login")}
         </Link>
       </div>
     </nav>

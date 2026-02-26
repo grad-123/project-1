@@ -1,5 +1,5 @@
 .footer {
-  background: var(--footer-bg);
+  background: var(--navbar-bg);
   padding: 60px 80px 20px;
   font-family: "Segoe UI", sans-serif;
   color: var(--text-secondary);

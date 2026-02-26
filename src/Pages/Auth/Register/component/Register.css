@@ -1,0 +1,75 @@
+.register-box {
+  width: 100%;
+}
+
+.register-box h2 {
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 25px;
+}
+
+.input-group {
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.input-field {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--text-secondary);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--bg-main);
+}
+
+.input-field input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.icon {
+  margin-right: 8px;
+  color: var(--text-secondary);
+}
+
+html[dir="rtl"] .icon {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+.register-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary);
+  color: var(--text-light);
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+
+.register-btn:hover {
+  opacity: 0.9;
+}
+
+.register-footer {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
