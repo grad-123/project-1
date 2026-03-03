@@ -82,26 +82,26 @@ function Login() {
         setLoginError(data?.message || "Login failed");
         return;
       }
-      
-localStorage.setItem("token", data.data.accessToken);
 
-const decoded = jwtDecode(data.data.accessToken);
-if (data.data.refreshToken?.tokenString) {
+      localStorage.setItem("token", data.data.accessToken);
+
+      const decoded = jwtDecode(data.data.accessToken);
+      if (data.data.refreshToken?.tokenString) {
         localStorage.setItem(
           "refreshToken",
           data.data.refreshToken.tokenString,
         );
       }
-const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-localStorage.setItem("role", role);
+      const role =
+        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      localStorage.setItem("role", role);
 
-if (role === "Admin") {navigate("/admin");}
-else{navigate("/")} 
-window.location.reload();
-
-      
-
-     
+      if (role === "Admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+      window.location.reload();
     } catch (error) {
       console.error("Login Error:", error.response?.data);
 
