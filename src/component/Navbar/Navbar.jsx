@@ -1,12 +1,40 @@
 import React, { useEffect, useState } from "react";
 import { HiSun, HiOutlineGlobeAlt } from "react-icons/hi";
 import { FiUpload, FiMoon } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Navbar.css";
 
 function Navbar() {
-  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    navigate("/");
+    
+  };
+const [token, setToken] = useState(
+  localStorage.getItem("token")
+);
+useEffect(() => {
+  const interval = setInterval(() => {
+    setToken(localStorage.getItem("token"));
+  }, 500);
+
+  return () => clearInterval(interval);
+}, []);
+
+useEffect(() => {
+  const handleStorage = () => {
+    setToken(localStorage.getItem("token"));
+  };
+
+  window.addEventListener("storage", handleStorage);
+
+  return () =>
+    window.removeEventListener("storage", handleStorage);
+}, []);  const { t, i18n } = useTranslation();
   const [theme, setTheme] = useState("light");
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -27,6 +55,7 @@ function Navbar() {
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "light";
+    setTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
 
     const savedLang = localStorage.getItem("lang") || "en";
@@ -48,17 +77,23 @@ function Navbar() {
         <li>
           <Link to="/Browse">{t("navbar.browse")}</Link>
         </li>
-        <li>
-          <Link to="/Favorites">{t("navbar.favorites")}</Link>
-        </li>
-        <li>
-          <Link to="/Upload">
-            <FiUpload /> {t("navbar.upload")}
-          </Link>
-        </li>
-        <li>
-          <Link to="/AI">{t("navbar.ai")}</Link>
-        </li>
+        {token && (
+          <>
+            <li>
+              <Link to="/favorites">{t("navbar.favorites")}</Link>
+            </li>
+
+            <li>
+              <Link to="/upload">
+                <FiUpload /> {t("navbar.upload")}
+              </Link>
+            </li>
+
+            <li>
+              <Link to="/ai">{t("navbar.ai")}</Link>
+            </li>
+          </>
+        )}
       </ul>
 
       <div className="nav-right">
@@ -70,9 +105,15 @@ function Navbar() {
           <HiOutlineGlobeAlt />
         </button>
 
-        <Link to="/Auth" className="signin-btn">
-          {t("navbar.login")}
-        </Link>
+        {token ? (
+          <button className="signin-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        ) : (
+          <Link to="/auth/login" className="signin-btn">
+            {t("navbar.login")}
+          </Link>
+        )}
       </div>
     </nav>
   );

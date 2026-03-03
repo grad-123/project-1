@@ -26,7 +26,7 @@
     "favorites": "Favorites",
     "upload": "Upload",
     "ai": "AI",
-   "login": "Login"
+    "login": "Login"
   },
 
   "home": {
@@ -61,11 +61,11 @@
     "shareNotesBtn": "Share Your Notes",
     "copyRight": "© 2026 EDUPRO Academic Intelligence Platform. All rights reserved."
   },
-  "browse":{
-    "categories":"Browse Categories"
-  } ,
+  "browse": {
+    "categories": "Browse Categories"
+  },
 
-    "upload": {
+  "upload": {
     "title": "Share Your Knowledge",
     "subtitle": "Upload your academic materials to help thousands of fellow students.",
     "file": {
@@ -77,7 +77,7 @@
       "descriptionLabel": "Brief Description",
       "materialTitleLabel": "Material Title",
       "categoryLabel": "Category",
-      "universityLabel":"University / Institution",
+      "universityLabel": "University / Institution",
       "materialTypeLabel": "Material Type",
       "materialTitle": "e.g., Intro to Algorithms - Week 1",
       "university": "e.g., Stanford University",
@@ -86,29 +86,29 @@
       "description": "Tell us what this material covers...",
       "submitBtn": "Upload Material",
       "materialTitleRequired": "Enter the subject title",
-    "universityRequired": "Enter the university or institution name",
-    "categoryRequired": "Select a category",
-    "materialTypeRequired": "Please select a material type",
-    "descriptionRequired": "Please write a short description",
-    "fileRequired": "Choose a file to upload",
-    "categories": {
-    "selectCategory": "Select Category",
-  "computer_science": "Computer Science",
-  "mathematics": "Mathematics",
-  "physics": "Physics",
-  "business": "Business",
-  "engineering": "Engineering",
-  "medicine": "Medicine"
+      "universityRequired": "Enter the university or institution name",
+      "categoryRequired": "Select a category",
+      "materialTypeRequired": "Please select a material type",
+      "descriptionRequired": "Please write a short description",
+      "fileRequired": "Choose a file to upload",
+      "categories": {
+        "selectCategory": "Select Category",
+        "computer_science": "Computer Science",
+        "mathematics": "Mathematics",
+        "physics": "Physics",
+        "business": "Business",
+        "engineering": "Engineering",
+        "medicine": "Medicine"
+      },
+      "materialTypes": {
+        "selectMaterialType": "Select Material Type",
+        "lecture_pdf": "Lecture PDF",
+        "handwritten_notes": "Handwritten Notes",
+        "ai_summary": "AI Summary",
+        "research_paper": "Research Paper"
+      }
     },
-    "materialTypes": {
-  "selectMaterialType": "Select Material Type",
-  "lecture_pdf": "Lecture PDF",
-  "handwritten_notes": "Handwritten Notes",
-  "ai_summary": "AI Summary",
-  "research_paper": "Research Paper"
-}
-    },
-    
+
     "infoCards": {
       "guidelines": "Review Guidelines",
       "whyContribute": "Why Contribute?",
@@ -116,46 +116,90 @@
         "Must be original or public domain academic content.",
         "Clear handwriting or readable digital text is preferred.",
         "No copyrighted textbooks or exam solutions.."
-            ],
+      ],
       "contributeList": [
         "Build Authority  Showcase your expertise.",
         "Help Community  Help other students succeed."
-            ]
+      ]
     },
     "alerts": {
-  "successTitle": "Upload Successful! 🎉",
-  "successText": "Your file has been uploaded.",
-  "failTitle": "Upload Failed ❌",
-  "failText": "Something went wrong. Please try again.",
-  "ok": "OK"
-}
+      "successTitle": "Upload Successful! 🎉",
+      "successText": "Your file has been uploaded.",
+      "failTitle": "Upload Failed ❌",
+      "failText": "Something went wrong. Please try again.",
+      "ok": "OK"
+    }
   },
   "login": {
-  "title": "Welcome Back",
-  "subtitle": "Log in to access your personalized educational dashboard.",
-  "email": "University Email",
-  "password": "Password",
-  "signIn": "Sign In",
-  "forgot": "Forgot password?",
-  "terms": "Terms",
-  "privacy": "Privacy",
-  "contact": "Contact",
-  "footerText": "© 2026 EDUPRO Platform. Developed for Palestine Technical University - Kadoorie."
+    "title": "Welcome Back",
+    "subtitle": "Log in to access your personalized educational dashboard.",
+    "email": "Email *",
+    "password": "Password *",
+    "signIn": "Sign In",
+    "forgot": "Forgot password?",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "contact": "Contact",
+    "footerText": "© 2026 EDUPRO Platform. Developed for Palestine Technical University - Kadoorie."
+  },
+  "auth": {
+    "noAccount": "Don't have an account?",
+    "register": "Register",
+    "haveAccount": "Already have an account?",
+    "login": "Login"
+  },
+  "register": {
+    "title": "Create Account",
+    "subtitle": "Create your account to get started",
+    "fullName": "Full Name *",
+    "fullNamePlaceholder": "Enter your full name",
+    "email": "Email *",
+    "password": "Password *",
+    "createAccount": "Create Account",
+    "footerText": "By registering, you agree to the terms and conditions",
+    "usernameHint": "Username can contain English letters, numbers and @ + _ . only",
+    "emailHint": "Enter a valid email like example@gmail.com",
+    "passwordHint": "Password must be at least 6 characters and contain uppercase, lowercase letters and a special character",
+    "passwordconfirm":"Confirm Password *"
+  },
+  "alerts": {
+    "successTitle": "Success! 🎉",
+    "successText": "The operation was completed successfully.",
+    "failTitle": "Failed ❌",
+    "failText": "Something went wrong. Please try again.",
+    "ok": "OK"
+  },
+  "validation": {
+  "usernameRequired": "Username is required",
+  "usernamePattern": "Username can contain letters, numbers and @ + _ . only",
+  "emailRequired": "Email is required",
+  "emailInvalid": "Invalid email format",
+  "passwordRequired": "Password is required",
+  "passwordMin": "Password must be at least 6 characters",
+  "passwordPattern": "Password must contain uppercase, lowercase letters and special character",
+  "passwordConfirmRequired": "Password Confirm is required",
+ "passwordMatch":"Passwords do not match"
 },
-"auth": {
-  "noAccount": "Don't have an account?",
-  "register": "Register",
-  "haveAccount": "Already have an account?",
-  "login": "Login"
-},
-"register": {
-  "title": "Create Account",
-  "subtitle": "Create your account to get started",
-  "fullName": "Full Name",
-  "fullNamePlaceholder": "Enter your full name",
-  "email": "Email",
-  "password": "Password",
-  "createAccount": "Create Account",
-  "footerText": "By registering, you agree to the terms and conditions"
-}
+  "image": {
+    "title": "Your Intelligent Gateway to Academic Excellence",
+    "subtitle": "Join thousands of students sharing knowledge and leveraging local AI to transform fragmented study materials into structured learning ecosystems",
+    "stats": "264M+",
+    "student": "Global Students",
+    "ai": "AI-Ready",
+    "procces": "Local LLaMA Processing"
+  },
+  "forgot": {
+    "title": "Forgot Password",
+    "subtitle": "Enter your email address and we'll send you a link to reset your password",
+    "Label": "Email Address *",
+    "Placeholder": "name@example.com",
+    "btn": "Send Reset Link",
+    "checkEmail": "Check your email",
+    "emailSentMessage": "We've sent a password reset link to {{email}}. Please check your inbox and click the link to reset your password.",
+    "didntReceive": "Didn't receive the email?",
+    "resend": "Resend",
+    "resending": "Resending...",
+    "resendSent": "Password reset link sent again.",
+    "resendError": "Failed to resend. Try again later."
+  }
 }

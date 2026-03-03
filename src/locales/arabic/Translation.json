@@ -24,15 +24,15 @@
     "engine": "محرك الذكاء الاصطناعي: LLaMA 3.1 متصل",
     "madeWith": "صُنع بـ ❤ من أجل الطلاب"
   },
-"navbar":{
-  "home": "الرئيسية",
-  "browse": "تصفح",
-  "favorites": "المفضلة",
-  "upload": "رفع",
-  "ai": "الذكاء الاصطناعي",
-  "login": "تسجيل الدخول"
-},
-"home": {
+  "navbar": {
+    "home": "الرئيسية",
+    "browse": "تصفح",
+    "favorites": "المفضلة",
+    "upload": "رفع",
+    "ai": "الذكاء الاصطناعي",
+    "login": "تسجيل الدخول"
+  },
+  "home": {
     "badge": "✨ تمكين التفوق الأكاديمي باستخدام الذكاء الاصطناعي",
     "master": "تحكم في دراستك",
     "studies": "دراستك",
@@ -64,9 +64,9 @@
     "shareNotesBtn": "شارك ملاحظاتك",
     "copyRight": "© 2026 منصة EDUPRO للذكاء الأكاديمي. جميع الحقوق محفوظة."
   },
-  "browse":{
-    "categories":"تصفح التصنيفات"
-  } ,
+  "browse": {
+    "categories": "تصفح التصنيفات"
+  },
   "upload": {
     "title": "شارك معرفتك",
     "subtitle": "ارفع موادك الأكاديمية لمساعدة آلاف الطلاب الآخرين.",
@@ -78,39 +78,39 @@
     "form": {
       "descriptionLabel": "وصف مختصر",
       "materialTitleLabel": "عنوان المادة",
-"categoryLabel": "الفئة",
-"universityLabel": "الجامعة / المؤسسة",
-"materialTypeLabel": "نوع المادة",
+      "categoryLabel": "الفئة",
+      "universityLabel": "الجامعة / المؤسسة",
+      "materialTypeLabel": "نوع المادة",
       "materialTitle": "مثال: مقدمة في الخوارزميات - الأسبوع 1",
       "university": "مثال: جامعة ستانفورد",
       "category": "اختر الفئة",
       "materialType": "اختر نوع المادة",
       "description": "اخبرنا بما تغطي هذه المادة...",
       "submitBtn": "رفع المادة",
-       "materialTitleRequired": "ادخل عنوان المادة",
-    "universityRequired": "ادخل اسم الجامعة",
-    "categoryRequired": "اختر الفئة",
-    "materialTypeRequired": "اختر نوع المادة",
-    "descriptionRequired": "اكتب وصفاً قصيراً",
-    "fileRequired": "اختر ملف للرفع",
-    "categories": {
-       "selectCategory": "اختر الفئة",
-  "computer_science": "علوم الحاسوب",
-  "mathematics": "الرياضيات",
-  "physics": "الفيزياء",
-  "business": "الأعمال",
-  "engineering": "الهندسة",
-  "medicine": "الطب"
-},
-"materialTypes": {
-  "selectMaterialType": "اختر نوع المادة",
-  "lecture_pdf": "ملف محاضرة PDF",
-  "handwritten_notes": "ملاحظات مكتوبة بخط اليد",
-  "ai_summary": "ملخص بالذكاء الاصطناعي",
-  "research_paper": "بحث علمي"
-}
+      "materialTitleRequired": "ادخل عنوان المادة",
+      "universityRequired": "ادخل اسم الجامعة",
+      "categoryRequired": "اختر الفئة",
+      "materialTypeRequired": "اختر نوع المادة",
+      "descriptionRequired": "اكتب وصفاً قصيراً",
+      "fileRequired": "اختر ملف للرفع",
+      "categories": {
+        "selectCategory": "اختر الفئة",
+        "computer_science": "علوم الحاسوب",
+        "mathematics": "الرياضيات",
+        "physics": "الفيزياء",
+        "business": "الأعمال",
+        "engineering": "الهندسة",
+        "medicine": "الطب"
+      },
+      "materialTypes": {
+        "selectMaterialType": "اختر نوع المادة",
+        "lecture_pdf": "ملف محاضرة PDF",
+        "handwritten_notes": "ملاحظات مكتوبة بخط اليد",
+        "ai_summary": "ملخص بالذكاء الاصطناعي",
+        "research_paper": "بحث علمي"
+      }
     },
-    
+
     "infoCards": {
       "guidelines": "إرشادات المراجعة",
       "whyContribute": "لماذا تساهم؟",
@@ -125,40 +125,84 @@
       ]
     },
     "alerts": {
-  "successTitle": "تم رفع الملف بنجاح! 🎉",
-  "successText": "",
-  "failTitle": "فشل رفع الملف ❌",
-  "failText": "حدث خطأ. حاول مرة أخرى.",
-  "ok": "موافق"
-}
+      "successTitle": "تم رفع الملف بنجاح! 🎉",
+      "successText": "",
+      "failTitle": "فشل رفع الملف ❌",
+      "failText": "حدث خطأ. حاول مرة أخرى.",
+      "ok": "موافق"
+    }
   },
   "login": {
-  "title": "مرحباً بعودتك",
-  "subtitle": "سجّل الدخول للوصول إلى لوحتك الأكاديمية.",
-  "email": "البريد الجامعي",
-  "password": "كلمة المرور",
-  "signIn": "تسجيل الدخول",
-  "forgot": "نسيت كلمة المرور؟",
-  "terms": "الشروط",
-  "privacy": "الخصوصية",
-  "contact": "تواصل",
-  "footerText": "© 2026 منصة EDUPRO. تم تطويرها لجامعة فلسطين التقنية - خضوري."
-},
-"auth": {
-  "noAccount": "ليس لديك حساب؟",
-  "register": "إنشاء حساب",
-  "haveAccount": "لديك حساب بالفعل؟",
-  "login": "تسجيل الدخول"
-},
-"register": {
-  "title": "إنشاء حساب",
-  "subtitle": "أنشئ حسابك للبدء",
-  "fullName": "الاسم الكامل",
-  "fullNamePlaceholder": "أدخل اسمك الكامل",
-  "email": "البريد الإلكتروني",
-  "password": "كلمة المرور",
-  "createAccount": "إنشاء الحساب",
-  "footerText": "من خلال التسجيل فإنك توافق على الشروط والأحكام"
-}
-  
+    "title": "مرحباً بعودتك",
+    "subtitle": "سجّل الدخول للوصول إلى لوحتك الأكاديمية.",
+    "email": "البريد *",
+    "password": "كلمة المرور *",
+    "signIn": "تسجيل الدخول",
+    "forgot": "نسيت كلمة المرور؟",
+    "terms": "الشروط",
+    "privacy": "الخصوصية",
+    "contact": "تواصل",
+    "footerText": "© 2026 منصة EDUPRO. تم تطويرها لجامعة فلسطين التقنية - خضوري."
+  },
+  "auth": {
+    "noAccount": "ليس لديك حساب؟",
+    "register": "إنشاء حساب",
+    "haveAccount": "لديك حساب بالفعل؟",
+    "login": "تسجيل الدخول"
+  },
+  "register": {
+    "passwordconfirm":" تأكيد كلمة المرور*",
+    "title": "إنشاء حساب",
+    "subtitle": "أنشئ حسابك للبدء",
+    "fullName": "الاسم الكامل*",
+    "fullNamePlaceholder": "أدخل اسمك الكامل",
+    "email": "البريد الإلكتروني*",
+    "password": "كلمة المرور *",
+    "createAccount": "إنشاء الحساب",
+    "footerText": "من خلال التسجيل فإنك توافق على الشروط والأحكام",
+    "usernameHint": "يمكن أن يحتوي اسم المستخدم على حروف إنجليزية وأرقام والرموز @ + _ . فقط",
+    "emailHint": "أدخل بريد إلكتروني صالح مثل example@gmail.com",
+    "passwordHint": "يجب أن تتكون كلمة المرور من 6 خانات على الأقل وتحتوي على حرف كبير وصغير ورمز خاص",
+     "checkEmailTitle": "تحقق من بريدك الإلكتروني",
+    "checkEmailMessage": "لقد أرسلنا رابط التحقق إلى {{email}}. يرجى التحقق من بريدك الإلكتروني والنقر على الرابط لتأكيد حسابك."
+  },
+   "alerts": {
+    "successTitle": "تم بنجاح! 🎉",
+    "successText": "تمت العملية بنجاح.",
+    "failTitle": "فشل ❌",
+    "failText": "حدث خطأ. حاول مرة أخرى.",
+    "ok": "موافق"
+  },
+  "validation": {
+    "usernameRequired": "اسم المستخدم مطلوب",
+    "usernamePattern": "يمكن أن يحتوي اسم المستخدم على حروف وأرقام والرموز @ + _ . فقط",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "emailInvalid": "تنسيق البريد الإلكتروني غير صحيح",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "passwordMin": "يجب أن تتكون كلمة المرور من 6 خانات على الأقل",
+    "passwordPattern": "يجب أن تحتوي كلمة المرور على حرف كبير، حرف صغير ورمز خاص",
+    "passwordMatch":"كلمات المرور غير متطابقة"
+  },
+  "image": {
+    "title": "بوابتك الذكية الى التميز والأكاديمي",
+    "subtitle": "انضم إلى آلاف الطلاب الذين يشاركون المعرفة ويستفيدون من الذكاء الاصطناعي المحلي لتحويل المواد الدراسية المجزأة إلى أنظمة تعلم منظمة متكاملة",
+    "stats": "+مليون 264",
+    "student": "طلاب حول العالم",
+    "ai": "جاهز للذكاء الاصطناعي",
+    "procces": "معالجة محلية عبر LLaMA"
+  },
+  "forgot": {
+    "title": "نسيت كلمة المرور",
+    "subtitle": "أدخل عنوان بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور",
+    "Label": "البريد الإلكتروني *",
+    "Placeholder": "name@example.com",
+    "btn": "إرسال رابط إعادة التعيين",
+    "checkEmail": "تحقق من بريدك الإلكتروني",
+    "emailSentMessage": "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى {{email}}. يرجى التحقق من صندوق الوارد والنقر على الرابط لإعادة تعيين كلمة المرور.",
+    "didntReceive": "لم يصلك البريد؟",
+    "resend": "إعادة الإرسال",
+    "resending": "جارٍ الإرسال...",
+    "resendSent": "تم إرسال رابط إعادة تعيين كلمة المرور مرة أخرى.",
+    "resendError": "فشل في إعادة الإرسال. حاول مرة أخرى لاحقًا."
+  }
 }

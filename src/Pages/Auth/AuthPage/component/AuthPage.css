@@ -7,29 +7,87 @@
 .auth-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  height: 100vh;
+  min-height: 100vh;
 }
 
-
 .auth-image-side {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
   background-image:
-    linear-gradient(
-      rgba(0, 0, 0, var(--overlay-opacity)),
-      rgba(0, 0, 0, var(--overlay-opacity))
-    ),
+    linear-gradient(var(--overlay-color), var(--overlay-color)),
     url("https://images.pexels.com/photos/7972949/pexels-photo-7972949.jpeg");
 
   background-size: cover;
   background-position: center;
+
+  color: var(--text-on-image);
+}
+
+.auth-image-side * {
+  color: var(--text-on-image);
+  opacity: 1;
+}
+
+.auth-image-content {
+  max-width: 600px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;   
+  text-align: center;
+}
+
+.brand {
+  font-size: 42px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  line-height: 1.4;
+  
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  opacity: 0.9;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+}
+
+.stats h3 {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.stats span {
+  font-size: 13px;
+  opacity: 0.8;
 }
 
 .auth-form-side {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   background: var(--bg-secondary);
   color: var(--text-main);
   padding: 60px;
+   min-height: 100vh;
 }
 
 .auth-content {
@@ -38,7 +96,7 @@
 }
 
 .auth-switch {
-  margin-top: 25px;
+  margin-top: 30px;
   text-align: center;
   color: var(--text-secondary);
 }

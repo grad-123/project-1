@@ -59,17 +59,41 @@ html[dir="rtl"] .icon {
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 15px;
   transition: 0.3s;
+   transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+.login-btn:hover:not(:disabled) {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }
 
+.login-btn:active:not(:disabled) {
+  transform: scale(0.96);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.login-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.4);
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 .login-btn:hover {
   opacity: 0.9;
 }
 
 .forgot {
   text-align: center;
+  display: block;
   margin-top: 15px;
+  margin-top: 15px;
+  font-size: 13px;
   color: var(--primary);
   cursor: pointer;
 }
@@ -79,4 +103,7 @@ html[dir="rtl"] .icon {
   text-align: center;
   font-size: 12px;
   color: var(--text-secondary);
+}
+.input-error {
+  border: 2px solid red !important;
 }
