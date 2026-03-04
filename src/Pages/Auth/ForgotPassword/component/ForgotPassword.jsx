@@ -20,12 +20,12 @@ function ForgotPassword() {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!Email) {
-      setError("Email is required");
+      setError(t("forgot.requiredEmail"));
         setFieldError(true);
       return;
     }
     if (!/\S+@\S+\.\S+/.test(Email)) {
-      setError("Enter a valid email");
+      setError(t("forgot.invalidEmail"));
         setFieldError(true);
       return;
     }
@@ -37,12 +37,12 @@ function ForgotPassword() {
   "https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/SendResetPasswordCode?Email=" +  encodeURIComponent(Email)
 );
       if (!response.data?.succeeded) {
-  setError(response.data?.message || "Something went wrong");
+  setError(response.data?.message || t("forgot.somethingWrong"));
   return;
 }
 navigate(`/auth/check?email=${encodeURIComponent(Email)}`);    } catch (err) {
       console.error(err);
-      setError("Something went wrong");
+      setError(t("forgot.somethingWrong"));
     } finally {
       setLoading(false);
     }
@@ -70,7 +70,7 @@ navigate(`/auth/check?email=${encodeURIComponent(Email)}`);    } catch (err) {
       </div>
 
       <button className="send-btn" onClick={handleSend} disabled={loading}>
-        {loading ? "Loading..." : t("forgot.btn")}
+        {loading ?t("forgot.loading"): t("forgot.btn")}
       </button>
     </div>
   );

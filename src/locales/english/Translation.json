@@ -140,7 +140,13 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "contact": "Contact",
-    "footerText": "© 2026 EDUPRO Platform. Developed for Palestine Technical University - Kadoorie."
+    "footerText": "© 2026 EDUPRO Platform. Developed for Palestine Technical University - Kadoorie.",
+   "invalidEmailFormat": "Invalid email format",
+    "enterEmailPassword": "Please enter email and password",
+    "invalidCredentials": "Invalid email or password",
+    "verifyFirst": "Please verify your email first",
+    "loading": "Loading...",
+    "failed": "Login failed"
   },
   "auth": {
     "noAccount": "Don't have an account?",
@@ -160,7 +166,8 @@
     "usernameHint": "Username can contain English letters, numbers and @ + _ . only",
     "emailHint": "Enter a valid email like example@gmail.com",
     "passwordHint": "Password must be at least 6 characters and contain uppercase, lowercase letters and a special character",
-    "passwordconfirm":"Confirm Password *"
+    "passwordconfirm":"Confirm Password *",
+    "processing": "Creating account..."
   },
   "alerts": {
     "successTitle": "Success! 🎉",
@@ -200,6 +207,47 @@
     "resend": "Resend",
     "resending": "Resending...",
     "resendSent": "Password reset link sent again.",
-    "resendError": "Failed to resend. Try again later."
+    "resendError": "Failed to resend. Try again later.",
+     "requiredEmail": "Email is required",
+    "invalidEmail": "Enter a valid email",
+    "somethingWrong": "Something went wrong",
+    "loading": "Loading..."
+  },
+  "checkEmail": {
+    "title": "Check Your Email",
+    "description": "We sent a verification link to:",
+    "goToLogin": "Go to Login",
+    "invalidLink": "Invalid verification link",
+    "resendSuccess": "Verification email sent again.",
+    "resendFail": "Failed to resend email."
+  },
+  "verifyEmail": {
+    "loading": "Verifying your email...",
+    "invalidLink": "Invalid verification link.",
+    "failed": "Email verification failed. Please try again."
+  },
+  "checkReset": {
+    "title": "Check your email",
+    "description": "We sent a reset code to",
+    "enterCode": "Enter reset code",
+    "resend": "Resend",
+    "resetPassword": "Reset Password",
+    "emailPlaceholder": "Enter your email",
+    "codePlaceholder": "Enter code",
+    "resendSuccess": "Link resent successfully",
+    "resendFail": "Resend failed",
+    "codeRequired": "Please enter the reset code",
+    "invalidCode": "Invalid or expired code"
+  },
+   "reset": {
+    "title": "Reset Password",
+    "email": "Email",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password",
+    "button": "Reset Password",
+    "processing": "Processing...",
+    "success": "Password updated successfully",
+    "failed": "Reset password failed",
+    "passwords_not_match": "Passwords do not match"
   }
 }

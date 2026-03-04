@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 function Register() {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -99,16 +100,29 @@ function Register() {
     if (!(await validateData())) return;
 
     try {
-      await axios.post(
+      setLoading(true);
+      setErrors({});
+      const response = await axios.post(
         `https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/Register`,
         user,
       );
 
-      navigate("/auth/checkemail", {
-        state: { email: user.email },
+      if (response.data?.succeeded === true) {
+        navigate("/auth/checkemail", {
+          state: { email: user.email },
+        });
+        return;
+      }
+
+      setErrors({
+        general: response.data?.message || "Register failed",
       });
     } catch (error) {
-      console.log(error);
+      setErrors({
+        general: error?.response?.data?.message || "Network error occurred",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -116,7 +130,9 @@ function Register() {
     <div className="register-box">
       <h2>{t("register.title")}</h2>
       <p className="subtitle">{t("register.subtitle")}</p>
-
+      {errors.general && (
+        <p className="error-text general-error">{errors.general}</p>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label>{t("register.fullName")}</label>
@@ -141,7 +157,6 @@ function Register() {
             <p className="error-text">{errors.fullName}</p>
           )}
         </div>
-
         <div className="input-group">
           <label>{t("register.email")}</label>
 
@@ -167,7 +182,6 @@ function Register() {
 
           <p className="helper-text">{t("register.emailHint")}</p>
         </div>
-
         <div className="input-group">
           <label>{t("register.password")}</label>
 
@@ -200,15 +214,12 @@ function Register() {
 
           <p className="helper-text">{t("register.passwordHint")}</p>
         </div>
-
         <div className="input-group">
           <label>{t("register.passwordconfirm")}</label>
 
           <div
             className={`input-field ${
-              errors.confirmPassword && submitted
-                ? "input-error"
-                : ""
+              errors.confirmPassword && submitted ? "input-error" : ""
             }`}
           >
             <FaLock className="icon" />
@@ -233,8 +244,9 @@ function Register() {
             <p className="error-text">{errors.confirmPassword}</p>
           )}
         </div>
-
-        <button className="register-btn">{t("register.createAccount")}</button>
+        <button className="register-btn" disabled={loading}>
+          {loading ? t("register.processing") : t("register.createAccount")}
+        </button>{" "}
       </form>
     </div>
   );

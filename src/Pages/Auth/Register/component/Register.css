@@ -127,3 +127,9 @@ html[dir="rtl"] .icon {
   font-size: 12px;
   margin-top: 4px;
 }
+.general-error {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #ef4444;
+  font-weight: 500;
+}

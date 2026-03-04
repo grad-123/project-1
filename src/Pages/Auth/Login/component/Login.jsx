@@ -46,7 +46,7 @@ function Login() {
 
     try {
       if (!user.email || !user.password) {
-        setLoginError("Please enter email and password");
+        setLoginError(t("login.enterEmailPassword"));
         setFieldError({
           email: !user.email,
           password: !user.password,
@@ -58,7 +58,8 @@ function Login() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (!emailRegex.test(user.email)) {
-        setLoginError("Invalid email format");
+        setLoginError(t("login.invalidEmailFormat"));
+        setLoading(false);
         return;
       }
 
@@ -79,7 +80,7 @@ function Login() {
       const data = response.data;
 
       if (!data || !data.succeeded) {
-        setLoginError(data?.message || "Login failed");
+        setLoginError(data?.message || t("login.failed"));
         return;
       }
 
@@ -101,13 +102,22 @@ function Login() {
       } else {
         navigate("/");
       }
-      window.location.reload();
     } catch (error) {
       console.error("Login Error:", error.response?.data);
 
-      setLoginError(
-        error.response?.data?.message || "Invalid email or password",
-      );
+      const backendMessage = error.response?.data?.message;
+
+      if (backendMessage) {
+        if (backendMessage === "Email not confirmed") {
+          setEmailNotVerified(true);
+          setLoginError("");
+          return;
+        }
+
+        setLoginError(backendMessage);
+      } else {
+        setLoginError(t("login.invalidCredentials"));
+      }
     } finally {
       setLoading(false);
     }
@@ -160,11 +170,11 @@ function Login() {
 
         {loginError && <p className="error-text">{loginError}</p>}
         {emailNotVerified && (
-          <p className="error-text">Please verify your email first.</p>
+          <p className="error-text">{t("login.verifyFirst")}</p>
         )}
 
         <button className="login-btn" type="submit" disabled={loading}>
-          {loading ? "Loading..." : t("login.signIn")}
+          {loading ? t("login.loading") : t("login.signIn")}
         </button>
       </form>
 

@@ -2,7 +2,11 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../../../api/axiosInstance";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+
 function CheckEmail() {
+  const { t } = useTranslation();
+
   const location = useLocation();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
@@ -10,9 +14,9 @@ function CheckEmail() {
   /*const handleResend = async () => {
     try {
      await axios.post(`https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/Register`, { email });
-      setMessage("Verification email sent again.");
+      setMessage(t("checkEmail.resendSuccess"));
     } catch (error) {
-      setMessage("Failed to resend email.");
+      setMessage(t("checkEmail.resendFail"));
     }
   };*/
   const email = location.state?.email;
@@ -24,16 +28,16 @@ function CheckEmail() {
 
   return (
     <div className="register-box">
-      <h2>✅ Check Your Email</h2>
+      <h2>✅ {t("checkEmail.title")}</h2>
 
       <p>
-        We sent verification link to:
+        {t("checkEmail.description")}
         <b> {email} </b>
       </p>
-    {/*<button onClick={handleResend}>Resend Verification Email</button> */}  
+      {/*<button onClick={handleResend}>Resend Verification Email</button> */}
       {message && <p>{message}</p>}
       <button onClick={() => navigate("/auth/login")} className="register-btn">
-        Go to Login
+        {t("checkEmail.goToLogin")}{" "}
       </button>
     </div>
   );

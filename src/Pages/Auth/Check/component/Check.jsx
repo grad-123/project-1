@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../../../api/axiosInstance";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 function Check() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-
+  const [message, setMessage] = useState("");
   const [searchParams] = useSearchParams();
   const Email = searchParams.get("email") || "";
 
@@ -13,69 +15,77 @@ function Check() {
 
   const handleResend = async () => {
     try {
-      await axios.post(
-    `Authentication/SendResetPasswordCode`,null,{
-         params: { Email }
-    }
+      await axios.post(`Authentication/SendResetPasswordCode`, null, {
+        params: { Email },
+      });
 
-);
-
-      alert("Link resent successfully");
-    } catch {
-      alert("Resend failed");
+      setMessage(t("checkReset.resendSuccess"));
+    } catch (err) {
+      setMessage(err?.response?.data?.message || t("checkReset.resendFail"));
     }
   };
 
   const handleReset = async () => {
     if (!Code) {
-      setError("Please enter the reset code");
+      setError(t("checkReset.codeRequired"));
       return;
     }
 
     try {
-      const response = await axios.get(
-        "Authentication/ConfirmResetPassword",
-        {
-          params: {
-            Code: Code,
-            Email: Email,
-          },
+      const response = await axios.get("Authentication/ConfirmResetPassword", {
+        params: {
+          Code: Code,
+          Email: Email,
         },
-      );
+      });
 
       if (response.data?.succeeded !== true) {
-        setError(response.data?.message || "Invalid or expired code");
+        setError(response.data?.message || t("checkReset.invalidCode"));
         return;
       }
 
-navigate(
- `/auth/reset?email=${encodeURIComponent(Email)}&code=${encodeURIComponent(Code)}`
-);
+      navigate(
+        `/auth/reset?email=${encodeURIComponent(Email)}&code=${encodeURIComponent(Code)}`,
+      );
     } catch (err) {
-      setError(err?.response?.data?.message || "Invalid or expired code");
+      setError(err?.response?.data?.message || t("checkReset.invalidCode"));
     }
   };
 
   return (
-    <div>
-      <h2>Check your email</h2>
-      <p>We sent a reset code to {Email}</p>
-      <input
-        type="email"
-        placeholder="Enter your email"
-        value={Email}
-        disabled
-      />
-      <input
-        placeholder="Enter code"
-        value={Code}
-        onChange={(e) => setCode(e.target.value)}
-      />
+    <div className="check-container">
+      <div className="check-card">
+        <h2>{t("checkReset.title")}</h2>
+        <p className="check-card">
+          {t("checkReset.description")} {Email}
+        </p>
+        <input
+          className="check-input"
+          type="email"
+          placeholder={t("checkReset.emailPlaceholder")}
+          value={Email}
+          disabled
+        />
+        <input
+          className="check-input"
+          placeholder={t("checkReset.codePlaceholder")}
+          value={Code}
+          onChange={(e) => setCode(e.target.value)}
+        />
+        {message && <p className="success-text">{message}</p>}
+        <div className="check-buttons">
+          <button className="check-btn secondary" onClick={handleResend}>
+            {" "}
+            {t("checkReset.resend")}
+          </button>
+          <button className="check-btn primary" onClick={handleReset}>
+            {" "}
+            {t("checkReset.resetPassword")}
+          </button>
+        </div>
 
-      <button onClick={handleResend}>Resend</button>
-      <button onClick={handleReset}>Reset Password</button>
-
-      {error && <p>{error}</p>}
+        {error && <p className="error-text">{error}</p>}
+      </div>
     </div>
   );
 }

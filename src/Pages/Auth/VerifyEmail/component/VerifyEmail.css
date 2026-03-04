@@ -1,0 +1,11 @@
+.verify-message {
+  text-align: center;
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-top: 20px;
+}
+
+.verify-error {
+  color: #e74c3c;
+  font-weight: 500;
+}

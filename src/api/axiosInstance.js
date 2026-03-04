@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-const accessToken = localStorage.getItem("token");
+        const accessToken = localStorage.getItem("token");
 
 
         const response = await axios.post(
@@ -51,7 +51,8 @@ const accessToken = localStorage.getItem("token");
       } catch (refreshError) {
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
-        window.location.href = "/auth/login";
+        localStorage.clear();
+        window.location.replace("/auth/login");
       }
     }
 
