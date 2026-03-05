@@ -18,35 +18,53 @@ function ForgotPassword() {
   }, [i18n.language]);
 
   const handleSend = async (e) => {
-    e.preventDefault();
-    if (!Email) {
-      setError(t("forgot.requiredEmail"));
-        setFieldError(true);
-      return;
-    }
-    if (!/\S+@\S+\.\S+/.test(Email)) {
-      setError(t("forgot.invalidEmail"));
-        setFieldError(true);
-      return;
-    }
-    setError("");
-    setLoading(true);
+  e.preventDefault();
 
-    try {
-       const response = await axios.post(
-  "https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/SendResetPasswordCode?Email=" +  encodeURIComponent(Email)
-);
-      if (!response.data?.succeeded) {
-  setError(response.data?.message || t("forgot.somethingWrong"));
-  return;
-}
-navigate(`/auth/check?email=${encodeURIComponent(Email)}`);    } catch (err) {
-      console.error(err);
-      setError(t("forgot.somethingWrong"));
-    } finally {
-      setLoading(false);
+  if (!Email) {
+    setError(t("forgot.requiredEmail"));
+    setFieldError(true);
+    return;
+  }
+
+  if (!/\S+@\S+\.\S+/.test(Email)) {
+    setError(t("forgot.invalidEmail"));
+    setFieldError(true);
+    return;
+  }
+
+  setError("");
+  setLoading(true);
+
+  try {
+    const response = await axios.post(
+      "https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/SendResetPasswordCode",
+      null,
+      {
+        params: {
+          Email: Email,
+        },
+      }
+    );
+
+    if (!response.data?.succeeded) {
+      setError(response.data?.message);
+      return;
     }
-  };
+
+    navigate(`/auth/check?email=${encodeURIComponent(Email)}`);
+
+  } catch (err) {
+    console.error(err);
+
+    const backendMessage = err?.response?.data?.message;
+
+    setError(backendMessage || t("forgot.somethingWrong"));
+
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="forgot-container">

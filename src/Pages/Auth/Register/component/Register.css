@@ -1,5 +1,6 @@
 .register-box {
   width: 100%;
+  text-align: start;
   max-width: 420px;
   margin: 0 auto;
   display: flex;
@@ -9,17 +10,21 @@
 }
 
 .register-box h2 {
+  color: var(--text-main);
   margin-bottom: 5px;
 }
 
-.subtitle {
+.register-box .subtitle {
   font-size: 14px;
-  color: var(--text-secondary);
+   font-weight: 500;
   margin-bottom: 25px;
 }
-
+.register-box .subtitle,
+.register-box .subtitle * {
+  color: var(--text-main) !important;
+}
 .input-group {
-  margin-bottom: 18px;
+  margin-bottom: 8px;
 }
 
 .input-group label {
@@ -119,13 +124,13 @@ html[dir="rtl"] .icon {
 .error-text {
   color: red;
   font-size: 13px;
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .helper-text {
   color: gray;
   font-size: 12px;
-  margin-top: 4px;
+  margin-top: 0;
 }
 .general-error {
   text-align: center;

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../../../api/axiosInstance";
+import "./Check.css";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 function Check() {
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
@@ -15,7 +17,7 @@ function Check() {
 
   const handleResend = async () => {
     try {
-      await axios.post(`Authentication/SendResetPasswordCode`, null, {
+      await axios.post(`/api/v1/Authentication/SendResetPasswordCode`, null, {
         params: { Email },
       });
 
@@ -25,30 +27,30 @@ function Check() {
     }
   };
 
-  const handleReset = async () => {
+  const handleReset = async (e) => {
+    e.preventDefault();
+
     if (!Code) {
       setError(t("checkReset.codeRequired"));
       return;
     }
 
     try {
-      const response = await axios.get("Authentication/ConfirmResetPassword", {
-        params: {
-          Code: Code,
-          Email: Email,
-        },
-      });
-
-      if (response.data?.succeeded !== true) {
-        setError(response.data?.message || t("checkReset.invalidCode"));
-        return;
-      }
-
-      navigate(
-        `/auth/reset?email=${encodeURIComponent(Email)}&code=${encodeURIComponent(Code)}`,
+      const response = await axios.get(
+        `/api/v1/Authentication/ConfirmResetPassword?Code=${encodeURIComponent(Code)}&Email=${encodeURIComponent(Email)}`,
       );
+      if (response.data?.succeeded) {
+        setMessage(response.data.message);
+        setTimeout(() => {
+          navigate(`/auth/reset?email=${encodeURIComponent(Email)}`);
+        }, 1000);
+      } else {
+        setError(response.data?.message);
+      }
     } catch (err) {
-      setError(err?.response?.data?.message || t("checkReset.invalidCode"));
+      setError(err?.response?.data?.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,13 +76,23 @@ function Check() {
         />
         {message && <p className="success-text">{message}</p>}
         <div className="check-buttons">
-          <button className="check-btn secondary" onClick={handleResend}>
+          <button
+            type="button"
+            className="check-btn secondary"
+            onClick={handleResend}
+          >
             {" "}
             {t("checkReset.resend")}
           </button>
-          <button className="check-btn primary" onClick={handleReset}>
-            {" "}
-            {t("checkReset.resetPassword")}
+          <button
+            type="button"
+            className="check-btn primary"
+            onClick={handleReset}
+            disabled={loading}
+          >
+            {loading
+              ? t("checkReset.loooding")
+              : t("checkReset.resetPassword")}{" "}
           </button>
         </div>
 

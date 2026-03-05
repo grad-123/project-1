@@ -103,7 +103,7 @@ function Register() {
       setLoading(true);
       setErrors({});
       const response = await axios.post(
-        `https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/Register`,
+        `/api/v1/Authentication/Register`,
         user,
       );
 
