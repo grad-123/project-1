@@ -61,12 +61,12 @@ function Admin() {
 
     setNewCategory("");
   };
-  const deleteCategory = (cat) => {
-    setCategories(categories.filter((c) => c !== cat));
+  const deleteCategory = (categoryToDelete) => {
+    setCategories(categories.filter((item) => item !== categoryToDelete));
   };
   const updateCategory = () => {
     setCategories(
-      categories.map((cat) => (cat === editCategory ? updatedName : cat)),
+      categories.map((category) => (category === editCategory ? updatedName : category)),
     );
     setEditCategory(null);
     setUpdatedName("");
@@ -144,9 +144,9 @@ function Admin() {
       </div>
 
       <ul className="category-list">
-        {categories.map((cat, index) => (
+        {categories.map((category, index) => (
           <li key={index}>
-            {editCategory === cat ? (
+            {editCategory === category ? (
               <>
                 <input
                   value={updatedName}
@@ -157,21 +157,21 @@ function Admin() {
               </>
             ) : (
               <>
-                <span>{cat}</span>
+                <span>{category}</span>
 
                 <div>
                   <button
                     className="edit"
                     onClick={() => {
-                      setEditCategory(cat);
-                      setUpdatedName(cat);
+                      setEditCategory(category);
+                      setUpdatedName(category);
                     }}
                   >
                     Edit
                   </button>
                   <button
                     className="delete"
-                    onClick={() => deleteCategory(cat)}
+                    onClick={() => deleteCategory(category)}
                   >
                     Delete
                   </button>
