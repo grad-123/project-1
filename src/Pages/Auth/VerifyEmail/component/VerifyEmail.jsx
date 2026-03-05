@@ -1,4 +1,5 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
+import "./VerifyEmail.css";
 import axios from "../../../../api/axiosInstance";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,7 +24,7 @@ function VerifyEmail() {
         }
 
         await axios.get(
-          "https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/ConfirmEmail",
+          "/api/v1/Authentication/ConfirmEmail",
           {
             params: {
               UserId: userId,

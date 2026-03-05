@@ -68,7 +68,7 @@ function Login() {
       formData.append("Password", user.password);
 
       const response = await axios.post(
-        `https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/SignIn`,
+        `/api/v1/Authentication/SignIn`,
         formData,
         {
           headers: {
@@ -108,7 +108,7 @@ function Login() {
       const backendMessage = error.response?.data?.message;
 
       if (backendMessage) {
-        if (backendMessage === "Email not confirmed") {
+        if (backendMessage?.toLowerCase().includes("email not confirmed")) {
           setEmailNotVerified(true);
           setLoginError("");
           return;

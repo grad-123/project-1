@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../../../api/axiosInstance";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-
+import "./CheckEmail.css";
 function CheckEmail() {
   const { t } = useTranslation();
 

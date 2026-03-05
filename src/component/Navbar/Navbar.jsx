@@ -43,14 +43,17 @@ useEffect(() => {
     localStorage.setItem("theme", newTheme);
   };
 
-  const toggleLang = () => {
+  const toggleLang = async () => {
     const newLang = i18n.language === "en" ? "ar" : "en";
-    i18n.changeLanguage(newLang);
+    localStorage.setItem("lang", newLang);
+    await i18n.changeLanguage(newLang);
     document.documentElement.setAttribute(
       "dir",
       newLang === "ar" ? "rtl" : "ltr",
     );
-    localStorage.setItem("lang", newLang);
+   
+      window.location.reload();
+
   };
 
   useEffect(() => {

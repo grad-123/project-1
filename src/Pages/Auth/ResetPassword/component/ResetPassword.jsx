@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "./ResetPassword.css";
 import axios from "../../../../api/axiosInstance";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -8,7 +9,8 @@ function ResetPassword() {
 const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const Email = searchParams.get("email") || "";
-  const [Code, setCode] = useState("");
+  const Code = searchParams.get("code") || "";
+  //const [Code, setCode] = useState("");
   const [Password, setPassword] = useState("");
   const [ConfirmPassword, setConfirmPassword] = useState("");
 
@@ -40,7 +42,7 @@ const { t } = useTranslation();
       formData.append("ConfirmPassword", ConfirmPassword);
 
       const response = await axios.post(
-        "Authentication/ResetPassword",
+        "/api/v1/Authentication/ResetPassword",
         formData,
       );
 
