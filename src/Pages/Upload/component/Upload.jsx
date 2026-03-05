@@ -98,7 +98,7 @@ const handleFileChange = (e) => {
     </p>
 
     <span className="upload-subtext">
-     {t("upload.file.ubText")}
+     {t("upload.file.subText")}
     </span>
 
     <input
@@ -113,7 +113,9 @@ const handleFileChange = (e) => {
   </label>
 
   {errors.file && <span className="error">{errors.file.message}</span>}
-</div>
+</div> 
+
+
         <div className="form-row">
           <div className="form-group">
             <label>{t("upload.form.materialTitleLabel")}</label>

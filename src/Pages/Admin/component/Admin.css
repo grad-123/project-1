@@ -1,0 +1,145 @@
+body{
+margin:0;
+background:#f3f4f6;
+font-family:Segoe UI;
+}
+
+.admin{
+padding:40px;
+}
+
+.tab{
+margin:20px 0;
+}
+
+.tab button{
+padding:10px 20px;
+border:none;
+background:#eee;
+margin-right:10px;
+cursor:pointer;
+border-radius:6px;
+}
+
+.tab .active{
+background:#007bff;
+color:white;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+border-radius:10px;
+overflow:hidden;
+margin-top:20px;
+}
+
+th,td{
+padding:15px;
+border-bottom:1px solid #eee;
+text-align:left;
+}
+
+.approve{
+background:#28a745;
+color:white;
+border:none;
+padding:6px 14px;
+margin-right:8px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.reject{
+background:#dc3545;
+color:white;
+border:none;
+padding:6px 14px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.category{
+margin-top:40px;
+}
+
+.category-box{
+margin:20px 0;
+display:flex;
+gap:10px;
+}
+
+.category-box input{
+padding:8px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+.category-box button{
+background:#007bff;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.category-list{
+list-style:none;
+padding:0;
+}
+
+.category-list li{
+background:white;
+padding:12px;
+margin-bottom:10px;
+border-radius:6px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.edit{
+background:#ffc107;
+border:none;
+padding:6px 10px;
+border-radius:5px;
+margin-right:8px;
+cursor:pointer;
+}
+
+.delete{
+background:#dc3545;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:5px;
+cursor:pointer;
+}
+td button{
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-right: 8px;
+  transition: 0.2s;
+}
+
+.approve-btn{
+  background-color: #28a745;
+  color: white;
+}
+
+.approve-btn:hover{
+  background-color: #218838;
+}
+.reject-btn{
+  background-color: #dc3545;
+  color: white;
+}
+
+.reject-btn:hover{
+  background-color: #c82333;
+}
