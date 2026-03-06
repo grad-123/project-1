@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 function ResetPassword() {
   const navigate = useNavigate();
-const { t } = useTranslation();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const Email = searchParams.get("email") || "";
   const Code = searchParams.get("code") || "";
@@ -58,10 +58,7 @@ const { t } = useTranslation();
       }, 2000);
     } catch (err) {
       console.error(err);
-      setError(
-        err?.response?.data?.message ||
-          t("reset.failed"),
-      );
+      setError(err?.response?.data?.message || t("reset.failed"));
     } finally {
       setLoading(false);
     }
@@ -74,7 +71,12 @@ const { t } = useTranslation();
       {message && <div className="message success">{message}</div>}
       {error && <div className="message error">{error}</div>}
 
-      <input className="reset-input" value={Email} disabled placeholder={t("reset.email")} />
+      <input
+        className="reset-input"
+        value={Email}
+        disabled
+        placeholder={t("reset.email")}
+      />
 
       <input
         className="reset-input"
@@ -93,7 +95,7 @@ const { t } = useTranslation();
       />
 
       <button className="reset-button" onClick={handleReset} disabled={loading}>
-        {loading ? t("reset.processing") :t("reset.button")}
+        {loading ? t("reset.processing") : t("reset.button")}
       </button>
     </div>
   );
