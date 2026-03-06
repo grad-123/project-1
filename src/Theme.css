@@ -1,5 +1,8 @@
 :root {
   --overlay-opacity: 0.2;
+  --input-bg: #fff;
+  --input-border: #ccc;
+  --icon-color: #555;
   --bg-main: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-card: #ffffff;
@@ -14,6 +17,9 @@
 }
 
 [data-theme="dark"] {
+  --input-bg: #6157f0;
+  --input-border: #555;
+  --icon-color: #aaa;
   --overlay-opacity: 0.6;
   --bg-main: #0f172a;
   --bg-secondary: #1e293b;

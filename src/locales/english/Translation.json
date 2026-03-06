@@ -250,5 +250,13 @@
     "success": "Password updated successfully",
     "failed": "Reset password failed",
     "passwords_not_match": "Passwords do not match"
+  },
+   "browse": {
+    "categories": "Categories",
+    "searchPlaceholder": "Type to search..."
+  },
+  "courses": {
+    "title": "Courses",
+    "noCourses": "No courses available for this category"
   }
 }

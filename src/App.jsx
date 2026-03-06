@@ -34,19 +34,20 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "browse", element: <Browse /> },
+      { path: "courses/:id",element: <Courses />,},
       {
         path: "admin",
         element: (
-         // <ProtectedAdmin>
-            <Admin />
-        //  </ProtectedAdmin>
+          // <ProtectedAdmin>
+          <Admin />
+          //  </ProtectedAdmin>
         ),
       },
       {
         path: "upload",
         element: (
           //<ProtectedRoutes>
-            <Upload />
+          <Upload />
           //</ProtectedRoutes>
         ),
       },
@@ -54,16 +55,16 @@ const router = createBrowserRouter([
         path: "favorites",
         element: (
           //<ProtectedRoutes>
-            <Favorites />
-         // </ProtectedRoutes>
+          <Favorites />
+          // </ProtectedRoutes>
         ),
       },
       {
         path: "ai",
         element: (
           //<ProtectedRoutes>
-            <AI />
-         // </ProtectedRoutes>
+          <AI />
+          // </ProtectedRoutes>
         ),
       },
 
