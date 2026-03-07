@@ -5,22 +5,32 @@ import { useTranslation } from "react-i18next";
 import axios from "../../../api/axiosInstance";
 import { FaSearch } from "react-icons/fa";
 function Browse() {
+  const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     axios
-      .get("https://localhost:7090/api/v1/Category/GetList")
+      .get("/api/v1/Category/GetList")
       .then((res) => {
-        setCategories(res.data.data);
+        setCategories(res.data.data || []);
+        setLoading(false);
       })
       .catch((err) => {
         console.error("Error fetching categories:", err);
+        setLoading(false);
       });
   }, []);
-  const filteredCategories = categories.filter((cat) =>
-    cat.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+   if (loading) {
+    return (
+      <div className="loading">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+  //const filteredCategories = categories.filter((cat) =>
+   // cat.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  //);
   return (
     <div className="browse-page">
       <h1 className="browse-title">{t("browse.categories")}</h1>
@@ -34,13 +44,16 @@ function Browse() {
         className="search-input"
       />
       <FaSearch className="search-icon" />
-      </div>
+      </div> 
       <div className="categories-container">
         {categories.map((cat) => (
-          <Link key={cat.id} to={`/courses/${cat.id}`}>
+          <Link key={cat.id} to={`/courses/${cat.id}`} className="category-link">
             <div className="category-card">
+              <div className="card-content">
               <h3>{cat.name}</h3>
               <p>{cat.description}</p>
+            </div>
+            <div className="card-arrow">›</div>
             </div>
           </Link>
         ))}
