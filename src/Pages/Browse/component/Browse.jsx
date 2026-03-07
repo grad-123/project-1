@@ -28,9 +28,9 @@ function Browse() {
       </div>
     );
   }
-  //const filteredCategories = categories.filter((cat) =>
-   // cat.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  //);
+  const filteredCategories = categories.filter((cat) =>
+    cat.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
   return (
     <div className="browse-page">
       <h1 className="browse-title">{t("browse.categories")}</h1>
@@ -46,7 +46,7 @@ function Browse() {
       <FaSearch className="search-icon" />
       </div> 
       <div className="categories-container">
-        {categories.map((cat) => (
+        {filteredCategories.map((cat) => (
           <Link key={cat.id} to={`/courses/${cat.id}`} className="category-link">
             <div className="category-card">
               <div className="card-content">
