@@ -1,6 +1,6 @@
 body{
 margin:0;
-background:#f3f4f6;
+background: var(--bg-main);
 font-family:Segoe UI;
 }
 
@@ -29,7 +29,7 @@ color:white;
 table{
 width:100%;
 border-collapse:collapse;
-background:white;
+background: var(--bg-card);
 border-radius:10px;
 overflow:hidden;
 margin-top:20px;
@@ -39,6 +39,13 @@ th,td{
 padding:15px;
 border-bottom:1px solid #eee;
 text-align:left;
+}
+tbody tr:hover{
+background: var(--bg-secondary);
+}
+th ,h3,h2,p{
+  color:#007bff;
+  font-weight:600;
 }
 
 .approve{
@@ -63,8 +70,17 @@ cursor:pointer;
 .category{
 margin-top:40px;
 }
+.course{
+margin-top:40px;
+}
 
 .category-box{
+margin:20px 0;
+display:flex;
+gap:10px;
+}
+
+.course-box{
 margin:20px 0;
 display:flex;
 gap:10px;
@@ -75,8 +91,20 @@ padding:8px;
 border:1px solid #ccc;
 border-radius:6px;
 }
-
+.course-box input{
+padding:8px;
+border:1px solid #ccc;
+border-radius:6px;
+}
 .category-box button{
+background:#007bff;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+}
+.course-box button{
 background:#007bff;
 color:white;
 border:none;
@@ -90,8 +118,22 @@ list-style:none;
 padding:0;
 }
 
+.course-list{
+list-style:none;
+padding:0;
+}
+
 .category-list li{
-background:white;
+background:var(--bg-card);
+padding:12px;
+margin-bottom:10px;
+border-radius:6px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.course-list li{
+background:var(--bg-card);
 padding:12px;
 margin-bottom:10px;
 border-radius:6px;
@@ -142,4 +184,29 @@ td button{
 
 .reject-btn:hover{
   background-color: #c82333;
+}
+.actions{
+  display: flex;
+  gap: 8px;
+}
+.table-card{
+   background: var(--bg-card);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-top: 20px;
+}
+.section{
+ background: var(--bg-card);
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+  margin-top:30px;
+}
+button{
+  transition:0.2s;
+}
+
+button:hover{
+  transform:scale(1.05);
 }

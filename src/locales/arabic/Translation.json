@@ -79,16 +79,15 @@
       "descriptionLabel": "وصف مختصر",
       "materialTitleLabel": "عنوان المادة",
       "categoryLabel": "الفئة",
-      "universityLabel": "الجامعة / المؤسسة",
+      "courseLabel": "المساق",
       "materialTypeLabel": "نوع المادة",
       "materialTitle": "مثال: مقدمة في الخوارزميات - الأسبوع 1",
-      "university": "مثال: جامعة ستانفورد",
       "category": "اختر الفئة",
       "materialType": "اختر نوع المادة",
       "description": "اخبرنا بما تغطي هذه المادة...",
       "submitBtn": "رفع المادة",
       "materialTitleRequired": "ادخل عنوان المادة",
-      "universityRequired": "ادخل اسم الجامعة",
+      "courseRequired":"ادخل اسم المساق",
       "categoryRequired": "اختر الفئة",
       "materialTypeRequired": "اختر نوع المادة",
       "descriptionRequired": "اكتب وصفاً قصيراً",
@@ -254,12 +253,43 @@
     "failed": "فشل إعادة تعيين كلمة المرور",
     "passwords_not_match": "كلمتا المرور غير متطابقتين"
   },
-   "browse": {
-    "categories": "التصنيفات",
-    "searchPlaceholder": "اكتب للبحث..."
-  },
-  "courses": {
-    "title": "الكورسات",
-    "noCourses": "لا يوجد كورسات لهذه التصنيف"
+  "admin": {
+    "title": "لوحة تحكم المدير",
+    "manageFiles": "إدارة الملفات المرفوعة",
+
+    "tabs": {
+      "pending": "قيد الانتظار",
+      "approved": "مقبول",
+      "rejected": "مرفوض"
+    },
+
+    "table": {
+      "fileName": "اسم الملف",
+      "uploadedBy": "تم الرفع بواسطة",
+      "category": "التخصص",
+      "course": "المساق",
+      "date": "التاريخ",
+      "actions": "الإجراءات",
+      "status": "الحالة"
+    },
+
+    "buttons": {
+      "approve": "قبول",
+      "reject": "رفض",
+      "add": "إضافة",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "save": "حفظ"
+    },
+
+    "categories": {
+      "title": "إدارة التخصصات",
+      "newCategory": "تخصص جديد"
+    },
+
+    "courses": {
+      "title": "إدارة المساقات",
+      "newCourse": "مساق جديد"
+    }
   }
 }

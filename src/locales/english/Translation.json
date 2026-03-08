@@ -77,16 +77,15 @@
       "descriptionLabel": "Brief Description",
       "materialTitleLabel": "Material Title",
       "categoryLabel": "Category",
-      "universityLabel": "University / Institution",
+      "courseLabel": "Course",
       "materialTypeLabel": "Material Type",
       "materialTitle": "e.g., Intro to Algorithms - Week 1",
-      "university": "e.g., Stanford University",
       "category": "Select Category",
       "materialType": "Select Material Type",
       "description": "Tell us what this material covers...",
       "submitBtn": "Upload Material",
       "materialTitleRequired": "Enter the subject title",
-      "universityRequired": "Enter the university or institution name",
+      "courseRequired": "Enter the course name",
       "categoryRequired": "Select a category",
       "materialTypeRequired": "Please select a material type",
       "descriptionRequired": "Please write a short description",
@@ -141,7 +140,7 @@
     "privacy": "Privacy",
     "contact": "Contact",
     "footerText": "© 2026 EDUPRO Platform. Developed for Palestine Technical University - Kadoorie.",
-   "invalidEmailFormat": "Invalid email format",
+    "invalidEmailFormat": "Invalid email format",
     "enterEmailPassword": "Please enter email and password",
     "invalidCredentials": "Invalid email or password",
     "verifyFirst": "Please verify your email first",
@@ -166,7 +165,7 @@
     "usernameHint": "Username can contain English letters, numbers and @ + _ . only",
     "emailHint": "Enter a valid email like example@gmail.com",
     "passwordHint": "Password must be at least 6 characters and contain uppercase, lowercase letters and a special character",
-    "passwordconfirm":"Confirm Password *",
+    "passwordconfirm": "Confirm Password *",
     "processing": "Creating account..."
   },
   "alerts": {
@@ -177,16 +176,16 @@
     "ok": "OK"
   },
   "validation": {
-  "usernameRequired": "Username is required",
-  "usernamePattern": "Username can contain letters, numbers and @ + _ . only",
-  "emailRequired": "Email is required",
-  "emailInvalid": "Invalid email format",
-  "passwordRequired": "Password is required",
-  "passwordMin": "Password must be at least 6 characters",
-  "passwordPattern": "Password must contain uppercase, lowercase letters and special character",
-  "passwordConfirmRequired": "Password Confirm is required",
- "passwordMatch":"Passwords do not match"
-},
+    "usernameRequired": "Username is required",
+    "usernamePattern": "Username can contain letters, numbers and @ + _ . only",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email format",
+    "passwordRequired": "Password is required",
+    "passwordMin": "Password must be at least 6 characters",
+    "passwordPattern": "Password must contain uppercase, lowercase letters and special character",
+    "passwordConfirmRequired": "Password Confirm is required",
+    "passwordMatch": "Passwords do not match"
+  },
   "image": {
     "title": "Your Intelligent Gateway to Academic Excellence",
     "subtitle": "Join thousands of students sharing knowledge and leveraging local AI to transform fragmented study materials into structured learning ecosystems",
@@ -208,7 +207,7 @@
     "resending": "Resending...",
     "resendSent": "Password reset link sent again.",
     "resendError": "Failed to resend. Try again later.",
-     "requiredEmail": "Email is required",
+    "requiredEmail": "Email is required",
     "invalidEmail": "Enter a valid email",
     "somethingWrong": "Something went wrong",
     "loading": "Loading..."
@@ -238,9 +237,9 @@
     "resendFail": "Resend failed",
     "codeRequired": "Please enter the reset code",
     "invalidCode": "Invalid or expired code",
-    "loooding":"Verifying..."
+    "loooding": "Verifying..."
   },
-   "reset": {
+  "reset": {
     "title": "Reset Password",
     "email": "Email",
     "new_password": "New Password",
@@ -251,12 +250,45 @@
     "failed": "Reset password failed",
     "passwords_not_match": "Passwords do not match"
   },
-   "browse": {
-    "categories": "Categories",
-    "searchPlaceholder": "Type to search..."
-  },
-  "courses": {
-    "title": "Courses",
-    "noCourses": "No courses available for this category"
-  }
-}
+  "admin": {
+    "title": "Admin Dashboard",
+    "manageFiles": "Manage Upload File",
+
+    "tabs": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+
+    "table": {
+      "fileName": "File Name",
+      "uploadedBy": "Uploaded By",
+      "category": "Categories",
+      "course": "Course",
+      "date": "Date",
+      "actions": "Actions",
+      "status": "Status"
+    },
+
+    "buttons": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "add": "Add",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save"
+    },
+
+    "categories": {
+      "title": "Manage Categories",
+      "newCategory": "New Category"
+    },
+
+    "courses": {
+      "title": "Manage Courses",
+      "newCourse": "New Course"
+    }
+
+  
+  }}
+
