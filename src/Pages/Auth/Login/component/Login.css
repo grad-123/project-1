@@ -20,6 +20,7 @@
   display: block;
   margin-bottom: 6px;
   font-size: 14px;
+  text-align: start;
 }
 
 .input-field {
@@ -61,7 +62,7 @@ html[dir="rtl"] .icon {
   cursor: pointer;
   margin-top: 15px;
   transition: 0.3s;
-   transition: all 0.25s ease;
+  transition: all 0.25s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 .login-btn:hover:not(:disabled) {

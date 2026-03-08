@@ -14,7 +14,7 @@ axiosInstance.interceptors.request.use(
     }
 
     config.headers["Accept-Language"] = language === "ar" ? "ar-EG" : "en-US";
-
+    config.headers["ngrok-skip-browser-warning"] = "true";
     return config;
   },
   (error) => Promise.reject(error),

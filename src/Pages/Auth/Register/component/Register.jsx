@@ -225,19 +225,19 @@ function Register() {
             <FaLock className="icon" />
 
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={user.confirmPassword}
               name="confirmPassword"
               onChange={handleChange}
               placeholder="••••••••"
             />
-            {/*} <button
+             <button
               type="button"
               className="show-btn"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>*/}
+            </button>
           </div>
 
           {errors.confirmPassword && submitted && (
