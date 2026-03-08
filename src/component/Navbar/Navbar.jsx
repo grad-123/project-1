@@ -71,7 +71,7 @@ useEffect(() => {
 
   return (
     <nav className="navbar">
-      <div className="logo">EDUPRO</div>
+      <div className="logo">E D U P R O</div>
 
       <ul className="nav-link">
         <li>
