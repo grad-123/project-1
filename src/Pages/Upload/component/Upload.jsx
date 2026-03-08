@@ -17,7 +17,7 @@ export default function Upload() {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("materialTitle", data.materialTitle);
-    formData.append("university", data.university);
+    formData.append("course", data.course);
     formData.append("category", data.category);
     formData.append("materialType", data.materialType);
     formData.append("description", data.description);
@@ -131,17 +131,16 @@ const handleFileChange = (e) => {
             )}
           </div>
           <div className="form-group">
-              <label>{t("upload.form.universityLabel")}</label>
+              <label>{t("upload.form.courseLabel")}</label>
 
             <input
               type="text"
-              placeholder={t("upload.form.university")}
-              {...register("university", {
-                required: t("upload.form.universityRequired"),
+              {...register("course", {
+                required: t("upload.form.courseRequired"),
               })}
             />
-            {errors.university && (
-              <span className="error">{errors.university.message}</span>
+            {errors.course && (
+              <span className="error">{errors.course.message}</span>
             )}
           </div>
         </div>
