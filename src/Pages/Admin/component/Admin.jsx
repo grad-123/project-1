@@ -1,16 +1,48 @@
 import React, { useState } from "react";
 import "./Admin.css";
 import { useTranslation } from "react-i18next";
+import Categories from './../../categories/component/Categories';
+import Courses from './../../Courses/component/Courses';
+import { FaUserCircle } from "react-icons/fa";
+function Sidebar ({ activeSection, setActiveSection }){
+  return(
+    <div className="sidebar">
+      <h2>EDUPRO</h2>
+      <p>Admin Panel</p>
+      <button className = {activeSection==="files"? "active":""}
+      onClick={()=>setActiveSection("files")}
+      >
+        Manage Files
+      </button>
+       <button className = {activeSection==="categories"? "active":""}
+      onClick={()=>setActiveSection("categories")}
+      >
+        Manage Categories
+      </button>
+       <button className = {activeSection==="courses"? "active":""}
+      onClick={()=>setActiveSection("courses")}
+      >
+        Manage Courses
+      </button>
+       <button className = {activeSection==="users"? "active":""}
+      onClick={()=>setActiveSection("users")}
+      >
+      Manage Users
+      </button>
+
+    </div>
+  );}
 function Admin() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("Pending");
+  const [activeSection, setActiveSection] = useState("files");
   const [files, setFiles] = useState([
     {
       id: 1,
       name: "Data Structures Summary.pdf",
       uploadedBy: "Razan Madani",
       major: "Computer Systems Engineering",
-      Course: "Introduction to Computer Science",
+      course: "Introduction to Computer Science",
       date: "2025-03-01",
       status: "Pending",
     },
@@ -19,7 +51,7 @@ function Admin() {
       name: "Calculus Notes.pdf",
       uploadedBy: "Tahani Mansour",
       major: "Engineering",
-      Course: "Data Structures and Algorithms",
+      course: "Data Structures and Algorithms",
       date: "2025-03-01",
       status: "Pending",
     },
@@ -28,7 +60,7 @@ function Admin() {
       name: "Physics Lab Report.docx",
       uploadedBy: "Masa Omar",
       major: "Physics",
-      Course: "Communication Skills",
+      course: "Communication Skills",
       date: "2025-03-01",
       status: "Pending",
     },
@@ -49,6 +81,63 @@ function Admin() {
   const [newCourse, setNewCourse] = useState("");
   const [editCourse, setEditCourse] = useState(null);
   const [updatedNameCourse, setUpdatedNameCourse] = useState("");
+ const [searchUser, setSearchUser] = useState("");
+const [users, setUsers] = useState([
+  {
+    id: 1,
+    name: "EduPro Admin",
+    role: "Admin",
+    roles: ["Admin"], 
+    permissions: {
+      manageCategories: true,
+      manageCourses: true,
+      manageUsers: true,
+      publishCourse: true,
+      superAdmin: true
+    }
+  },
+  {
+    id: 2,
+    name: "Ahmad Salem",
+    role: "Student",
+    roles: ["Student"], 
+    permissions: {
+      manageCategories: false,
+      manageCourses: false,
+      manageUsers: false,
+      publishCourse: false,
+      superAdmin: false
+    }
+  },
+  {
+    id: 3,
+    name: "Sara Khalil",
+    role: "Student",
+    roles: ["Student"], 
+    permissions: {
+      manageCategories: false,
+      manageCourses: false,
+      manageUsers: false,
+      publishCourse: false,
+      superAdmin: false
+    }
+  },
+  {
+    id: 4,
+    name: "Majd Nasser",
+    role: "Admin",
+    roles: ["Admin"], 
+    permissions: {
+      manageCategories: true,
+      manageCourses: true,
+      manageUsers: true,
+      publishCourse: true,
+      superAdmin: false
+    }
+  }
+]);
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const approveFile = (id) => {
     setFiles(
       files.map((file) =>
@@ -102,7 +191,24 @@ function Admin() {
     setEditCourse(null);
     setUpdatedNameCourse("");
   };
+   const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchUser.toLowerCase())
+  );
+  const handlePermissionChange = (permission) => {
+  setSelectedUser(prev => ({
+    ...prev,
+    permissions: {
+      ...prev.permissions,
+      [permission]: !prev.permissions[permission]
+    }
+  }));
+};
   return (
+    <div className ="admin-container">
+    <Sidebar activeSection={activeSection} setActiveSection={setActiveSection}/>
+      <div className="admin-content">
+        <div className="admin-inner">
+{activeSection==="files" && (
     <div className="admin">
       <h2>{t("admin.title")}</h2>
       <p>{t("admin.manageFiles")}</p>
@@ -144,7 +250,7 @@ function Admin() {
                 <td> {file.name}</td>
                 <td>{file.uploadedBy}</td>
                 <td> {file.major}</td>
-                <td> {file.Course}</td>
+                <td> {file.course}</td>
                 <td> {file.date}</td>
                 <td> {file.status}</td>
                 <td>
@@ -170,6 +276,11 @@ function Admin() {
           </tbody>
         </table>
       </div>
+      </div>
+      
+  
+      )}
+      {activeSection==="categories" && (
       <div className="section">
         <h3 className="category">{t("admin.categories.title")}</h3>
         <div className="category-box">
@@ -196,7 +307,8 @@ function Admin() {
                   <button onClick={updateCategory}>
                     {t("admin.buttons.save")}
                   </button>
-                </>
+                  </>
+                
               ) : (
                 <>
                   <span>{category}</span>
@@ -224,6 +336,8 @@ function Admin() {
           ))}
         </ul>
       </div>
+      )}
+      {activeSection==="courses" && (
       <div className="section">
         <h3 className="course">{t("admin.courses.title")}</h3>
         <div className="course-box">
@@ -277,8 +391,128 @@ function Admin() {
             </li>
           ))}
         </ul>
-      </div>
+      </div> )} 
+
+   
+{activeSection ==="users"&&(
+  <div className="users-section">
+<div className="users-list">
+<h3>Users</h3>
+<div className="search-box">
+    <span className="search-icon">🔍</span>
+<input type="text" placeholder="search" className="search"
+value={searchUser}
+onChange={(e)=>setSearchUser(e.target.value)}
+/>
+</div>
+
+{filteredUsers.map((user)=>(
+  <div key ={user.id}
+  className="user-item"
+  onClick={()=>setSelectedUser(user)}>
+    <div className="avatar">
+      {user.name.charAt(0)}
     </div>
-  );
+    <div>
+      <p className="user-name">{user.name}</p>
+      <span className="usr-role">{user.role}</span>
+    </div>
+    </div>
+)
+)}
+</div>
+<div className= "user-details">
+{selectedUser?(
+  <>
+  <h3>{selectedUser.name}</h3> 
+ <div>
+  <h4>👤Roles</h4>
+  <div className="role-container">
+    <label>
+      <input
+        type="checkbox"
+        checked={selectedUser.roles.includes("Admin")}
+        onChange={(e) => {
+                const newRoles = e.target.checked
+                  ? [...selectedUser.roles, "Admin"]
+                  : selectedUser.roles.filter(r => r !== "Admin");
+                setSelectedUser({ ...selectedUser, roles: newRoles });
+              }}
+            />
+            <span> Admin</span> 
+            
+          </label>
+          <label>
+      <input
+        type="checkbox"
+        checked={selectedUser.roles.includes("Student")}
+        onChange={(e) => {
+                const newRoles = e.target.checked
+                  ? [...selectedUser.roles, "Student"]
+                  : selectedUser.roles.filter(r => r !== "Student");
+                setSelectedUser({ ...selectedUser, roles: newRoles });
+              }}
+            />
+           <span>Student</span> 
+          </label>
+           </div>
+</div> 
+
+  <h4>🔑Permissions</h4>
+  <ul className="permissions-grid">
+  <li>
+    <label>
+      <input
+        type="checkbox"
+        checked={selectedUser.permissions.manageCategories}
+        onChange={() => handlePermissionChange("manageCategories")}
+      />
+      Manage Categories
+    </label>
+  </li>
+  <li>
+    <label>
+      <input
+        type="checkbox"
+        checked={selectedUser.permissions.manageCourses}
+        onChange={() => handlePermissionChange("manageCourses")}
+      />
+      Manage Courses
+    </label>
+  </li>
+  <li>
+    <label>
+      <input
+        type="checkbox"
+        checked={selectedUser.permissions.publishCourse}
+        onChange={() => handlePermissionChange("publishCourse")}
+      />
+      Publish Course
+    </label>
+  </li>
+</ul>
+  </> 
+):(
+  <div className="container">
+  <div className="no-user-selected">
+       <FaUserCircle size={80} color="#007bff" />
+  <p>Choose a user to manage their permissions</p>
+</div> 
+</div>
+)}
+
+
+
+</div>
+
+
+  </div>
+)
 }
+ </div>
+</div>
+</div>
+  ); 
+  }
+
 export default Admin;

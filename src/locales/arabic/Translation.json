@@ -101,6 +101,9 @@
         "engineering": "الهندسة",
         "medicine": "الطب"
       },
+      "courses":{
+        "selectCourse": "اختر المساق"
+      },
       "materialTypes": {
         "selectMaterialType": "اختر نوع المادة",
         "lecture_pdf": "ملف محاضرة PDF",
