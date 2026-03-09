@@ -65,6 +65,7 @@
     "copyRight": "© 2026 منصة EDUPRO للذكاء الأكاديمي. جميع الحقوق محفوظة."
   },
   "browse": {
+    "searchPlaceholder":"اضغط للبحث ...",
     "categories": "تصفح التصنيفات"
   },
   "upload": {

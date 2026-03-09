@@ -21,7 +21,7 @@ function Browse() {
         setLoading(false);
       });
   }, []);
-   if (loading) {
+  if (loading) {
     return (
       <div className="loading">
         <div className="spinner"></div>
@@ -35,25 +35,29 @@ function Browse() {
     <div className="browse-page">
       <h1 className="browse-title">{t("browse.categories")}</h1>
       <div className="search-wrapper">
-      
-      <input
-        type="text"
-        placeholder={t("browse.searchPlaceholder")}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="search-input"
-      />
-      <FaSearch className="search-icon" />
-      </div> 
+        <input
+          type="text"
+          placeholder={t("browse.searchPlaceholder")}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+        <FaSearch className="search-icon" />
+      </div>
       <div className="categories-container">
         {filteredCategories.map((cat) => (
-          <Link key={cat.id} to={`/courses/${cat.id}`} className="category-link">
+          <Link
+            key={cat.id}
+            to={`/courses/${cat.id}`}
+            state={{ categoryName: cat.name }}
+            className="category-link"
+          >
             <div className="category-card">
               <div className="card-content">
-              <h3>{cat.name}</h3>
-              <p>{cat.description}</p>
-            </div>
-            <div className="card-arrow">›</div>
+                <h3>{cat.name}</h3>
+                <p>{cat.description}</p>
+              </div>
+              <div className="card-arrow">›</div>
             </div>
           </Link>
         ))}

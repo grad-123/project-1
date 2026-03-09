@@ -62,6 +62,7 @@
     "copyRight": "© 2026 EDUPRO Academic Intelligence Platform. All rights reserved."
   },
   "browse": {
+    "searchPlaceholder":"Tape to search...",
     "categories": "Browse Categories"
   },
 
@@ -292,5 +293,9 @@
     }
 
   
-  }}
+  },
+  "course":{
+    "course":""
+  }
+}
 
