@@ -1,12 +1,15 @@
-body {
+ 
+ body {
   margin: 0;
   background: var(--bg-main);
   font-family: Segoe UI;
 }
 
+
 .admin {
   padding: 40px;
 }
+
 .admin-container {
   display: flex;
   min-height: 100vh;
@@ -20,6 +23,7 @@ body {
   display: flex;
   flex-direction: column;
 }
+
 .sidebar h2 {
   color: white;
   margin-bottom: 5px;
@@ -40,6 +44,7 @@ body {
   margin-bottom: 10px;
   cursor: pointer;
 }
+
 .sidebar button:hover {
   background: #334155;
 }
@@ -118,67 +123,95 @@ p {
   border-radius: 6px;
   cursor: pointer;
 }
-
-.category,
-.course {
-  margin-top: 40px;
-}
-.category-box {
+.course-boxs,
+.category-boxs {
   margin: 20px 0;
   display: flex;
-  gap: 10px;
-  align-items: center;
-}
-.course-box {
-  margin: 20px 0;
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: #f0f4f8; 
+  border-radius: 10px;
 }
 
-.course-box input {
+
+.course-boxs input,
+.course-boxs select,
+.category-boxs input,
+.category-boxs select {
   width: 100%;
   height: 40px;
-  font-size: 16px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.category-box input {
-  width: 100%;
-  height: 40px;
-  font-size: 16px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.category-box button,
-.course-box button {
-  background: #007bff;
-  color: white;
-  border: none;
+  font-size: 18px;
   padding: 8px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.course-boxs button,
+.category-boxs button {
+  width: 120px;
+  align-self: center;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
   border-radius: 6px;
   cursor: pointer;
-  white-space: nowrap;
-  height: 40px;
-}
-.category-list,
-.course-list {
-  list-style: none;
-  padding: 0;
+  transition: 0.2s;
 }
 
-.category-list li,
-.course-list li {
-  background: var(--bg-card);
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 6px;
+.course-boxs button:hover,
+.category-boxs button:hover {
+  transform: scale(1.05);
+}
+
+
+.course-list li,
+.category-list li {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+
+.course-list li input,
+.category-list li input {
+  width: calc(100% - 120px); 
+  height: 40px;              
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  margin-bottom: 8px;   
+    margin-left: 8px;      
+}
+
+.course-list li button.save ,
+.category-list li button.save{
+  padding: 8px 12px;   
+  font-size: 16px;      
+  border-radius: 8px;   
+  background-color: #64686d;
+  color: white;
+   margin-left: 8px; 
+     margin-bottom: 8px;  
+}
+
+.course-list li button.save:hover,
+.category-list li button.save:hover {
+  background-color: #7d858d; 
+  transform: scale(1.05);   
+}
+.buttons {
+  display: flex;
+  gap: 8px;
   align-items: center;
 }
 
@@ -451,4 +484,17 @@ button:hover {
 }
 .unban-btn:hover {
   background: #218838;
+}
+.delete-btn{
+background:#dc3545;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:6px;
+cursor:pointer;
+margin-left:10px;
+}
+
+.delete-btn:hover{
+background:#b02a37;
 }

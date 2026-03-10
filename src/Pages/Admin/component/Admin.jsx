@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Admin.css";
 import { useTranslation } from "react-i18next";
 import { FaUserCircle } from "react-icons/fa";
-
+import axios from "../../../api/axiosInstance";
 function Sidebar({ activeSection, setActiveSection }) {
   return (
     <div className="sidebar">
@@ -41,49 +41,12 @@ function Admin() {
   const [activeTab, setActiveTab] = useState("Pending");
   const [activeSection, setActiveSection] = useState("files");
 
-  const [files, setFiles] = useState([
-    {
-      id: 1,
-      name: "Data Structures Summary.pdf",
-      uploadedBy: "Razan Madani",
-      major: "Computer Systems Engineering",
-      course: "Introduction to Computer Science",
-      date: "2025-03-01",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      name: "Calculus Notes.pdf",
-      uploadedBy: "Tahani Mansour",
-      major: "Engineering",
-      course: "Data Structures and Algorithms",
-      date: "2025-03-01",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      name: "Physics Lab Report.docx",
-      uploadedBy: "Masa Omar",
-      major: "Physics",
-      course: "Communication Skills",
-      date: "2025-03-01",
-      status: "Pending",
-    },
-  ]);
+  const [files, setFiles] = useState([ ]);
 
-  const [categories, setCategories] = useState([
-    { name: "Computer Systems Engineering", description: "" },
-    { name: "Engineering", description: "" },
-    { name: "Physics", description: "" },
-  ]);
+  const [categories, setCategories] = useState([ ]);
 
-  const [courses, setCourses] = useState([
-    { name: "Data Structures and Algorithms", description: "" },
-    { name: "Introduction to Computer Science", description: "" },
-    { name: "Communication Skills", description: "" },
-  ]);
-
-  // --- Categories & Courses States ---
+  
+  const [courses, setCourses] = useState([]);
   const [newCategory, setNewCategory] = useState("");
   const [newCategoryDesc, setNewCategoryDesc] = useState("");
   const [editCategory, setEditCategory] = useState(null);
@@ -92,64 +55,13 @@ function Admin() {
 
   const [newCourse, setNewCourse] = useState("");
   const [newCourseDesc, setNewCourseDesc] = useState("");
+   const [selectedCategory, setSelectedCategory] = useState("");
   const [editCourse, setEditCourse] = useState(null);
   const [updatedCourseName, setUpdatedCourseName] = useState("");
   const [updatedCourseDesc, setUpdatedCourseDesc] = useState("");
+
   const [searchUser, setSearchUser] = useState("");
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "EduPro Admin",
-      role: "Admin",
-      roles: ["Admin"],
-      permissions: {
-        manageCategories: true,
-        manageCourses: true,
-        manageUsers: true,
-        publishCourse: true,
-        superAdmin: true,
-      },
-    },
-    {
-      id: 2,
-      name: "Ahmad Salem",
-      role: "Student",
-      roles: ["Student"],
-      permissions: {
-        manageCategories: false,
-        manageCourses: false,
-        manageUsers: false,
-        publishCourse: false,
-        superAdmin: false,
-      },
-    },
-    {
-      id: 3,
-      name: "Sara Khalil",
-      role: "Student",
-      roles: ["Student"],
-      permissions: {
-        manageCategories: false,
-        manageCourses: false,
-        manageUsers: false,
-        publishCourse: false,
-        superAdmin: false,
-      },
-    },
-    {
-      id: 4,
-      name: "Majd Nasser",
-      role: "Admin",
-      roles: ["Admin"],
-      permissions: {
-        manageCategories: true,
-        manageCourses: true,
-        manageUsers: true,
-        publishCourse: true,
-        superAdmin: false,
-      },
-    },
-  ]);
+  const [users, setUsers] = useState([]);
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [bannedUsers, setBannedUsers] = useState([]);
@@ -160,40 +72,148 @@ function Admin() {
     setFiles(files.map((file) => (file.id === id ? { ...file, status: "Rejected" } : file)));
   };
   const filterFiles = files.filter((file) => file.status === activeTab);
-  const addCategory = () => {
+  
+  const fetchCategories = async () => {
+  try {
+    const response = await axios.get("/api/v1/Category/GetList");
+
+    if (response.data.succeeded) {
+      setCategories(response.data.data);
+    }
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+};const fetchCourses = async () => {
+  if (!selectedCategory) return; // ما ننفذ إذا ما فيه كاتيجوري
+  try {
+    const response = await axios.get(`/Api/Course/GetList/${selectedCategory}`);
+    if (response.data.succeeded) {
+      setCourses(response.data.data);
+    }
+  } catch (error) {
+    console.error("Error fetching courses:", error.response?.data || error);
+  }
+};
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+ useEffect(() => {
+  if (selectedCategory) fetchCourses();
+}, [selectedCategory]);
+  const addCategory = async () => {
     if (!newCategory.trim()) return;
-    setCategories([...categories, { name: newCategory, description: newCategoryDesc }]);
-    setNewCategory("");
-    setNewCategoryDesc("");
+
+    try {
+      const response = await axios.post("/api/v1/Category/Create", {
+        name: newCategory,
+        description: newCategoryDesc,
+      });
+
+      if (response.data.succeeded) {
+        fetchCategories(); 
+        setNewCategory("");
+        setNewCategoryDesc("");
+      }
+    } catch (error) {
+      console.error("Add Category Error:", error);
+    }
   };
-  const updateCategory = (index) => {
-    const updated = [...categories];
-    updated[index] = { name: updatedNameCategory, description: updatedCategoryDesc };
-    setCategories(updated);
-    setEditCategory(null);
-    setUpdatedNameCategory("");
-    setUpdatedCategoryDesc("");
-  };
-  const deleteCategory = (index) => {
-    setCategories(categories.filter((category, i) => i !== index));
-  };
-  const addCourse = () => {
-    if (!newCourse.trim()) return;
-    setCourses([...courses, { name: newCourse, description: newCourseDesc }]);
-    setNewCourse("");
-    setNewCourseDesc("");
-  };
-  const updateCourse = (index) => {
-    const updated = [...courses];
-    updated[index] = { name: updatedCourseName, description: updatedCourseDesc };
-    setCourses(updated);
-    setEditCourse(null);
-    setUpdatedCourseName("");
-    setUpdatedCourseDesc("");
-  };
-  const deleteCourse = (index) => {
-    setCourses(courses.filter((course, i) => i !== index));
-  };
+
+  const updateCategory = async (id) => {
+  try {
+    const response = await axios.put("/api/v1/Category/Update", {
+      id:id, 
+      name: updatedNameCategory,
+      description: updatedCategoryDesc,
+    });
+
+    if (response.data.succeeded) {
+      fetchCategories(); // تحديث اللائحة بعد التعديل
+      setEditCategory(null); // إغلاق وضعية التعديل
+      setUpdatedNameCategory("");
+      setUpdatedCategoryDesc("");
+    }
+  } catch (error) {
+    console.error("Update Category Error:", error);
+  }
+};
+ const deleteCategory = async (id) => {
+  try {
+
+    const response = await axios.delete(`/api/v1/Category/Delete/${id}`);
+
+    if (response.data.succeeded) {
+      fetchCategories();
+    }
+
+  } catch (error) {
+    console.error("Delete Category Error:", error);
+  }
+};
+const addCourse = async () => {
+  if (!newCourse.trim() || !selectedCategory) return;
+
+  try {
+    const categoryObj = categories.find(cat => cat.id === selectedCategory);
+    const categoryId = categoryObj ? categoryObj.id : selectedCategory;
+
+    const response = await axios.post("/Api/Course/Create", {
+      name: newCourse,
+      description: newCourseDesc,
+      categoryId: categoryId,
+    });
+
+    if (response.data.succeeded) {
+      // نظف الحقول فقط
+      setNewCourse("");
+      setNewCourseDesc("");
+
+      // تحديث قائمة الكورسات من السيرفر عشان تظهر فوراً
+      await fetchCourses();
+    }
+  } catch (error) {
+    console.error("Add Course Error:", error);
+  }
+};
+const updateCourse = async (courseId) => {
+  try {
+    // نجيب categoryId الحالي إذا المستخدم ما غيّر الاختيار
+    const categoryId =
+      selectedCategory || courses.find(c => c.id === courseId).categoryId;
+
+    const payload = {
+      id: courseId,
+      name: updatedCourseName,
+      description: updatedCourseDesc,
+      categoryId: categoryId
+    };
+
+    const response = await axios.put("/Api/Course/Update", payload);
+
+    if (response.data.succeeded) {
+      fetchCourses(); // تحديث قائمة الكورسات
+      setEditCourse(null);
+      setUpdatedCourseName("");
+      setUpdatedCourseDesc("");
+      setSelectedCategory("");
+    }
+  } catch (error) {
+    console.error("Update Course Error:", error.response?.data || error);
+  }
+};
+
+
+
+  const deleteCourse = async (id) => {
+  try {
+    const response = await axios.delete(`/Api/Course/Delete/${id}`);
+    if (response.data.succeeded) {
+      setCourses(courses.filter(course => course.id !== id));
+    }
+  } catch (error) {
+    console.error("Delete Course Error:", error.response?.data || error);
+  }
+};
 
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchUser.toLowerCase())
@@ -204,6 +224,15 @@ function Admin() {
       permissions: { ...prev.permissions, [permission]: !prev.permissions[permission] },
     }));
   };
+  const deleteFile = async (id) => {
+  try {
+    await axios.delete(``);
+
+    setFiles(files.filter((file) => file.id !== id));
+  } catch (error) {
+    console.error("Delete file error:", error);
+  }
+};
 
   return (
     <div className="admin-container">
@@ -265,6 +294,8 @@ function Admin() {
                               >
                                 {t("admin.buttons.approve")}
                               </button>
+
+
                               <button
                                 className="reject-btn"
                                 onClick={() => rejectFile(file.id)}
@@ -273,7 +304,15 @@ function Admin() {
                               </button>
                             </div>
                           ) : (
+                              <div className="actions">
                             <span>{file.status}</span>
+                             <button
+      className="delete-btn"
+      onClick={() => deleteFile(file.id)}
+    >
+      Delete
+    </button>
+                           </div>
                           )}
                         </td>
                       </tr>
@@ -287,26 +326,27 @@ function Admin() {
           {activeSection === "categories" && (
             <div className="section">
               <h3 className="category">{t("admin.categories.title")}</h3>
-              <div className="category-box">
+              <div className="category-boxs">
                 <input
                   type="text"
                   placeholder={t("admin.categories.newCategory")}
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
                 />
-                <input
-                  type="text"
-                  placeholder="Description"
-                  value={newCategoryDesc}
-                  onChange={(e) => setNewCategoryDesc(e.target.value)}
-                />
-                <button onClick={addCategory}>{t("admin.buttons.add")}</button>
+              
+<input
+  type="text"
+  placeholder="Description"
+  value={newCategoryDesc}
+  onChange={(e) => setNewCategoryDesc(e.target.value)}
+/>
+<button onClick={addCategory}>{t("admin.buttons.add")}</button>
               </div>
 
               <ul className="category-list">
-                {categories.map((category, index) => (
-                  <li key={index}>
-                    {editCategory === index ? (
+                {categories.map((category) => (
+                  <li key={category.id}>
+                    {editCategory === category.id  ? (
                       <>
                         <input
                           value={updatedNameCategory}
@@ -318,20 +358,20 @@ function Admin() {
                           onChange={(e) => setUpdatedCategoryDesc(e.target.value)}
                           placeholder="Category Description"
                         />
-                        <button onClick={() => updateCategory(index)}>
+                        <button className="save" onClick={() => updateCategory(category.id)}>
                           {t("admin.buttons.save")}
                         </button>
                       </>
                     ) : (
                       <>
                         <span>
-                          {category.name} - {category.description}
+                          {category.name} - {category.description || ""}
                         </span>
-                        <div>
+                       <div className="buttons">
                           <button
                             className="edit"
                             onClick={() => {
-                              setEditCategory(index);
+                              setEditCategory(category.id);
                               setUpdatedNameCategory(category.name);
                               setUpdatedCategoryDesc(category.description);
                             }}
@@ -340,7 +380,7 @@ function Admin() {
                           </button>
                           <button
                             className="delete"
-                            onClick={() => deleteCategory(index)}
+                            onClick={() => deleteCategory(category.id)}
                           >
                             {t("admin.buttons.delete")}
                           </button>
@@ -356,7 +396,7 @@ function Admin() {
           {activeSection === "courses" && (
             <div className="section">
               <h3 className="course">{t("admin.courses.title")}</h3>
-              <div className="course-box">
+              <div className="course-boxs">
                 <input
                   type="text"
                   placeholder={t("admin.courses.newCourse")}
@@ -369,13 +409,25 @@ function Admin() {
                   value={newCourseDesc}
                   onChange={(e) => setNewCourseDesc(e.target.value)}
                 />
+                 <select
+                  value={selectedCategory }
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  <option value="">Select Category</option>
+
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
                 <button onClick={addCourse}>{t("admin.buttons.add")}</button>
               </div>
 
               <ul className="course-list">
-                {courses.map((course, index) => (
-                  <li key={index}>
-                    {editCourse === index ? (
+                {courses.map((course) => (
+                  <li key={course.id}>
+                    {editCourse === course.id ? (
                       <>
                         <input
                           value={updatedCourseName}
@@ -387,20 +439,21 @@ function Admin() {
                           onChange={(e) => setUpdatedCourseDesc(e.target.value)}
                           placeholder="Course Description"
                         />
-                        <button onClick={() => updateCourse(index)}>
+                        <button className="save"  onClick={() => updateCourse(course.id)}>
                           {t("admin.buttons.save")}
                         </button>
                       </>
                     ) : (
                       <>
-                        <span>
-                          {course.name} - {course.description}
-                        </span>
-                        <div>
+                         <span>
+                 {course.name} - {course.description}
+                    </span>
+
+                       <div className="buttons">
                           <button
                             className="edit"
                             onClick={() => {
-                              setEditCourse(index);
+                              setEditCourse(course.id);
                               setUpdatedCourseName(course.name);
                               setUpdatedCourseDesc(course.description);
                             }}
@@ -409,7 +462,7 @@ function Admin() {
                           </button>
                           <button
                             className="delete"
-                            onClick={() => deleteCourse(index)}
+                            onClick={() => deleteCourse(course.id)}
                           >
                             {t("admin.buttons.delete")}
                           </button>
