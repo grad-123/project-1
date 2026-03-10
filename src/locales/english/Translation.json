@@ -106,9 +106,11 @@
         "handwritten_notes": "Handwritten Notes",
         "ai_summary": "AI Summary",
         "research_paper": "Research Paper"
-      }
-    },
-
+      },
+      "courses" :{
+                "selectCourse": "Select Course"
+    }
+  },
     "infoCards": {
       "guidelines": "Review Guidelines",
       "whyContribute": "Why Contribute?",

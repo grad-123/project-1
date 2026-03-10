@@ -10,8 +10,37 @@ import { FiShare2 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 export default function Upload() { 
    const { t } = useTranslation();
-  const { register, handleSubmit, formState: { errors } } = useForm();
+ const { register, handleSubmit, watch, formState: { errors } } = useForm();
+ const selectedCategory = watch("category");
    const [selectedFile, setSelectedFile] = useState(null);
+    const coursesByCategory = {
+  computer_science: [
+    "Introduction to Computer Science",
+    "Data Structures",
+    "Algorithms"
+  ],
+  mathematics: [
+    "Calculus",
+    "Linear Algebra",
+    "Statistics"
+  ],
+  physics: [
+    "Classical Mechanics",
+    "Quantum Physics"
+  ],
+  business: [
+    "Marketing",
+    "Accounting"
+  ],
+  engineering: [
+    "Thermodynamics",
+    "Engineering Drawing"
+  ],
+  medicine: [
+    "Anatomy",
+    "Biochemistry"
+  ]
+};
   const onSubmit = (data) => {
     const file = data.file[0];
     const formData = new FormData();
@@ -60,7 +89,7 @@ const handleFileChange = (e) => {
   
   const isFormComplete = selectedFile &&
     !errors.materialTitle &&
-    !errors.university &&
+    !errors.course &&
     !errors.category &&
     !errors.materialType &&
     !errors.description;
@@ -114,9 +143,7 @@ const handleFileChange = (e) => {
 
   {errors.file && <span className="error">{errors.file.message}</span>}
 </div> 
-
-
-        <div className="form-row">
+        <div div className="form-row">
           <div className="form-group">
             <label>{t("upload.form.materialTitleLabel")}</label>
             <input
@@ -130,21 +157,6 @@ const handleFileChange = (e) => {
               <span className="error">{errors.materialTitle.message}</span>
             )}
           </div>
-          <div className="form-group">
-              <label>{t("upload.form.courseLabel")}</label>
-
-            <input
-              type="text"
-              {...register("course", {
-                required: t("upload.form.courseRequired"),
-              })}
-            />
-            {errors.course && (
-              <span className="error">{errors.course.message}</span>
-            )}
-          </div>
-        </div>
-        <div className="form-row">
           <div className="form-group"> 
               <label>{t("upload.form.categoryLabel")}</label>
 
@@ -164,6 +176,27 @@ const handleFileChange = (e) => {
               <span className="error">{errors.category.message}</span>
             )}
           </div>
+          </div>
+
+<div class="form-row">
+          <div className="form-group">
+              <label>{t("upload.form.courseLabel")}</label>
+
+            <select {...register("course", { required: t("upload.form.courseRequired") })}>
+  <option value="">{t("upload.form.courses.selectCourse")}</option>
+
+  {coursesByCategory[selectedCategory]?.map((course, index) => (
+    <option key={index} value={course}>
+      {course}
+    </option>
+  ))}
+
+</select>
+            {errors.course && (
+              <span className="error">{errors.course.message}</span>
+            )}
+          </div>
+        
 
           <div className="form-group">
               <label>{t("upload.form.materialTypeLabel")}</label>
@@ -183,6 +216,7 @@ const handleFileChange = (e) => {
             )}
           </div>
         </div>
+        
         <div className="form-group">
           <label>{t("upload.form.descriptionLabel")}</label>
           <textarea 

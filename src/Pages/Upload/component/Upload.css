@@ -104,9 +104,9 @@ body {
 }
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   gap: 24px;
-  margin: 20px;
+  margin: 20px ;
 }
 .form-group {
   display: flex;
