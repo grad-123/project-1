@@ -23,7 +23,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config || {};
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -32,7 +32,7 @@ axiosInstance.interceptors.response.use(
         const refreshToken = localStorage.getItem("refreshToken");
         const accessToken = localStorage.getItem("token");
 
-        const response = await axios.post(
+        const response = await axiosInstance.post(
           "https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/RefreshToken",
           {
             refreshToken: refreshToken,
@@ -41,8 +41,13 @@ axiosInstance.interceptors.response.use(
         );
 
         const newAccessToken = response.data.data.accessToken;
+        const newRefreshToken = response.data.data.refreshToken?.tokenString;
 
         localStorage.setItem("token", newAccessToken);
+
+        if (newRefreshToken) {
+          localStorage.setItem("refreshToken", newRefreshToken);
+        }
 
         originalRequest.headers = originalRequest.headers || {};
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
