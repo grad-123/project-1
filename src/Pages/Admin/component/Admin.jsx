@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./Admin.css";
 import { useTranslation } from "react-i18next";
+//<<<<<<< HEAD
+//import Categories from './../../categories/component/Categories';
+import Courses from './../../Courses/component/Courses';
+//=======
+//>>>>>>> cf285972e258dfae8b490b2be14e7161f145c4fa
 import { FaUserCircle } from "react-icons/fa";
 import axios from "../../../api/axiosInstance";
 function Sidebar({ activeSection, setActiveSection }) {

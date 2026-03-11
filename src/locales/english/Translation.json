@@ -63,7 +63,9 @@
   },
   "browse": {
     "searchPlaceholder":"Tape to search...",
-    "categories": "Browse Categories"
+    "categories": "Browse Categories",
+    "description":"Explore different fields of study and discover the topics that match your interests",
+    "searchButton":"search"
   },
 
   "upload": {
@@ -294,7 +296,12 @@
   
   },
   "course":{
-    "course":""
+    "course":"Subjects",
+    "description":"Explore available courses and start learning today"
+  },
+  "file":{
+    "title":"Resources",
+    "description":"Access useful learning materials including summaries, lectures, and resources for this course"
   }
 }
 

@@ -14,7 +14,6 @@ import Favorites from "./Pages/Favorites/component/Favorites";
 import Upload from "./Pages/Upload/component/Upload";
 import Courses from "./Pages/Courses/component/Courses";
 import Files from "./Pages/Files/component/Files";
-import Categories from "./Pages/categories/component/Categories";
 import CheckEmail from "./Pages/Auth/CheckEmail/component/CheckEmail";
 import Register from "./Pages/Auth/Register/component/Register";
 import Login from "./Pages/Auth/Login/component/Login";
@@ -35,7 +34,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "browse", element: <Browse /> },
       { path: "courses/:categoryId",element: <Courses />,},
-      { path: "files/:id", element: <Files /> },
+      { path: "files/:courseId", element: <Files /> },
       {
         path: "admin",
         element: (
