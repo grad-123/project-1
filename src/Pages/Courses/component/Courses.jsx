@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Courses.css";
 import { useTranslation } from "react-i18next";
-import { useParams, Link ,useLocation} from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 function Courses() {
   const { t } = useTranslation();
@@ -32,9 +32,8 @@ function Courses() {
 
   return (
     <div className="courses-page">
-      <h1 className="courses-title">
-         {t("Course.course")} {categoryName && `- ${categoryName}`}
-      </h1>
+      <h1 className="courses-title">{t("course.course")}</h1>
+      <p className="course-description">{t("course.description")}</p>
       <div className="courses-grid">
         {courses.map((course) => (
           <Link

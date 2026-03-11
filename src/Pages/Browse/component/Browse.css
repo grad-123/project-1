@@ -19,7 +19,10 @@ body {
   margin-bottom: 20px;
   color: var(--primary);
 }
-
+.browse-description{
+  font-size:20px;
+  color:var(--primary);
+}
 
 .categories-container {
   display: grid;
@@ -150,9 +153,16 @@ body {
 }
 
 html[dir="ltr"] .search-input {
-  text-align: left;
+  padding: 10px 15px 10px 50px;
 }
 
 html[dir="rtl"] .search-input {
-  text-align: right;
+  padding: 10px 50px 10px 15px;
+}
+html[dir="rtl"] .search-icon {
+  right: 12px;
+}
+
+html[dir="ltr"] .search-icon {
+  left: 12px;
 }

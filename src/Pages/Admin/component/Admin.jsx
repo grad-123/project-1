@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Admin.css";
 import { useTranslation } from "react-i18next";
-import Categories from './../../categories/component/Categories';
+//import Categories from './../../categories/component/Categories';
 import Courses from './../../Courses/component/Courses';
 import { FaUserCircle } from "react-icons/fa";
 function Sidebar ({ activeSection, setActiveSection }){

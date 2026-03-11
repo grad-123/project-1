@@ -1,9 +1,95 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "../../../api/axiosInstance";
+import { useTranslation } from "react-i18next";
+import "./Files.css";
+function FilesPage() {
+  const { t } = useTranslation();
+  const { courseId } = useParams();
+  const [files, setFiles] = useState([]);
+  const fileTypeLabels = {
+    0: "Lecture",
+    1: "Summary",
+    2: "Exam",
+    3: "Assignment",
+    4: "Book",
+    5: "Other",
+  };
+  useEffect(() => {
+    axios
+      .get(`/EduFile/GetByCourseId/${courseId}`)
+      .then((res) => {
+        setFiles(res.data.data);
+      })
+      .catch((err) => console.log(err));
+  }, [courseId]);
+  const handleDownload = async (fileId, filePath) => {
+    try {
+      await axios.get(`/EduFile/Download/${fileId}`);
+      setFiles((prevFiles) =>
+        prevFiles.map((f) =>
+          f.id === fileId ? { ...f, downloadCount: f.downloadCount + 1 } : f,
+        ),
+      );
 
-function Files() {
+      window.open(
+        `https://corny-unevacuated-willy.ngrok-free.dev${filePath}`,
+        "_blank",
+      );
+    } catch (err) {
+      console.log("Download error:", err);
+    }
+  };
+
   return (
-    <div>Files</div>
-  )
+    <div className="files-container">
+      <h2 className="files-title">{t("file.title")}</h2>
+      <p className="files-description">{t("file.description")}</p>
+      {files.map((file) => (
+        <div className="file-card" key={file.id}>
+          <div className="file-info">
+            <div className="file-icon">
+              {file.fileType === "PDF" && "📄"}
+              {file.fileType === "Video" && "🎥"}
+              {file.fileType === "Image" && "🖼️"}
+            </div>
+            <div className="file-details">
+              <h3 className="file-title">
+                <a
+                  href={`https://corny-unevacuated-willy.ngrok-free.dev${file.filePath}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {file.title}
+                </a>
+              </h3>
+              <span className="file-type">
+                {fileTypeLabels[file.fileType] || "Other"}
+              </span>
+              <p className="file-description">{file.description}</p>
+              <div className="file-meta">
+                <span>📚 {file.courseName}</span>
+
+                <span>📁 {file.categoryName}</span>
+              </div>
+              <div className="file-footer">
+                <span>👤 {file.uploadedByUserName}</span>
+                <span>⬇ {file.downloadCount}</span>
+                <span>📅 {new Date(file.uploadedAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            className="download-btn"
+            onClick={() => handleDownload(file.id, file.filePath)}
+          >
+            Download
+          </button>
+        </div>
+      ))}
+    </div>
+  );
 }
 
-export default Files
+export default FilesPage;

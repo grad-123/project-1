@@ -69,14 +69,16 @@
 }
 
 .check-btn.primary:hover {
-  opacity: 0.9;
+  opacity: 0.6;
 }
 
 .check-btn.secondary {
-  background: #f1f5f9;
+  background: var(--bg-main);
   color: var(--text-main);
 }
-
+.check-btn.secondary:hover{
+    opacity: 0.6;
+}
 .success-text {
   color: #22c55e;
   margin-top: 15px;

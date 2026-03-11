@@ -133,7 +133,6 @@ function Login() {
           <div
             className={`input-field ${fieldError.email ? "input-error" : ""}`}
           >
-            {" "}
             <FaEnvelope className="icon" />
             <input
               type="email"

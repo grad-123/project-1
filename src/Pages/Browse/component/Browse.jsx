@@ -34,6 +34,7 @@ function Browse() {
   return (
     <div className="browse-page">
       <h1 className="browse-title">{t("browse.categories")}</h1>
+      <p className="browse-description">{t("browse.description")}</p>
       <div className="search-wrapper">
         <input
           type="text"
@@ -45,7 +46,7 @@ function Browse() {
         <FaSearch className="search-icon" />
       </div>
       <div className="categories-container">
-        {filteredCategories.map((cat) => (
+        {categories.map((cat) => (
           <Link
             key={cat.id}
             to={`/courses/${cat.id}`}
