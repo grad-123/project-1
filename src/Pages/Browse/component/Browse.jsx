@@ -18,9 +18,8 @@ function Browse() {
   const [orderBy, setOrderBy] = useState("");
   const [isDescending, setIsDescending] = useState(true);
 
-  const [showResults, setShowResults] = useState(false); // لتحديد إذا البحث تم أو لا
+  const [showResults, setShowResults] = useState(false); 
 
-  // جلب الكاتيجوريز
   useEffect(() => {
     axios
       .get("/api/v1/Category/GetList")
@@ -46,7 +45,7 @@ function Browse() {
         },
       });
       setFiles(res.data.data || []);
-      setShowResults(true); // بعد البحث نظهر النتائج والفلاتر
+      setShowResults(true); 
     } catch (err) {
       console.error("Search error:", err);
     }
@@ -81,8 +80,6 @@ function Browse() {
     <div className="browse-page">
       <h1 className="browse-title">{t("browse.categories")}</h1>
       <p className="browse-description">{t("browse.description")}</p>
-
-      {/* حقل البحث وزر البحث */}
       <div className="search-wrapper">
         <div className="search-input-wrapper">
           <FaSearch className="search-icon" />
@@ -99,7 +96,6 @@ function Browse() {
           {t("browse.searchButton")}
         </button>
       </div>
-      {/* قبل البحث: عرض كروت الكاتيجوري */}
       {!showResults && (
         <div className="categories-container">
           {categories.map((cat) => (
@@ -121,7 +117,6 @@ function Browse() {
         </div>
       )}
 
-      {/* بعد البحث: عرض الفلاتر */}
       {showResults && (
         <>
           <div className="filters">
@@ -158,7 +153,6 @@ function Browse() {
             </select>
           </div>
 
-          {/* عرض نتائج البحث */}
           <div className="files-container">
             {files.map((file) => (
               <div className="file-card" key={file.id}>
