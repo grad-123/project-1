@@ -47,6 +47,7 @@ function FilesPage() {
       <p className="files-description">{t("file.description")}</p>
       {files.map((file) => (
         <div className="file-card" key={file.id}>
+          <div className="file-favorite">❤️</div> 
           <div className="file-info">
             <div className="file-icon">
               {file.fileType === 0 && "📄"}
