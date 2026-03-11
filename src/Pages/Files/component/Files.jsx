@@ -49,9 +49,12 @@ function FilesPage() {
         <div className="file-card" key={file.id}>
           <div className="file-info">
             <div className="file-icon">
-              {file.fileType === "PDF" && "📄"}
-              {file.fileType === "Video" && "🎥"}
-              {file.fileType === "Image" && "🖼️"}
+              {file.fileType === 0 && "📄"}
+              {file.fileType === 1 && "📄"}
+              {file.fileType === 2 && "📝"}
+              {file.fileType === 3 && "📌"}
+              {file.fileType === 4 && "📚"}
+              {file.fileType === 5 && "❔"}
             </div>
             <div className="file-details">
               <h3 className="file-title">
