@@ -58,6 +58,7 @@
 
 .file-icon {
   font-size: 30px;
+  align-self: center;
 }
 
 .file-title {
@@ -108,5 +109,5 @@
 }
 
 .download-btn:hover {
-  opacity: 0.9;
+  opacity: 0.6;
 }
