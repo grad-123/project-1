@@ -70,13 +70,44 @@ function Admin() {
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [bannedUsers, setBannedUsers] = useState([]);
-  const approveFile = (id) => {
-    setFiles(files.map((file) => (file.id === id ? { ...file, status: "Approved" } : file)));
-  };
-  const rejectFile = (id) => {
-    setFiles(files.map((file) => (file.id === id ? { ...file, status: "Rejected" } : file)));
-  };
-  const filterFiles = files.filter((file) => file.status === activeTab);
+  const statusMap = {
+  Pending: "pending",
+  Approved: "approved",
+  Rejected: "rejected"
+};
+  const fetchFiles = async () => {
+  if (!statusMap[activeTab]) return; // safety
+  try {
+    const response = await axios.get(`/Api/EduFile/GetList/${statusMap[activeTab]}`);
+    console.log(response.data);
+    if (response.data.succeeded) {
+      setFiles(response.data.data);
+    }
+  } catch (error) {
+    console.error("Error fetching files:", error);
+  }
+};
+useEffect(() => {
+  fetchFiles();
+}, [activeTab]);
+const approveFile = async (id) => {
+  try {
+    await axios.put(`/Api/EduFile/Approve/${id}`);
+    fetchFiles();
+  } catch (error) {
+    console.error("Approve file error:", error);
+  }
+};
+
+const rejectFile = async (id) => {
+  try {
+    await axios.put(`/Api/EduFile/Reject/${id}`);
+    fetchFiles();
+  } catch (error) {
+    console.error("Reject file error:", error);
+  }
+};
+
   
   const fetchCategories = async () => {
   try {
@@ -99,9 +130,7 @@ function Admin() {
     console.error("Error fetching courses:", error.response?.data || error);
   }
 };
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+ 
  useEffect(() => {
   if (selectedCategory) fetchCourses();
 }, [selectedCategory]);
@@ -169,11 +198,8 @@ const addCourse = async () => {
     });
 
     if (response.data.succeeded) {
-      // نظف الحقول فقط
       setNewCourse("");
       setNewCourseDesc("");
-
-      // تحديث قائمة الكورسات من السيرفر عشان تظهر فوراً
       await fetchCourses();
     }
   } catch (error) {
@@ -182,7 +208,6 @@ const addCourse = async () => {
 };
 const updateCourse = async (courseId) => {
   try {
-    // نجيب categoryId الحالي إذا المستخدم ما غيّر الاختيار
     const categoryId =
       selectedCategory || courses.find(c => c.id === courseId).categoryId;
 
@@ -196,7 +221,7 @@ const updateCourse = async (courseId) => {
     const response = await axios.put("/Api/Course/Update", payload);
 
     if (response.data.succeeded) {
-      fetchCourses(); // تحديث قائمة الكورسات
+      fetchCourses(); 
       setEditCourse(null);
       setUpdatedCourseName("");
       setUpdatedCourseDesc("");
@@ -206,9 +231,6 @@ const updateCourse = async (courseId) => {
     console.error("Update Course Error:", error.response?.data || error);
   }
 };
-
-
-
   const deleteCourse = async (id) => {
   try {
     const response = await axios.delete(`/Api/Course/Delete/${id}`);
@@ -219,25 +241,82 @@ const updateCourse = async (courseId) => {
     console.error("Delete Course Error:", error.response?.data || error);
   }
 };
+const fetchUsers = async () => {
+  try {
+    const response = await axios.get("/Api/Authorization/GetUsersList", {
+      params: { keyword: searchUser }
+    });
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchUser.toLowerCase())
-  );
+    console.log(response.data);
+
+    if (response.data.succeeded) {
+      setUsers(response.data.data);
+    }
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
+};
+useEffect(() => {
+  fetchUsers();
+}, [searchUser]);
+useEffect(() => {
+  fetchCategories();
+}, []);
+const banUser = async (id) => {
+  try {
+    await axios.post(`/Api/User/Ban/${id}`);
+    fetchUsers();
+  } catch (error) {
+    console.error("Ban user error:", error);
+  }
+};
+const unbanUser = async (id) => {
+  try {
+    await axios.post(`/Api/User/Unban/${id}`);
+    fetchUsers();
+  } catch (error) {
+    console.error("Unban user error:", error);
+  }
+};
+ const filteredUsers = users.filter(
+  (user) =>
+    user.name?.toLowerCase().includes(searchUser?.toLowerCase() || "")
+);
   const handlePermissionChange = (permission) => {
     setSelectedUser((prev) => ({
       ...prev,
       permissions: { ...prev.permissions, [permission]: !prev.permissions[permission] },
     }));
   };
+  const updateUser = async () => {
+  try {
+    const response = await axios.put("/Api/User/Update", selectedUser);
+
+    if (response.data.succeeded) {
+      fetchUsers();
+      alert("User updated");
+    }
+  } catch (error) {
+    console.error("Update user error:", error);
+  }
+};
   const deleteFile = async (id) => {
   try {
-    await axios.delete(``);
+    await axios.delete(`/Api/EduFile/Delete/${id}`);
 
     setFiles(files.filter((file) => file.id !== id));
   } catch (error) {
     console.error("Delete file error:", error);
   }
 };
+const filterFiles = files.filter((file) => {
+  const statusMapReverse = {
+    Pending: 0,
+    Approved: 1,
+    Rejected: 2
+  };
+  return file.status === statusMapReverse[activeTab];
+});
 
   return (
     <div className="admin-container">
@@ -285,40 +364,42 @@ const updateCourse = async (courseId) => {
                   <tbody>
                     {filterFiles.map((file) => (
                       <tr key={file.id}>
-                        <td>{file.name}</td>
-                        <td>{file.uploadedBy}</td>
-                        <td>{file.major}</td>
-                        <td>{file.course}</td>
-                        <td>{file.date}</td>
+                        <td>{file.title}</td>
+<td>{file.uploadedByUserName}</td>
+<td>{file.categoryName}</td>
+<td>{file.courseName}</td>
+<td>{new Date(file.uploadedAt).toLocaleString()}</td>
                         <td>
-                          {file.status === "Pending" ? (
-                            <div className="actions">
-                              <button
-                                className="approve-btn"
-                                onClick={() => approveFile(file.id)}
-                              >
-                                {t("admin.buttons.approve")}
-                              </button>
+                       {file.status === 0 ? (
+  <div className="actions">
+    <button
+      className="approve-btn"
+      onClick={() => approveFile(file.id)}
+    >
+      {t("admin.buttons.approve")}
+    </button>
 
+    <button
+      className="reject-btn"
+      onClick={() => rejectFile(file.id)}
+    >
+      {t("admin.buttons.reject")}
+    </button>
+  </div>
+) : (
+  <div className="actions">
+    <span>
+      {file.status === 1 ? "Approved" : "Rejected"}
+    </span>
 
-                              <button
-                                className="reject-btn"
-                                onClick={() => rejectFile(file.id)}
-                              >
-                                {t("admin.buttons.reject")}
-                              </button>
-                            </div>
-                          ) : (
-                              <div className="actions">
-                            <span>{file.status}</span>
-                             <button
+    <button
       className="delete-btn"
       onClick={() => deleteFile(file.id)}
     >
       Delete
     </button>
-                           </div>
-                          )}
+  </div>
+)}
                         </td>
                       </tr>
                     ))}
@@ -512,7 +593,7 @@ const updateCourse = async (courseId) => {
                             className="unban-btn"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setBannedUsers(bannedUsers.filter((id) => id !== user.id));
+                              unbanUser(user.id);
                             }}
                           >
                             Unban
@@ -522,7 +603,7 @@ const updateCourse = async (courseId) => {
                             className="ban-btn"
                             onClick={(e) => {
                               e.stopPropagation();
-                              setBannedUsers([...bannedUsers, user.id]);
+                              banUser(user.id);
                             }}
                           >
                             Ban
@@ -606,7 +687,9 @@ const updateCourse = async (courseId) => {
                       </li>
                     </ul>
 
-                    <button className="save-btn">Save Changes</button>
+                  <button className="save-btn" onClick={updateUser}>
+  Save Changes
+</button>
                   </>
                 ) : (
                   <div className="container">

@@ -115,6 +115,7 @@ body {
 .upload-form input,
 .upload-form select,
 .upload-form textarea {
+    width: 100%; 
   padding: 13px;
   border-radius: 10px;
   border: 1px solid #d1d5db;
@@ -122,6 +123,7 @@ body {
   transition: 0.3s ease;
    background-color: var(--bg-secondary);
   color: var(--text-main);
+    box-sizing: border-box;
 }
 .upload-form input:focus,
 .upload-form select:focus,
@@ -139,7 +141,7 @@ body {
   min-height: 110px;
   resize: none;
 }
-.upload-form button {
+.upload-form button[type="submit"] {
   width: 100%;
   margin-top: 16px;
   padding: 15px;
@@ -153,8 +155,16 @@ body {
   color: var(--text-light);
 }
 
-.upload-form button:hover {
+.upload-form button[type="submit"]:hover {
   background-color: #4f73b5;
+}
+.remove-btn {
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  background-color: #eee;
+  color: #333;
+  cursor: pointer;
 }
 .right-section {
   flex: 1.2;   
