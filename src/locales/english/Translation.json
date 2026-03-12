@@ -62,10 +62,18 @@
     "copyRight": "© 2026 EDUPRO Academic Intelligence Platform. All rights reserved."
   },
   "browse": {
-    "searchPlaceholder":"Tape to search...",
+    "searchPlaceholder": "Tape to search...",
     "categories": "Browse Categories",
-    "description":"Explore different fields of study and discover the topics that match your interests",
-    "searchButton":"search"
+    "description": "Explore different fields of study and discover the topics that match your interests",
+    "searchButton": "search",
+    "noFiles": "No files found",
+    "tryAnotherSearch": "Try another keyword or change filters",
+    "allCategories": "All Categories",
+    "allTypes": "All Types",
+    "sort": "Sort",
+    "descending": "Descending",
+    "ascending": "Ascending",
+    "download": "Download"
   },
 
   "upload": {
@@ -109,10 +117,10 @@
         "ai_summary": "AI Summary",
         "research_paper": "Research Paper"
       },
-      "courses" :{
-                "selectCourse": "Select Course"
-    }
-  },
+      "courses": {
+        "selectCourse": "Select Course"
+      }
+    },
     "infoCards": {
       "guidelines": "Review Guidelines",
       "whyContribute": "Why Contribute?",
@@ -293,15 +301,14 @@
       "title": "Manage Courses",
       "newCourse": "New Course"
     }
-  
   },
-  "course":{
-    "course":"Subjects",
-    "description":"Explore available courses and start learning today"
+  "course": {
+    "course": "Subjects",
+    "description": "Explore available courses and start learning today"
   },
-  "file":{
-    "title":"Resources",
-    "description":"Access useful learning materials including summaries, lectures, and resources for this course"
+  "file": {
+    "title": "Resources",
+    "description": "Access useful learning materials including summaries, lectures, and resources for this course",
+    "download": "Download"
   }
 }
-

@@ -11,14 +11,14 @@ function Browse() {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [files, setFiles] = useState([]);
-
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [categoryId, setCategoryId] = useState("");
   const [fileType, setFileType] = useState("");
   const [orderBy, setOrderBy] = useState("");
   const [isDescending, setIsDescending] = useState(true);
 
-  const [showResults, setShowResults] = useState(false); 
+  const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
     axios
@@ -32,28 +32,43 @@ function Browse() {
         setLoading(false);
       });
   }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
 
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
   const searchFiles = async () => {
     try {
       const res = await axios.get("/Api/EduFile/Search", {
         params: {
-          Keyword: searchTerm,
-          CategoryId: categoryId,
-          FileType: fileType,
-          OrderBy: orderBy,
+          Keyword: debouncedSearch || undefined,
+          CategoryId: categoryId || undefined,
+          FileType: fileType || undefined,
+          OrderBy: orderBy || undefined,
           IsDescending: isDescending,
         },
       });
+
       setFiles(res.data.data || []);
-      setShowResults(true); 
     } catch (err) {
       console.error("Search error:", err);
     }
   };
+  const handleSearch = () => {
+    setShowResults(true);
+    searchFiles();
+  };
+
+  useEffect(() => {
+    if (!showResults) return;
+    searchFiles();
+  }, [debouncedSearch, categoryId, fileType, orderBy, isDescending]);
 
   const handleDownload = async (fileId, filePath) => {
     try {
-      await axios.get(`/EduFile/Download/${fileId}`);
+      await axios.get(`/Api/EduFile/Download/${fileId}`);
       setFiles((prevFiles) =>
         prevFiles.map((f) =>
           f.id === fileId ? { ...f, downloadCount: f.downloadCount + 1 } : f,
@@ -92,7 +107,7 @@ function Browse() {
           />
         </div>
 
-        <button className="search-btn" onClick={searchFiles}>
+        <button className="search-btn" onClick={handleSearch}>
           {t("browse.searchButton")}
         </button>
       </div>
@@ -121,7 +136,7 @@ function Browse() {
         <>
           <div className="filters">
             <select onChange={(e) => setCategoryId(e.target.value)}>
-              <option value="">All Categories</option>
+              <option value="">{t("browse.allCategories")}</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
@@ -130,7 +145,7 @@ function Browse() {
             </select>
 
             <select onChange={(e) => setFileType(e.target.value)}>
-              <option value="">All Types</option>
+              <option value="">{t("browse.allTypes")}</option>
               <option value="0">Lecture</option>
               <option value="1">Summary</option>
               <option value="2">Exam</option>
@@ -139,8 +154,11 @@ function Browse() {
               <option value="5">Other</option>
             </select>
 
-            <select onChange={(e) => setOrderBy(e.target.value)}>
-              <option value="">Sort</option>
+            <select
+              onChange={(e) =>
+                setOrderBy(e.target.value === "" ? "" : Number(e.target.value))
+              }
+            >
               <option value="0">Most Downloaded</option>
               <option value="1">Newest</option>
             </select>
@@ -148,66 +166,72 @@ function Browse() {
             <select
               onChange={(e) => setIsDescending(e.target.value === "true")}
             >
-              <option value="true">Descending</option>
-              <option value="false">Ascending</option>
+              <option value="true">{t("browse.descending")}</option>
+              <option value="false">{t("browse.ascending")}</option>
             </select>
           </div>
-
+          {files.length === 0 && (
+            <div className="no-results">
+              <h3>{t("browse.noFiles")}</h3>
+              <p>{t("browse.tryAnotherSearch")}</p>
+            </div>
+          )}
           <div className="files-container">
-            {files.map((file) => (
-              <div className="file-card" key={file.id}>
-              <div className="file-favorite">❤️</div> 
-                <div className="file-info">
-                  <div className="file-icon">
-                    {file.fileType === 0 && "📄"}
-                    {file.fileType === 1 && "📄"}
-                    {file.fileType === 2 && "📝"}
-                    {file.fileType === 3 && "📌"}
-                    {file.fileType === 4 && "📚"}
-                    {file.fileType === 5 && "❔"}
-                  </div>
-                  <div className="file-details">
-                    <h3 className="file-title">
-                      <a
-                        href={`https://corny-unevacuated-willy.ngrok-free.dev${file.filePath}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {file.title}
-                      </a>
-                    </h3>
-                    <span className="file-type">
-                      {{
-                        0: "Lecture",
-                        1: "Summary",
-                        2: "Exam",
-                        3: "Assignment",
-                        4: "Book",
-                        5: "Other",
-                      }[file.fileType] || "Other"}
-                    </span>
-                    <p className="file-description">{file.description}</p>
-                    <div className="file-meta">
-                      <span>📚 {file.courseName}</span>
-                      <span>📁 {file.categoryName}</span>
+            {files.length > 0 &&
+              files.map((file) => (
+                <div className="file-card" key={file.id}>
+                  <div className="file-favorite">❤️</div>
+                  <div className="file-info">
+                    <div className="file-icon">
+                      {file.fileType === 0 && "📄"}
+                      {file.fileType === 1 && "📄"}
+                      {file.fileType === 2 && "📝"}
+                      {file.fileType === 3 && "📌"}
+                      {file.fileType === 4 && "📚"}
+                      {file.fileType === 5 && "❔"}
                     </div>
-                    <div className="file-footer">
-                      <span>👤 {file.uploadedByUserName}</span>
-                      <span>⬇ {file.downloadCount}</span>
-                      <span>
-                        📅 {new Date(file.uploadedAt).toLocaleDateString()}
+                    <div className="file-details">
+                      <h3 className="file-title">
+                        <a
+                          href={`https://corny-unevacuated-willy.ngrok-free.dev${file.filePath}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {file.title}
+                        </a>
+                      </h3>
+                      <span className="file-type">
+                        {{
+                          0: "Lecture",
+                          1: "Summary",
+                          2: "Exam",
+                          3: "Assignment",
+                          4: "Book",
+                          5: "Other",
+                        }[file.fileType] || "Other"}
                       </span>
+                      <p className="file-description">{file.description}</p>
+                      <div className="file-meta">
+                        <span>📚 {file.courseName}</span>
+                        <span>📁 {file.categoryName}</span>
+                      </div>
+                      <div className="file-footer">
+                        <span>👤 {file.uploadedByUserName}</span>
+                        <span>⬇ {file.downloadCount}</span>
+                        <span>
+                          📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}
+                        </span>
+                      </div>
                     </div>
                   </div>
+                  <button
+                    className="download-btn"
+                    onClick={() => handleDownload(file.id, file.filePath)}
+                  >
+                    {t("browse.download")}
+                  </button>
                 </div>
-                <button
-                  className="download-btn"
-                  onClick={() => handleDownload(file.id, file.filePath)}
-                >
-                  Download
-                </button>
-              </div>
-            ))}
+              ))}
           </div>
         </>
       )}

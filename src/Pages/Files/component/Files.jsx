@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 import { useTranslation } from "react-i18next";
 import "./Files.css";
-function FilesPage() {
+function Files() {
   const { t } = useTranslation();
   const { courseId } = useParams();
   const [files, setFiles] = useState([]);
@@ -17,7 +17,7 @@ function FilesPage() {
   };
   useEffect(() => {
     axios
-      .get(`/EduFile/GetByCourseId/${courseId}`)
+      .get(`/Api/EduFile/GetByCourseId/${courseId}`)
       .then((res) => {
         setFiles(res.data.data);
       })
@@ -25,7 +25,7 @@ function FilesPage() {
   }, [courseId]);
   const handleDownload = async (fileId, filePath) => {
     try {
-      await axios.get(`/EduFile/Download/${fileId}`);
+      await axios.get(`/Api/EduFile/Download/${fileId}`);
       setFiles((prevFiles) =>
         prevFiles.map((f) =>
           f.id === fileId ? { ...f, downloadCount: f.downloadCount + 1 } : f,
@@ -79,7 +79,7 @@ function FilesPage() {
               <div className="file-footer">
                 <span>👤 {file.uploadedByUserName}</span>
                 <span>⬇ {file.downloadCount}</span>
-                <span>📅 {new Date(file.uploadedAt).toLocaleDateString()}</span>
+                <span>📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}</span>
               </div>
             </div>
           </div>
@@ -88,7 +88,7 @@ function FilesPage() {
             className="download-btn"
             onClick={() => handleDownload(file.id, file.filePath)}
           >
-            Download
+            {t("file.download")}
           </button>
         </div>
       ))}
@@ -96,4 +96,4 @@ function FilesPage() {
   );
 }
 
-export default FilesPage;
+export default Files;
