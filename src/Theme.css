@@ -14,6 +14,14 @@
   --footer-bg: #f4f4f4;
   --overlay-color: rgba(255, 255, 255, 0.5);
   --text-on-image: #000000;
+   --color-approve: #28a745;
+  --color-reject: #dc3545;
+  --color-edit: #ffc107;
+  --color-save: #007bff;
+  --color-ban: #dc3545;
+  --color-unban: #28a745;
+  --color-delete: #dc3545;
+    
 }
 
 [data-theme="dark"] {
@@ -32,6 +40,14 @@
   --footer-bg: #111827;
   --overlay-color: rgba(0, 0, 0, 0.65);
   --text-on-image: #ffffff;
+   --color-approve: #218838;
+  --color-reject: #c82333;
+  --color-edit: #d4a017;
+  --color-save: #0056b3;
+  --color-ban: #c82333;
+  --color-unban: #218838;
+  --color-delete: #b02a37; 
+
 }
 html {
   direction: ltr;

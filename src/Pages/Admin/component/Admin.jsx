@@ -1,42 +1,52 @@
 import React, { useState, useEffect } from "react";
 import "./Admin.css";
 import { useTranslation } from "react-i18next";
-//<<<<<<< HEAD
-//import Categories from './../../categories/component/Categories';
 import Courses from './../../Courses/component/Courses';
-//=======
-//>>>>>>> cf285972e258dfae8b490b2be14e7161f145c4fa
 import { FaUserCircle } from "react-icons/fa";
 import axios from "../../../api/axiosInstance";
-function Sidebar({ activeSection, setActiveSection }) {
+function Sidebar({ activeSection, setActiveSection, currentUser }) {
+  const { t } = useTranslation();
+
   return (
     <div className="sidebar">
       <h2>EDUPRO</h2>
-      <p>Admin Panel</p>
-      <button
-        className={activeSection === "files" ? "active" : ""}
-        onClick={() => setActiveSection("files")}
-      >
-        Manage Files
-      </button>
-      <button
-        className={activeSection === "categories" ? "active" : ""}
-        onClick={() => setActiveSection("categories")}
-      >
-        Manage Categories
-      </button>
-      <button
-        className={activeSection === "courses" ? "active" : ""}
-        onClick={() => setActiveSection("courses")}
-      >
-        Manage Courses
-      </button>
-      <button
-        className={activeSection === "users" ? "active" : ""}
-        onClick={() => setActiveSection("users")}
-      >
-        Manage Users
-      </button>
+      <p>{t("admin.panel")}</p>
+
+      {currentUser?.permissions?.ManageFiles && (
+        <button
+          className={activeSection === "files" ? "active" : ""}
+          onClick={() => setActiveSection("files")}
+        >
+          {t("admin.sidebar.files")}
+        </button>
+      )}
+
+      {currentUser?.permissions?.ManageCategories && (
+        <button
+          className={activeSection === "categories" ? "active" : ""}
+          onClick={() => setActiveSection("categories")}
+        >
+          {t("admin.sidebar.categories")}
+        </button>
+      )}
+
+      {currentUser?.permissions?.ManageCourses && (
+        <button
+          className={activeSection === "courses" ? "active" : ""}
+          onClick={() => setActiveSection("courses")}
+        >
+          {t("admin.sidebar.courses")}
+        </button>
+      )}
+
+      {currentUser?.permissions?.ManageUsers && (
+        <button
+          className={activeSection === "users" ? "active" : ""}
+          onClick={() => setActiveSection("users")}
+        >
+          {t("admin.sidebar.users")}
+        </button>
+      )}
     </div>
   );
 }
@@ -67,14 +77,28 @@ function Admin() {
 
   const [searchUser, setSearchUser] = useState("");
   const [users, setUsers] = useState([]);
-
   const [selectedUser, setSelectedUser] = useState(null);
   const [bannedUsers, setBannedUsers] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
+
   const statusMap = {
   Pending: "pending",
   Approved: "approved",
   Rejected: "rejected"
 };
+useEffect(() => {
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await axios.get("/Api/Authorization/GetCurrentUser");
+      if (response.data.succeeded) {
+        setCurrentUser(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+    }
+  };
+  fetchCurrentUser();
+}, []);
   const fetchFiles = async () => {
   if (!statusMap[activeTab]) return; // safety
   try {
@@ -162,8 +186,8 @@ const rejectFile = async (id) => {
     });
 
     if (response.data.succeeded) {
-      fetchCategories(); // تحديث اللائحة بعد التعديل
-      setEditCategory(null); // إغلاق وضعية التعديل
+      fetchCategories(); 
+      setEditCategory(null); 
       setUpdatedNameCategory("");
       setUpdatedCategoryDesc("");
     }
@@ -243,17 +267,64 @@ const updateCourse = async (courseId) => {
 };
 const fetchUsers = async () => {
   try {
-    const response = await axios.get("/Api/Authorization/GetUsersList", {
-      params: { keyword: searchUser }
-    });
 
-    console.log(response.data);
+    const url = searchUser
+      ? `/Api/Authorization/GetUsersList?keyword=${searchUser}`
+      : `/Api/Authorization/GetUsersList`;
+
+    const response = await axios.get(url);
+
+   console.log("Users Response:", response.data);
+console.log("Users Data:", response.data.data);
 
     if (response.data.succeeded) {
       setUsers(response.data.data);
     }
+
   } catch (error) {
     console.error("Error fetching users:", error);
+  }
+};
+const loadUserData = async (user) => {
+  try {
+    const rolesRes = await axios.get(`/Api/Authorization/ManageUserRoles/${user.id}`);
+    const claimsRes = await axios.get(`/Api/Authorization/ManageUserClaims/${user.id}`);
+
+    const rolesArray = rolesRes.data.data.userRoles
+      .filter(r => r.hasRole)
+      .map(r => r.name);
+
+    const claimsArray = claimsRes.data.data.userClaims || [];
+
+    const permissionsObject = {};
+    claimsArray.forEach(claim => {
+      permissionsObject[claim.type] = claim.value;
+    });
+
+    setSelectedUser({
+      ...user,
+      roles: rolesArray,
+      permissions: permissionsObject
+    });
+
+  } catch (error) {
+    console.error("Error loading user roles/claims", error);
+  }
+};
+const updateClaims = async () => {
+  try {
+    const claimsArray = Object.keys(selectedUser.permissions).map(key => ({
+      type: key,
+      value: selectedUser.permissions[key]
+    }));
+
+    await axios.put("/Api/Authorization/UpdateUserClaims", {
+      userId: selectedUser.id,
+      userClaims: claimsArray
+    });
+
+  } catch (error) {
+    console.error("Update claims error:", error);
   }
 };
 useEffect(() => {
@@ -264,15 +335,22 @@ useEffect(() => {
 }, []);
 const banUser = async (id) => {
   try {
-    await axios.post(`/Api/User/Ban/${id}`);
+    await axios.put(`/Api/Authorization/BanUser/${id}`);
+
+    setBannedUsers((prev) => [...prev, id]);
+
     fetchUsers();
   } catch (error) {
     console.error("Ban user error:", error);
   }
 };
+
 const unbanUser = async (id) => {
   try {
-    await axios.post(`/Api/User/Unban/${id}`);
+    await axios.put(`/Api/Authorization/UnbanUser/${id}`);
+
+    setBannedUsers((prev) => prev.filter((userId) => userId !== id));
+
     fetchUsers();
   } catch (error) {
     console.error("Unban user error:", error);
@@ -280,24 +358,32 @@ const unbanUser = async (id) => {
 };
  const filteredUsers = users.filter(
   (user) =>
-    user.name?.toLowerCase().includes(searchUser?.toLowerCase() || "")
+    user.fullName?.toLowerCase().includes(searchUser?.toLowerCase() || "")
 );
-  const handlePermissionChange = (permission) => {
-    setSelectedUser((prev) => ({
-      ...prev,
-      permissions: { ...prev.permissions, [permission]: !prev.permissions[permission] },
-    }));
-  };
-  const updateUser = async () => {
+  const handlePermissionChange = (key) => {
+  setSelectedUser((prev) => ({
+    ...prev,
+    permissions: {
+      ...prev.permissions,
+      [key]: !prev.permissions[key], // toggle القيمة
+    },
+  }));
+};
+  const updateRoles = async () => {
   try {
-    const response = await axios.put("/Api/User/Update", selectedUser);
+    const userRoles = selectedUser.roles.map((roleName, index) => ({
+      id: 0, // أو ID الحقيقي لو متاح
+      name: roleName,
+      hasRole: true
+    }));
 
-    if (response.data.succeeded) {
-      fetchUsers();
-      alert("User updated");
-    }
+    await axios.put("/Api/Authorization/UpdateUserRoles", {
+      userId: selectedUser.id,
+      userRoles: userRoles
+    });
+
   } catch (error) {
-    console.error("Update user error:", error);
+    console.error("Update roles error:", error.response?.data || error);
   }
 };
   const deleteFile = async (id) => {
@@ -315,12 +401,17 @@ const filterFiles = files.filter((file) => {
     Approved: 1,
     Rejected: 2
   };
+  
   return file.status === statusMapReverse[activeTab];
 });
 
   return (
     <div className="admin-container">
-      <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} />
+      <Sidebar
+  activeSection={activeSection}
+  setActiveSection={setActiveSection}
+  currentUser={currentUser || { permissions:{}  }}
+/>
 
       <div className="admin-content">
         <div className="admin-inner">
@@ -389,14 +480,14 @@ const filterFiles = files.filter((file) => {
 ) : (
   <div className="actions">
     <span>
-      {file.status === 1 ? "Approved" : "Rejected"}
+     {file.status === 1 ? t("admin.tabs.approved") : t("admin.tabs.rejected")}
     </span>
 
     <button
       className="delete-btn"
       onClick={() => deleteFile(file.id)}
     >
-      Delete
+      {t("admin.buttons.delete")}
     </button>
   </div>
 )}
@@ -422,7 +513,7 @@ const filterFiles = files.filter((file) => {
               
 <input
   type="text"
-  placeholder="Description"
+  placeholder={t("admin.categories.description")}
   value={newCategoryDesc}
   onChange={(e) => setNewCategoryDesc(e.target.value)}
 />
@@ -437,7 +528,7 @@ const filterFiles = files.filter((file) => {
                         <input
                           value={updatedNameCategory}
                           onChange={(e) => setUpdatedNameCategory(e.target.value)}
-                          placeholder="Category Name"
+                          placeholder={t("admin.categories.placeholderName")}
                         />
                         <input
                           value={updatedCategoryDesc}
@@ -491,7 +582,7 @@ const filterFiles = files.filter((file) => {
                 />
                 <input
                   type="text"
-                  placeholder="Description"
+                 placeholder={t("admin.courses.description")}
                   value={newCourseDesc}
                   onChange={(e) => setNewCourseDesc(e.target.value)}
                 />
@@ -499,7 +590,7 @@ const filterFiles = files.filter((file) => {
                   value={selectedCategory }
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
-                  <option value="">Select Category</option>
+                  <option value="">{t("admin.courses.selectCategory")}</option>
 
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
@@ -518,12 +609,12 @@ const filterFiles = files.filter((file) => {
                         <input
                           value={updatedCourseName}
                           onChange={(e) => setUpdatedCourseName(e.target.value)}
-                          placeholder="Course Name"
+                         placeholder={t("admin.courses.placeholderName")}
                         />
                         <input
                           value={updatedCourseDesc}
                           onChange={(e) => setUpdatedCourseDesc(e.target.value)}
-                          placeholder="Course Description"
+                         placeholder={t("admin.courses.description")}
                         />
                         <button className="save"  onClick={() => updateCourse(course.id)}>
                           {t("admin.buttons.save")}
@@ -565,12 +656,12 @@ const filterFiles = files.filter((file) => {
           {activeSection === "users" && (
             <div className="users-section">
               <div className="users-list">
-                <h3>Users</h3>
+              <h3>{t("admin.users.title")}</h3>
                 <div className="search-box">
                   <span className="search-icon">🔍</span>
                   <input
                     type="text"
-                    placeholder="search"
+                  placeholder={t("admin.users.search")}
                     className="search"
                     value={searchUser}
                     onChange={(e) => setSearchUser(e.target.value)}
@@ -581,12 +672,12 @@ const filterFiles = files.filter((file) => {
                   <div
                     key={user.id}
                     className="user-item"
-                    onClick={() => setSelectedUser(user)}
+                   onClick={() => loadUserData(user)}
                   >
-                    <div className="avatar">{user.name.charAt(0)}</div>
+                    <div className="avatar">{user.fullName?.charAt(0)}</div>
                     <div className="user-info">
-                      <p className="user-name">{user.name}</p>
-                      <span className="usr-role">{user.role}</span>
+                     <p className="user-name">{user.fullName}</p>
+                   <span className="usr-role">{user.roles?.join(", ")}</span>
                       <div className="user-actions">
                         {bannedUsers.includes(user.id) ? (
                           <button
@@ -596,7 +687,7 @@ const filterFiles = files.filter((file) => {
                               unbanUser(user.id);
                             }}
                           >
-                            Unban
+                          {t("admin.users.unban")}
                           </button>
                         ) : (
                           <button
@@ -606,7 +697,7 @@ const filterFiles = files.filter((file) => {
                               banUser(user.id);
                             }}
                           >
-                            Ban
+                          {t("admin.users.ban")}
                           </button>
                         )}
                       </div>
@@ -618,10 +709,10 @@ const filterFiles = files.filter((file) => {
               <div className="user-details">
                 {selectedUser ? (
                   <>
-                    <h3>{selectedUser.name}</h3>
+                 <h3>{selectedUser.fullName}</h3>
 
                     <div>
-                      <h4>👤Roles</h4>
+                    <h4>👤 {t("admin.users.roles")}</h4>
                       <div className="role-container">
                         <label>
                           <input
@@ -634,7 +725,7 @@ const filterFiles = files.filter((file) => {
                               setSelectedUser({ ...selectedUser, roles: newRoles });
                             }}
                           />
-                          <span> Admin</span>
+                       <span>{t("admin.roles.admin")}</span>
                         </label>
 
                         <label>
@@ -648,54 +739,70 @@ const filterFiles = files.filter((file) => {
                               setSelectedUser({ ...selectedUser, roles: newRoles });
                             }}
                           />
-                          <span> Student</span>
+                        <span>{t("admin.roles.student")}</span>
                         </label>
                       </div>
                     </div>
-
-                    <h4>🔑Permissions</h4>
+<h4>🔑 {t("admin.users.permissions")}</h4>
                     <ul className="permissions-grid">
                       <li>
                         <label>
                           <input
                             type="checkbox"
-                            checked={selectedUser.permissions.manageCategories}
-                            onChange={() => handlePermissionChange("manageCategories")}
+                           checked={selectedUser.permissions.ManageCategories || false}
+                            onChange={() => handlePermissionChange("ManageCategories")}
                           />
-                          Manage Categories
+                     {t("admin.permissions.manageCategories")}
                         </label>
                       </li>
                       <li>
                         <label>
                           <input
                             type="checkbox"
-                            checked={selectedUser.permissions.manageCourses}
-                            onChange={() => handlePermissionChange("manageCourses")}
+                            checked={selectedUser.permissions.ManageCourses || false}
+                            onChange={() => handlePermissionChange("ManageCourses")}
                           />
-                          Manage Courses
+                        {t("admin.permissions.manageCourses")}
                         </label>
                       </li>
                       <li>
                         <label>
                           <input
                             type="checkbox"
-                            checked={selectedUser.permissions.publishCourse}
-                            onChange={() => handlePermissionChange("publishCourse")}
+                            checked={selectedUser.permissions.ManageFiles || false}
+                            onChange={() => handlePermissionChange("ManageFiles")}
                           />
-                          Publish Course
+                      {t("admin.permissions.manageFiles")}
+                        </label>
+                        </li>
+                        <li>
+                         <label>
+                          <input
+                            type="checkbox"
+                            checked={selectedUser.permissions.SuperAdmin || false}
+                            onChange={() => handlePermissionChange("SuperAdmin")}
+                          />
+                     {t("admin.permissions.superAdmin")}
                         </label>
                       </li>
                     </ul>
 
-                  <button className="save-btn" onClick={updateUser}>
-  Save Changes
+                <button
+  className="save-btn"
+  onClick={async () => {
+    await updateRoles();
+    await updateClaims();
+   alert(t("admin.users.updated"));
+  }}
+>
+  {t("admin.users.saveChanges")}
 </button>
                   </>
                 ) : (
                   <div className="container">
                     <div className="no-user-selected">
                       <FaUserCircle size={80} color="#007bff" />
-                      <p>Choose a user to manage their permissions</p>
+                      <p>{t("admin.users.chooseUser")}</p>
                     </div>
                   </div>
                 )}
