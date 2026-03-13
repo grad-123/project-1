@@ -65,11 +65,20 @@
     "copyRight": "© 2026 منصة EDUPRO للذكاء الأكاديمي. جميع الحقوق محفوظة."
   },
   "browse": {
-    "searchPlaceholder":"اضغط للبحث ...",
+    "searchPlaceholder": "اضغط للبحث ...",
     "categories": "تصفح التصنيفات",
-    "description":"استكشف مختلف مجالات الدراسة واختر المجال الذي يناسب اهتماماتك",
-    "searchButton":"ابحث"
+    "description": "استكشف مختلف مجالات الدراسة واختر المجال الذي يناسب اهتماماتك",
+    "searchButton": "ابحث",
+    "noFiles": "لم يتم العثور على أي ملفات",
+    "tryAnotherSearch": "جرب كلمة مفتاحية أخرى أو غيّر عوامل التصفية",
+    "allCategories": "جميع الفئات",
+    "allTypes": "جميع الأنواع",
+    "sort": "ترتيب",
+    "descending": "تنازلي",
+    "ascending": "تصاعدي",
+    "download": "تحميل"
   },
+
   "upload": {
     "title": "شارك معرفتك",
     "subtitle": "ارفع موادك الأكاديمية لمساعدة آلاف الطلاب الآخرين.",
@@ -90,7 +99,7 @@
       "description": "اخبرنا بما تغطي هذه المادة...",
       "submitBtn": "رفع المادة",
       "materialTitleRequired": "ادخل عنوان المادة",
-      "courseRequired":"ادخل اسم المساق",
+      "courseRequired": "ادخل اسم المساق",
       "categoryRequired": "اختر الفئة",
       "materialTypeRequired": "اختر نوع المادة",
       "descriptionRequired": "اكتب وصفاً قصيراً",
@@ -104,7 +113,7 @@
         "engineering": "الهندسة",
         "medicine": "الطب"
       },
-      "courses":{
+      "courses": {
         "selectCourse": "اختر المساق"
       },
       "materialTypes": {
@@ -246,8 +255,8 @@
     "resendFail": "فشل إعادة الإرسال",
     "codeRequired": "الرجاء إدخال رمز التحقق",
     "invalidCode": "رمز غير صالح أو منتهي",
-    "loooding":"جاري التحقق..."
-},
+    "loooding": "جاري التحقق..."
+  },
   "reset": {
     "title": "إعادة تعيين كلمة المرور",
     "email": "البريد الإلكتروني",
@@ -326,12 +335,13 @@
     "superAdmin": "مدير عام"
   }
   },
-  "course":{
-    "course":"المساقات",
-    "description":"استكشف الدورات المتاحة وابدأ التعلم اليوم"
+  "course": {
+    "course": "المساقات",
+    "description": "استكشف الدورات المتاحة وابدأ التعلم اليوم"
   },
-  "file":{
-    "title":"الموارد",
-    "description":"يمكنك الوصول إلى مواد تعليمية مفيدة تتضمن ملخصات ومحاضرات وموارد خاصة بهذه الدورة"
+  "file": {
+    "title": "الموارد",
+    "description": "يمكنك الوصول إلى مواد تعليمية مفيدة تتضمن ملخصات ومحاضرات وموارد خاصة بهذه الدورة",
+    "download": "تحميل"
   }
 }

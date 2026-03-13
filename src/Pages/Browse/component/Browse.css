@@ -331,3 +331,8 @@ html[dir="ltr"] .search-icon {
 .download-btn:hover {
   opacity: 0.6;
 }
+.no-results{
+  margin-top:40px;
+  text-align:center;
+  color:var(--text-secondary);
+}

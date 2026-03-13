@@ -12,29 +12,26 @@ function Navbar() {
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
     navigate("/");
-    
   };
-const [token, setToken] = useState(
-  localStorage.getItem("token")
-);
-useEffect(() => {
-  const interval = setInterval(() => {
-    setToken(localStorage.getItem("token"));
-  }, 500);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setToken(localStorage.getItem("token"));
+    }, 500);
 
-  return () => clearInterval(interval);
-}, []);
+    return () => clearInterval(interval);
+  }, []);
 
-useEffect(() => {
-  const handleStorage = () => {
-    setToken(localStorage.getItem("token"));
-  };
+  useEffect(() => {
+    const handleStorage = () => {
+      setToken(localStorage.getItem("token"));
+    };
 
-  window.addEventListener("storage", handleStorage);
+    window.addEventListener("storage", handleStorage);
 
-  return () =>
-    window.removeEventListener("storage", handleStorage);
-}, []);  const { t, i18n } = useTranslation();
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+  const { t, i18n } = useTranslation();
   const [theme, setTheme] = useState("light");
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -51,9 +48,6 @@ useEffect(() => {
       "dir",
       newLang === "ar" ? "rtl" : "ltr",
     );
-   
-      window.location.reload();
-
   };
 
   useEffect(() => {
