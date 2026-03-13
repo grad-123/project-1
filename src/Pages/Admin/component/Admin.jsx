@@ -4,9 +4,10 @@ import { useTranslation } from "react-i18next";
 import Courses from './../../Courses/component/Courses';
 import { FaUserCircle } from "react-icons/fa";
 import axios from "../../../api/axiosInstance";
+import { jwtDecode } from "jwt-decode";
 function Sidebar({ activeSection, setActiveSection, currentUser }) {
   const { t } = useTranslation();
-
+console.log(currentUser);
   return (
     <div className="sidebar">
       <h2>EDUPRO</h2>
@@ -39,7 +40,7 @@ function Sidebar({ activeSection, setActiveSection, currentUser }) {
         </button>
       )}
 
-      {currentUser?.permissions?.ManageUsers && (
+      {(currentUser?.permissions?.ManageUsers || currentUser?.permissions?.SuperAdmin) && (
         <button
           className={activeSection === "users" ? "active" : ""}
           onClick={() => setActiveSection("users")}
@@ -79,26 +80,30 @@ function Admin() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [bannedUsers, setBannedUsers] = useState([]);
-    const [currentUser, setCurrentUser] = useState(null);
 
   const statusMap = {
   Pending: "pending",
   Approved: "approved",
   Rejected: "rejected"
 };
-useEffect(() => {
-  const fetchCurrentUser = async () => {
-    try {
-      const response = await axios.get("/Api/Authorization/GetCurrentUser");
-      if (response.data.succeeded) {
-        setCurrentUser(response.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching current user:", error);
-    }
-  };
-  fetchCurrentUser();
-}, []);
+const token = localStorage.getItem("token");
+
+let currentUser = { permissions: {} };
+
+if (token) {
+  const decoded = jwtDecode(token);
+ console.log("Decoded token:", decoded);
+
+  currentUser = {
+  permissions: {
+    ManageCategories: decoded.ManageCategories?.toLowerCase() === "true",
+    ManageCourses: decoded.ManageCourses?.toLowerCase() === "true",
+    ManageFiles: decoded.ManageFiles?.toLowerCase() === "true",
+    ManageUsers: decoded.ManageUsers?.toLowerCase() === "true",
+    SuperAdmin: decoded.SuperAdmin?.toLowerCase() === "true",
+  }
+};
+}
   const fetchFiles = async () => {
   if (!statusMap[activeTab]) return; // safety
   try {
@@ -410,7 +415,7 @@ const filterFiles = files.filter((file) => {
       <Sidebar
   activeSection={activeSection}
   setActiveSection={setActiveSection}
-  currentUser={currentUser || { permissions:{}  }}
+  currentUser={currentUser }
 />
 
       <div className="admin-content">
