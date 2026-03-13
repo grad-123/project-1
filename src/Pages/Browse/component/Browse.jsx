@@ -7,7 +7,6 @@ import { FaSearch } from "react-icons/fa";
 
 function Browse() {
   const { t } = useTranslation();
-
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [files, setFiles] = useState([]);
@@ -17,7 +16,8 @@ function Browse() {
   const [fileType, setFileType] = useState("");
   const [orderBy, setOrderBy] = useState("");
   const [isDescending, setIsDescending] = useState(true);
-
+  const [courses, setCourses] = useState([]);
+  const [courseId, setCourseId] = useState("");
   const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
@@ -32,6 +32,23 @@ function Browse() {
         setLoading(false);
       });
   }, []);
+
+ useEffect(() => {
+  if (!categoryId) {
+    setCourses([]);
+    setCourseId("");
+    return;
+  }
+  setCourseId("");
+  axios.get(`/Api/Course/GetList/${categoryId}`)
+    .then((res) => {
+    setCourses(res.data.data || []);
+    })
+    .catch((err) => {
+      console.error("Error fetching courses:", err);
+    });
+}, [categoryId]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -45,6 +62,7 @@ function Browse() {
         params: {
           Keyword: debouncedSearch || undefined,
           CategoryId: categoryId || undefined,
+          CourseId: courseId || undefined,
           FileType: fileType || undefined,
           OrderBy: orderBy || undefined,
           IsDescending: isDescending,
@@ -64,7 +82,7 @@ function Browse() {
   useEffect(() => {
     if (!showResults) return;
     searchFiles();
-  }, [debouncedSearch, categoryId, fileType, orderBy, isDescending]);
+  }, [debouncedSearch, categoryId, courseId, fileType, orderBy, isDescending]);
 
   const handleDownload = async (fileId, filePath) => {
     try {
@@ -135,11 +153,24 @@ function Browse() {
       {showResults && (
         <>
           <div className="filters">
-            <select onChange={(e) => setCategoryId(e.target.value)}>
+            <select onChange={(e) => setCategoryId(Number(e.target.value))}>
               <option value="">{t("browse.allCategories")}</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={courseId}
+              onChange={(e) => setCourseId(Number(e.target.value))}
+              disabled={!categoryId}
+            >
+              <option value="">{t("browse.courses")}</option>
+              {courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {course.name}
                 </option>
               ))}
             </select>
@@ -219,7 +250,10 @@ function Browse() {
                         <span>👤 {file.uploadedByUserName}</span>
                         <span>⬇ {file.downloadCount}</span>
                         <span>
-                          📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}
+                          📅{" "}
+                          {new Date(file.uploadedAt).toLocaleDateString(
+                            "en-GB",
+                          )}
                         </span>
                       </div>
                     </div>

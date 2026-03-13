@@ -80,7 +80,7 @@ function ResetPassword() {
 
       <input
         className="reset-input"
-        type="password"
+        type="text" 
         placeholder={t("reset.new_password")}
         value={Password}
         onChange={(e) => setPassword(e.target.value)}
@@ -88,7 +88,7 @@ function ResetPassword() {
 
       <input
         className="reset-input"
-        type="password"
+        type="text" 
         placeholder={t("reset.confirm_password")}
         value={ConfirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}

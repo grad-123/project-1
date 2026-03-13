@@ -59,7 +59,12 @@
     "readyDesc": "Join the EDUPRO community today and start leveraging the power of collective knowledge and artificial intelligence.",
     "createAccountBtn": "Create Free Account",
     "shareNotesBtn": "Share Your Notes",
-    "copyRight": "© 2026 EDUPRO Academic Intelligence Platform. All rights reserved."
+    "copyRight": "© 2026 EDUPRO Academic Intelligence Platform. All rights reserved.",
+    "studentsCount":"Registered students",
+    "filesCount":"Uploaded files count",
+    "coursesCount":"Courses count",
+    "categoriesCount":"Categories count",
+    "totalDownloads":"Total download"
   },
   "browse": {
     "searchPlaceholder": "Tape to search...",
@@ -73,7 +78,8 @@
     "sort": "Sort",
     "descending": "Descending",
     "ascending": "Ascending",
-    "download": "Download"
+    "download": "Download",
+    "courses":"All Courses"
   },
 
   "upload": {
