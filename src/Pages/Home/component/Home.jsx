@@ -1,12 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { MdPeople, MdFolder, MdLibraryBooks, MdCategory, MdDownload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Home.css";
-
+import axios from "../../../api/axiosInstance";
 function Home() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [stats, setStats] = useState({
+    studentsCount: 0,
+    filesCount: 0,
+    coursesCount: 0,
+    categoriesCount: 0,
+    totalDownloads: 0,
+  });
 
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get("/api/v1/Stats/GetStats");
+        setStats(res.data.data);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    };
+
+    fetchStats();
+  }, []);
   return (
     <>
       <div className="hero">
@@ -16,7 +36,8 @@ function Home() {
 
           <div className="main">
             <h1 className="main-title">
-              {t("home.master")} <span className="word-studies">{t("home.studies")}</span>
+              {t("home.master")}{" "}
+              <span className="word-studies">{t("home.studies")}</span>
             </h1>
           </div>
 
@@ -25,13 +46,53 @@ function Home() {
           <p className="description">{t("home.description")}</p>
 
           <div className="home-buttons">
-            <button className="btn browse-btn" onClick={() => navigate("/Browse")}>
+            <button
+              className="btn browse-btn"
+              onClick={() => navigate("/Browse")}
+            >
               {t("home.browseBtn")} <span className="arrow">→</span>
             </button>
 
-            <button className="btn get-started-btn" onClick={() => navigate("/Auth")}>
+            <button
+              className="btn get-started-btn"
+              onClick={() => navigate("/Auth")}
+            >
               {t("home.getStartedBtn")}
             </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="stats-section">
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-icon"><MdPeople size={50} color="#FF6B6B" /></div>
+            <h2>{stats.studentsCount}+</h2>
+            <p>{t("home.studentsCount")}</p>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon"><MdFolder size={50} color="#FFD93D" /></div>
+            <h2>{stats.filesCount}+</h2>
+            <p>{t("home.filesCount")}</p>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon">  <MdLibraryBooks size={50} color="#6BCB77" /> </div>
+            <h2>{stats.coursesCount}+</h2>
+            <p>{t("home.coursesCount")}</p>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon"> <MdCategory size={50} color="#4D96FF" /></div>
+            <h2>{stats.categoriesCount}+</h2>
+            <p>{t("home.categoriesCount")}</p>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon"> <MdDownload size={50} color="#ff6efa" /> </div>
+            <h2>{stats.totalDownloads}+</h2>
+            <p>{t("home.totalDownloads")}</p>
           </div>
         </div>
       </div>

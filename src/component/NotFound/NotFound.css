@@ -1,0 +1,21 @@
+.notfound {
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.notfound h1 {
+  font-size: 100px;
+  color: var(--primary);
+}
+
+.home-btn {
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+}

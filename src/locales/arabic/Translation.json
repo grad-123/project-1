@@ -62,7 +62,12 @@
     "readyDesc": "انضم إلى مجتمع EDUPRO اليوم وابدأ بالاستفادة من قوة المعرفة الجماعية والذكاء الاصطناعي.",
     "createAccountBtn": "إنشاء حساب مجاني",
     "shareNotesBtn": "شارك ملاحظاتك",
-    "copyRight": "© 2026 منصة EDUPRO للذكاء الأكاديمي. جميع الحقوق محفوظة."
+    "copyRight": "© 2026 منصة EDUPRO للذكاء الأكاديمي. جميع الحقوق محفوظة.",
+    "studentsCount":"الطلاب المسجلين",
+    "filesCount":"عدد الملفات المرفوعة",
+    "coursesCount":"عدد المساقات",
+    "categoriesCount":"عدد التصنيفات",
+    "totalDownloads":"إجمالي التحميلات"
   },
   "browse": {
     "searchPlaceholder": "اضغط للبحث ...",
@@ -76,7 +81,8 @@
     "sort": "ترتيب",
     "descending": "تنازلي",
     "ascending": "تصاعدي",
-    "download": "تحميل"
+    "download": "تحميل",
+    "courses":"جميع المساقات"
   },
 
   "upload": {
@@ -343,5 +349,10 @@
     "title": "الموارد",
     "description": "يمكنك الوصول إلى مواد تعليمية مفيدة تتضمن ملخصات ومحاضرات وموارد خاصة بهذه الدورة",
     "download": "تحميل"
+  },
+  "found":{
+    "page":"Page Not Found",
+    "sorry":"Sorry, the page you are looking for doesn't exist.",
+    "go":" Go Home"
   }
 }

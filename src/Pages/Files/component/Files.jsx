@@ -73,7 +73,6 @@ function Files() {
               <p className="file-description">{file.description}</p>
               <div className="file-meta">
                 <span>📚 {file.courseName}</span>
-
                 <span>📁 {file.categoryName}</span>
               </div>
               <div className="file-footer">
