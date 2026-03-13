@@ -316,5 +316,10 @@
     "title": "Resources",
     "description": "Access useful learning materials including summaries, lectures, and resources for this course",
     "download": "Download"
+  },
+  "found":{
+    "page":"Page Not Found",
+    "sorry":"Sorry, the page you are looking for doesn't exist.",
+    "go":" Go Home"
   }
 }

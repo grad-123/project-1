@@ -321,5 +321,10 @@
     "title": "الموارد",
     "description": "يمكنك الوصول إلى مواد تعليمية مفيدة تتضمن ملخصات ومحاضرات وموارد خاصة بهذه الدورة",
     "download": "تحميل"
+  },
+  "found":{
+    "page":"Page Not Found",
+    "sorry":"Sorry, the page you are looking for doesn't exist.",
+    "go":" Go Home"
   }
 }
