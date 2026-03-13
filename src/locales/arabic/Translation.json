@@ -277,13 +277,12 @@
   "admin": {
     "title": "لوحة تحكم المدير",
     "manageFiles": "إدارة الملفات المرفوعة",
-
+    "panel": "لوحة الإدارة",
     "tabs": {
       "pending": "قيد الانتظار",
       "approved": "مقبول",
       "rejected": "مرفوض"
     },
-
     "table": {
       "fileName": "اسم الملف",
       "uploadedBy": "تم الرفع بواسطة",
@@ -293,7 +292,6 @@
       "actions": "الإجراءات",
       "status": "الحالة"
     },
-
     "buttons": {
       "approve": "قبول",
       "reject": "رفض",
@@ -302,16 +300,46 @@
       "delete": "حذف",
       "save": "حفظ"
     },
-
     "categories": {
       "title": "إدارة التخصصات",
-      "newCategory": "تخصص جديد"
+      "newCategory": "تخصص جديد",
+      "description": "الوصف",
+       "placeholderName": "اسم التخصص"
     },
-
     "courses": {
       "title": "إدارة المساقات",
-      "newCourse": "مساق جديد"
-    }
+      "newCourse": "مساق جديد",
+       "placeholderName": "اسم المساق",
+       "description": "الوصف",
+    "selectCategory": "اختر التخصص"
+    },
+  "users": {
+    "title": "المستخدمون",
+    "search": "بحث",
+    "roles": "الأدوار",
+    "permissions": "الصلاحيات",
+    "ban": "حظر",
+    "unban": "إلغاء الحظر",
+    "saveChanges": "حفظ التغييرات",
+    "updated": "تم تحديث المستخدم بنجاح",
+    "chooseUser": "اختر مستخدم لإدارة صلاحياته"
+  },
+  "sidebar": {
+  "files": "إدارة الملفات",
+  "categories": "إدارة التخصصات",
+  "courses": "إدارة المساقات",
+  "users": "إدارة المستخدمين"
+},
+  "roles": {
+    "admin": "مدير",
+    "student": "طالب"
+  },
+  "permissions": {
+    "manageCategories": "إدارة التخصصات",
+    "manageCourses": "إدارة المساقات",
+    "manageFiles": "إدارة الملفات",
+    "superAdmin": "مدير عام"
+  }
   },
   "course": {
     "course": "المساقات",

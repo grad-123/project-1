@@ -272,13 +272,12 @@
   "admin": {
     "title": "Admin Dashboard",
     "manageFiles": "Manage Upload File",
-
+    "panel": "Admin Panel",
     "tabs": {
       "pending": "Pending",
       "approved": "Approved",
       "rejected": "Rejected"
     },
-
     "table": {
       "fileName": "File Name",
       "uploadedBy": "Uploaded By",
@@ -288,7 +287,6 @@
       "actions": "Actions",
       "status": "Status"
     },
-
     "buttons": {
       "approve": "Approve",
       "reject": "Reject",
@@ -297,17 +295,47 @@
       "delete": "Delete",
       "save": "Save"
     },
-
     "categories": {
       "title": "Manage Categories",
-      "newCategory": "New Category"
+      "newCategory": "New Category",
+      "description": "Description",
+      "placeholderName": "Category Name"
     },
-
     "courses": {
-      "title": "Manage Courses",
-      "newCourse": "New Course"
-    }
-  },
+  "title": "Manage Courses",
+  "newCourse": "New Course",
+  "placeholderName": "Course Name",
+  "description": "Description",
+  "selectCategory": "Select Category"
+},
+"users": {
+  "title": "Users",
+  "search": "Search",
+  "roles": "Roles",
+  "permissions": "Permissions",
+  "ban": "Ban",
+  "unban": "Unban",
+  "saveChanges": "Save Changes",
+  "updated": "User updated successfully",
+  "chooseUser": "Choose a user to manage permissions"
+},
+"sidebar": {
+  "files": "Manage Files",
+  "categories": "Manage Categories",
+  "courses": "Manage Courses",
+  "users": "Manage Users"
+},
+"roles": {
+  "admin": "Admin",
+  "student": "Student"
+},
+"permissions": {
+  "manageCategories": "Manage Categories",
+  "manageCourses": "Manage Courses",
+  "manageFiles": "Manage Files",
+  "superAdmin": "Super Admin"
+}
+},
   "course": {
     "course": "Subjects",
     "description": "Explore available courses and start learning today"
