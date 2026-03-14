@@ -87,6 +87,7 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 function App() {
   return <RouterProvider router={router} />;

@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { MdPeople, MdFolder, MdLibraryBooks, MdCategory, MdDownload } from "react-icons/md";
+import {
+  MdPeople,
+  MdFolder,
+  MdLibraryBooks,
+  MdCategory,
+  MdDownload,
+} from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Home.css";
 import axios from "../../../api/axiosInstance";
 function Home() {
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [stats, setStats] = useState({
@@ -52,13 +59,14 @@ function Home() {
             >
               {t("home.browseBtn")} <span className="arrow">→</span>
             </button>
-
-            <button
-              className="btn get-started-btn"
-              onClick={() => navigate("/Auth")}
-            >
-              {t("home.getStartedBtn")}
-            </button>
+            {!token && (
+              <button
+                className="btn get-started-btn"
+                onClick={() => navigate("/Auth")}
+              >
+                {t("home.getStartedBtn")}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -66,31 +74,44 @@ function Home() {
       <div className="stats-section">
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-icon"><MdPeople size={50} color="#FF6B6B" /></div>
+            <div className="stat-icon">
+              <MdPeople size={50} color="#FF6B6B" />
+            </div>
             <h2>{stats.studentsCount}+</h2>
             <p>{t("home.studentsCount")}</p>
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon"><MdFolder size={50} color="#FFD93D" /></div>
+            <div className="stat-icon">
+              <MdFolder size={50} color="#FFD93D" />
+            </div>
             <h2>{stats.filesCount}+</h2>
             <p>{t("home.filesCount")}</p>
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon">  <MdLibraryBooks size={50} color="#6BCB77" /> </div>
+            <div className="stat-icon">
+              {" "}
+              <MdLibraryBooks size={50} color="#6BCB77" />{" "}
+            </div>
             <h2>{stats.coursesCount}+</h2>
             <p>{t("home.coursesCount")}</p>
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon"> <MdCategory size={50} color="#4D96FF" /></div>
+            <div className="stat-icon">
+              {" "}
+              <MdCategory size={50} color="#4D96FF" />
+            </div>
             <h2>{stats.categoriesCount}+</h2>
             <p>{t("home.categoriesCount")}</p>
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon"> <MdDownload size={50} color="#ff6efa" /> </div>
+            <div className="stat-icon">
+              {" "}
+              <MdDownload size={50} color="#ff6efa" />{" "}
+            </div>
             <h2>{stats.totalDownloads}+</h2>
             <p>{t("home.totalDownloads")}</p>
           </div>
@@ -134,9 +155,11 @@ function Home() {
           <p>{t("home.readyDesc")}</p>
 
           <div className="anotherButtons">
-            <button className="mainbtn" onClick={() => navigate("/Auth")}>
-              {t("home.createAccountBtn")}
-            </button>
+            {!token && (
+              <button className="mainbtn" onClick={() => navigate("/Auth")}>
+                {t("home.createAccountBtn")}
+              </button>
+            )}
             <button className="secbtn" onClick={() => navigate("/Upload")}>
               {t("home.shareNotesBtn")}
             </button>

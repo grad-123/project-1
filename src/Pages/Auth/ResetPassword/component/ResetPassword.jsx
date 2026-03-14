@@ -10,7 +10,6 @@ function ResetPassword() {
   const [searchParams] = useSearchParams();
   const Email = searchParams.get("email") || "";
   const Code = searchParams.get("code") || "";
-  //const [Code, setCode] = useState("");
   const [Password, setPassword] = useState("");
   const [ConfirmPassword, setConfirmPassword] = useState("");
 
@@ -24,12 +23,24 @@ function ResetPassword() {
     }
   }, [Email, navigate]);
 
+  const validatePassword = (password, confirmPassword) => {
+    const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).+$/;
+
+    if (!password) return t("reset.passwordRequired");
+    if (password.length < 6) return t("reset.passwordMin");
+    if (!pattern.test(password)) return t("reset.passwordPattern");
+    if (password !== confirmPassword) return t("reset.passwords_not_match");
+
+    return null;
+  };
+
   const handleReset = async () => {
     setError("");
     setMessage("");
 
-    if (Password !== ConfirmPassword) {
-      setError(t("reset.passwords_not_match"));
+    const validationError = validatePassword(Password, ConfirmPassword);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -80,7 +91,7 @@ function ResetPassword() {
 
       <input
         className="reset-input"
-        type="text" 
+        type="text"
         placeholder={t("reset.new_password")}
         value={Password}
         onChange={(e) => setPassword(e.target.value)}
@@ -88,12 +99,12 @@ function ResetPassword() {
 
       <input
         className="reset-input"
-        type="text" 
+        type="text"
         placeholder={t("reset.confirm_password")}
         value={ConfirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
-
+ <p className="password-note">{t("reset.message")}</p>
       <button className="reset-button" onClick={handleReset} disabled={loading}>
         {loading ? t("reset.processing") : t("reset.button")}
       </button>

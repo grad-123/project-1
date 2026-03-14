@@ -2,17 +2,19 @@ import { Navigate } from "react-router-dom";
 
 function ProtectedRoutes({ children }) {
   const token = localStorage.getItem("token");
-  const role = JSON.parse(localStorage.getItem("role"));
+  const storedRole = localStorage.getItem("role");
 
-  if (!token) {
-    return <Navigate to="/" replace />;
+  let role = [];
+  try {
+    const parsed = JSON.parse(storedRole);
+    role = Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    role = storedRole ? storedRole.split(",") : [];
   }
 
-  const isUser = Array.isArray(role)
-    ? role.includes("User")
-    : role === "User";
+  const isStudent = role.includes("Student");
 
-  if (!isUser) {
+  if (!token || !isStudent) {
     return <Navigate to="/" replace />;
   }
 

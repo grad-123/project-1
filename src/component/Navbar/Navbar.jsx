@@ -14,20 +14,21 @@ function Navbar() {
     navigate("/");
   };
   const [token, setToken] = useState(localStorage.getItem("token"));
-  const storedRole = localStorage.getItem("role");
 
-  let role = null;
+let role = [];
 
-  try {
-    role = JSON.parse(storedRole);
-  } catch {
-    role = storedRole;
-  }
-  const isAdmin = Array.isArray(role)
-    ? role.includes("Admin")
-    : role === "Admin";
+const storedRole = localStorage.getItem("role");
 
-  const isUser = Array.isArray(role) ? role.includes("User") : role === "User";
+try {
+  const parsed = JSON.parse(storedRole);
+  role = Array.isArray(parsed) ? parsed : [parsed];
+} catch {
+  // لو JSON.parse فشل، اعتبر النص مفصول بفواصل
+  role = storedRole ? storedRole.split(",") : [];
+}
+
+const isAdmin = role.includes("Admin");
+const isStudent = role.includes("Student");
   useEffect(() => {
     const interval = setInterval(() => {
       setToken(localStorage.getItem("token"));
@@ -88,7 +89,7 @@ function Navbar() {
         <li>
           <Link to="/Browse">{t("navbar.browse")}</Link>
         </li>
-        {token && isUser && (
+        {token && isStudent && (
           <>
             <li>
               <Link to="/favorites">{t("navbar.favorites")}</Link>
@@ -107,7 +108,7 @@ function Navbar() {
         )}
         {token && isAdmin && (
           <li>
-            <Link to="/admin">Admin</Link>
+            <Link to="/admin">{t("navbar.admin")}</Link>
           </li>
         )}
       </ul>
