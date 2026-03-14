@@ -1,9 +1,13 @@
 import { Navigate } from "react-router-dom";
 
 function ProtectedAdmin({ children }) {
-  const role = localStorage.getItem("role");
+  const role = JSON.parse(localStorage.getItem("role"));
 
-  if (!role || role.toLowerCase() !== "admin") {
+  const isAdmin = Array.isArray(role)
+    ? role.includes("Admin")
+    : role === "Admin";
+
+  if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
 

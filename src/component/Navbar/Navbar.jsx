@@ -14,6 +14,20 @@ function Navbar() {
     navigate("/");
   };
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const storedRole = localStorage.getItem("role");
+
+  let role = null;
+
+  try {
+    role = JSON.parse(storedRole);
+  } catch {
+    role = storedRole;
+  }
+  const isAdmin = Array.isArray(role)
+    ? role.includes("Admin")
+    : role === "Admin";
+
+  const isUser = Array.isArray(role) ? role.includes("User") : role === "User";
   useEffect(() => {
     const interval = setInterval(() => {
       setToken(localStorage.getItem("token"));
@@ -74,7 +88,7 @@ function Navbar() {
         <li>
           <Link to="/Browse">{t("navbar.browse")}</Link>
         </li>
-        {token && (
+        {token && isUser && (
           <>
             <li>
               <Link to="/favorites">{t("navbar.favorites")}</Link>
@@ -90,6 +104,11 @@ function Navbar() {
               <Link to="/ai">{t("navbar.ai")}</Link>
             </li>
           </>
+        )}
+        {token && isAdmin && (
+          <li>
+            <Link to="/admin">Admin</Link>
+          </li>
         )}
       </ul>
 

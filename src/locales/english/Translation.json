@@ -26,7 +26,8 @@
     "favorites": "Favorites",
     "upload": "Upload",
     "ai": "AI",
-    "login": "Login"
+    "login": "Login",
+    "admin":"Admin"
   },
 
   "home": {

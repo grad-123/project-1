@@ -38,33 +38,33 @@ const router = createBrowserRouter([
       {
         path: "admin",
         element: (
-          // <ProtectedAdmin>
+          <ProtectedAdmin>
           <Admin />
-          //  </ProtectedAdmin>
+          </ProtectedAdmin>
         ),
       },
       {
         path: "upload",
         element: (
-          //<ProtectedRoutes>
+          <ProtectedRoutes>
           <Upload />
-          //</ProtectedRoutes>
+          </ProtectedRoutes>
         ),
       },
       {
         path: "favorites",
         element: (
-          //<ProtectedRoutes>
+          <ProtectedRoutes>
           <Favorites />
-          // </ProtectedRoutes>
+          </ProtectedRoutes>
         ),
       },
       {
         path: "ai",
         element: (
-          //<ProtectedRoutes>
+          <ProtectedRoutes>
           <AI />
-          // </ProtectedRoutes>
+          </ProtectedRoutes>
         ),
       },
 

@@ -95,9 +95,14 @@ function Login() {
       }
       const role =
         decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-      localStorage.setItem("role", role);
 
-      if (role === "Admin") {
+      const isAdmin = Array.isArray(role)
+        ? role.includes("Admin")
+        : role === "Admin";
+
+      localStorage.setItem("role", JSON.stringify(role));
+
+      if (isAdmin) {
         navigate("/admin");
       } else {
         navigate("/");
