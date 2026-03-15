@@ -1,15 +1,23 @@
 import React from "react";
 import "./Browse.css";
-const fileTypeText = {
-  0: "Lecture",
-  1: "Summary",
-  2: "Exam",
-  3: "Assignment",
-  4: "Book",
-  5: "Other",
-};
+import { useTranslation } from "react-i18next";
 
-export default function FavoriteFileCard({ file, isFavorite, toggleFavorite, handleDownload, serverUrl }) {
+export default function FavoriteFileCard({
+  file,
+  isFavorite,
+  toggleFavorite,
+  handleDownload,
+  serverUrl,
+}) {
+  const { t } = useTranslation();
+const fileTypeText = {
+   0: t("browse.types.lecture"),
+  1: t("browse.types.summary"),
+  2: t("browse.types.exam"),
+  3: t("browse.types.assignment"),
+  4: t("browse.types.book"),
+  5: t("browse.types.other"),
+};
   return (
     <div className="file-card">
       <div
@@ -20,16 +28,20 @@ export default function FavoriteFileCard({ file, isFavorite, toggleFavorite, han
       </div>
       <div className="file-info">
         <div className="file-icon">
-          {file.fileType === 0 && <MdOndemandVideo />}
-          {file.fileType === 1 &&  <MdSummarize />}
-          {file.fileType === 2 && <MdQuiz />}
-          {file.fileType === 3 && <MdAssignment />}
-          {file.fileType === 4 && <MdMenuBook />}
-          {file.fileType === 5 && <MdInsertDriveFile />}
+          {file.fileType === 0 && "📄"}
+           {file.fileType === 1 && "📄"}
+          {file.fileType === 2 && "📝"}
+         {file.fileType === 3 && "📌"}
+          {file.fileType === 4 && "📚"} 
+          {file.fileType === 5 && "❔"}
         </div>
         <div className="file-details">
           <h3 className="file-title">
-            <a href={`${serverUrl}${file.filePath}`} target="_blank" rel="noreferrer">
+            <a
+              href={`${serverUrl}${file.filePath}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               {file.title}
             </a>
           </h3>
@@ -42,12 +54,17 @@ export default function FavoriteFileCard({ file, isFavorite, toggleFavorite, han
           <div className="file-footer">
             <span>👤 {file.uploadedByUserName}</span>
             <span>⬇ {file.downloadCount}</span>
-            <span>📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}</span>
+            <span>
+              📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}
+            </span>
           </div>
         </div>
       </div>
-      <button className="download-btn" onClick={() => handleDownload(file.id || file.eduFileId, file.filePath)}>
-        Download
+      <button
+        className="download-btn"
+        onClick={() => handleDownload(file.id || file.eduFileId, file.filePath)}
+      >
+       {t("file.download")}
       </button>
     </div>
   );
