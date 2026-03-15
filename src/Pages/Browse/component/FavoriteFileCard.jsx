@@ -1,13 +1,6 @@
 import React from "react";
 import "./Browse.css";
-import {
-  MdOndemandVideo,
-  MdSummarize,
-  MdQuiz,
-  MdAssignment,
-  MdMenuBook,
-  MdInsertDriveFile
-} from "react-icons/md";
+
 const fileTypeText = {
   0: "Lecture",
   1: "Summary",
@@ -17,7 +10,13 @@ const fileTypeText = {
   5: "Other",
 };
 
-export default function FavoriteFileCard({ file, isFavorite, toggleFavorite, handleDownload, serverUrl }) {
+export default function FavoriteFileCard({
+  file,
+  isFavorite,
+  toggleFavorite,
+  handleDownload,
+  serverUrl,
+}) {
   return (
     <div className="file-card">
       <div
@@ -28,16 +27,20 @@ export default function FavoriteFileCard({ file, isFavorite, toggleFavorite, han
       </div>
       <div className="file-info">
         <div className="file-icon">
-          {file.fileType === 0 && <MdOndemandVideo />}
-          {file.fileType === 1 &&  <MdSummarize />}
-          {file.fileType === 2 && <MdQuiz />}
-          {file.fileType === 3 && <MdAssignment />}
-          {file.fileType === 4 && <MdMenuBook />}
-          {file.fileType === 5 && <MdInsertDriveFile />}
+          {file.fileType === 0 && "🎥"}
+          {file.fileType === 1 && "📄"}
+          {file.fileType === 2 && "📝"}
+          {file.fileType === 3 && "📌"}
+          {file.fileType === 4 && "📚"}
+          {file.fileType === 5 && "📁"}
         </div>
         <div className="file-details">
           <h3 className="file-title">
-            <a href={`${serverUrl}${file.filePath}`} target="_blank" rel="noreferrer">
+            <a
+              href={`${serverUrl}${file.filePath}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               {file.title}
             </a>
           </h3>
@@ -50,11 +53,16 @@ export default function FavoriteFileCard({ file, isFavorite, toggleFavorite, han
           <div className="file-footer">
             <span>👤 {file.uploadedByUserName}</span>
             <span>⬇ {file.downloadCount}</span>
-            <span>📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}</span>
+            <span>
+              📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}
+            </span>
           </div>
         </div>
       </div>
-      <button className="download-btn" onClick={() => handleDownload(file.id || file.eduFileId, file.filePath)}>
+      <button
+        className="download-btn"
+        onClick={() => handleDownload(file.id || file.eduFileId, file.filePath)}
+      >
         Download
       </button>
     </div>
