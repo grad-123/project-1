@@ -111,3 +111,6 @@ html[dir="rtl"] .icon {
 .input-error {
   border: 2px solid red !important;
 }
+.google-btn {
+  margin-top: 30px;
+}
