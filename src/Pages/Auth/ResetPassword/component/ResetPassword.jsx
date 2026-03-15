@@ -104,7 +104,7 @@ function ResetPassword() {
         value={ConfirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
- <p className="password-note">{t("reset.message")}</p>
+      <p className="password-note">{t("reset.message")}</p>
       <button className="reset-button" onClick={handleReset} disabled={loading}>
         {loading ? t("reset.processing") : t("reset.button")}
       </button>

@@ -27,7 +27,8 @@
     "upload": "Upload",
     "ai": "AI",
     "login": "Login",
-    "admin":"Admin"
+    "admin":"Admin",
+    "logout":"Logout"
   },
 
   "home": {
@@ -272,7 +273,7 @@
     "passwordRequired":"password Required",
     "passwordMin":"Password must be at least 6 characters",
     "passwordPattern":"Password must contain uppercase, lowercase letters and special character",
-    "message":"A password is required, must be at least 6 characters long, and must contain an uppercase letter, a lowercase letter, and a special symbol. It must also match the password confirmation"
+    "message":"Password must be at least 6 characters and contain uppercase, lowercase letters and a special character"
 
   },
   "admin": {

@@ -1,4 +1,5 @@
 import "./Login.css";
+import { GoogleLogin } from "@react-oauth/google";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
@@ -127,6 +128,50 @@ function Login() {
       setLoading(false);
     }
   };
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const idToken = credentialResponse.credential;
+      const response = await axios.post("/api/v1/Authentication/GoogleSignIn", {
+        idToken: idToken,
+      });
+      const data = response.data;
+      if (!data.succeeded) {
+        setLoginError(data.message);
+        return;
+      }
+
+      localStorage.setItem("token", data.data.accessToken);
+
+      if (data.data.refreshToken?.tokenString) {
+        localStorage.setItem(
+          "refreshToken",
+          data.data.refreshToken.tokenString,
+        );
+      }
+
+      const decoded = jwtDecode(data.data.accessToken);
+
+      const role =
+        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+      const isAdmin = Array.isArray(role)
+        ? role.includes("Admin")
+        : role === "Admin";
+
+      localStorage.setItem("role", JSON.stringify(role));
+
+      if (isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Google Login Error:", error);
+      setLoginError("Google login failed");
+    }
+  };
+
   return (
     <div className="login-box">
       <h2>{t("login.title")}</h2>
@@ -181,6 +226,15 @@ function Login() {
           {loading ? t("login.loading") : t("login.signIn")}
         </button>
       </form>
+
+      <div className="google-btn">
+        <GoogleLogin
+          onSuccess={handleGoogleLogin}
+          onError={() => {
+            setLoginError("Google Login Failed");
+          }}
+        />
+      </div>
 
       <Link to="/auth/forgot" className="forgot">
         {t("login.forgot")}

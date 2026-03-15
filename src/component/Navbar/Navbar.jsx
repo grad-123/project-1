@@ -15,20 +15,20 @@ function Navbar() {
   };
   const [token, setToken] = useState(localStorage.getItem("token"));
 
-let role = [];
+  let role = [];
 
-const storedRole = localStorage.getItem("role");
+  const storedRole = localStorage.getItem("role");
 
-try {
-  const parsed = JSON.parse(storedRole);
-  role = Array.isArray(parsed) ? parsed : [parsed];
-} catch {
-  // لو JSON.parse فشل، اعتبر النص مفصول بفواصل
-  role = storedRole ? storedRole.split(",") : [];
-}
+  try {
+    const parsed = JSON.parse(storedRole);
+    role = Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    // لو JSON.parse فشل، اعتبر النص مفصول بفواصل
+    role = storedRole ? storedRole.split(",") : [];
+  }
 
-const isAdmin = role.includes("Admin");
-const isStudent = role.includes("Student");
+  const isAdmin = role.includes("Admin");
+  const isStudent = role.includes("Student");
   useEffect(() => {
     const interval = setInterval(() => {
       setToken(localStorage.getItem("token"));
@@ -124,7 +124,7 @@ const isStudent = role.includes("Student");
 
         {token ? (
           <button className="signin-btn" onClick={handleLogout}>
-            Logout
+            {t("navbar.logout")}
           </button>
         ) : (
           <Link to="/auth/login" className="signin-btn">
