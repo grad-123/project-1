@@ -15,7 +15,6 @@ const handleDownload = (fileId, filePath) => {
 };
 
  useEffect(()=>{
-
   axios.get("/Favorite/GetList")
   .then(res => setFiles(res.data.data))
   .catch(err => console.log(err));
@@ -29,7 +28,7 @@ const handleDownload = (fileId, filePath) => {
       console.log(err);
     }
   };
-   const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
+   const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
 
  return (
 

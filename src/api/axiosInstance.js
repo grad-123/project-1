@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://corny-unevacuated-willy.ngrok-free.dev",
+  baseURL: "https://ozie-unneedful-freely.ngrok-free.dev",
 });
 
 axiosInstance.interceptors.request.use(
@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
         const accessToken = localStorage.getItem("token");
 
         const response = await axiosInstance.post(
-          "/api/v1/Authentication/RefreshToken",
+          "https://ozie-unneedful-freely.ngrok-free.dev/api/v1/Authentication/RefreshToken",
           {
             refreshToken: refreshToken,
             accessToken: accessToken,
