@@ -1,7 +1,6 @@
 import React from "react";
 import "./Browse.css";
 import { useTranslation } from "react-i18next";
-
 export default function FavoriteFileCard({
   file,
   isFavorite,
@@ -28,12 +27,14 @@ const fileTypeText = {
       </div>
       <div className="file-info">
         <div className="file-icon">
+
           {file.fileType === 0 && "📄"}
            {file.fileType === 1 && "📄"}
           {file.fileType === 2 && "📝"}
          {file.fileType === 3 && "📌"}
           {file.fileType === 4 && "📚"} 
           {file.fileType === 5 && "❔"}
+        
         </div>
         <div className="file-details">
           <h3 className="file-title">

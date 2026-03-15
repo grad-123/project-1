@@ -70,6 +70,9 @@
   text-decoration: none;
   font-weight: bold;
   transition: 0.2s;
+   border: none;
+  outline: none; 
+  cursor: pointer;
 }
 
 .signin-btn:hover {
