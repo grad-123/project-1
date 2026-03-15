@@ -26,7 +26,7 @@ export default function FavoriteFileCard({ file, isFavorite, toggleFavorite, han
           {file.fileType === 2 && "📝"}
           {file.fileType === 3 && "📌"}
           {file.fileType === 4 && "📚"}
-          {file.fileType === 5 && "❔"}
+          {file.fileType === 5 && " "}
         </div>
         <div className="file-details">
           <h3 className="file-title">
