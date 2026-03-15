@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 
 function Favorites() {
  const { t } = useTranslation();
+ const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
  const [files,setFiles] = useState([]);
  const toggleFavorite = (fileId) => {
   removeFavorite(fileId); 
@@ -29,7 +30,7 @@ const handleDownload = (fileId, filePath) => {
       console.log(err);
     }
   };
-   const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
+  
 
  return (
 
