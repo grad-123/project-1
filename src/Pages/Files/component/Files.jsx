@@ -3,18 +3,13 @@ import { useParams } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 import { useTranslation } from "react-i18next";
 import "./Files.css";
+import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
 function Files() {
   const { t } = useTranslation();
   const { courseId } = useParams();
+  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
   const [files, setFiles] = useState([]);
-  const fileTypeLabels = {
-    0: "Lecture",
-    1: "Summary",
-    2: "Exam",
-    3: "Assignment",
-    4: "Book",
-    5: "Other",
-  };
+  const [favorites, setFavorites] = useState([]);
   useEffect(() => {
     axios
       .get(`/Api/EduFile/GetByCourseId/${courseId}`)
@@ -23,6 +18,39 @@ function Files() {
       })
       .catch((err) => console.log(err));
   }, [courseId]);
+
+  useEffect(()=>{
+    axios
+    .get("/favorites/Getlist")
+    .then((res)=>{
+      const favIds = res.data.data.map((f) => f.eduFileId);
+        setFavorites(favIds);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+  const addFavorite = async (fileId) => {
+  try {
+    await axios.post(`/Favorite/Add/${fileId}`);
+    setFavorites((prev) => [...prev, fileId]);
+  } catch (err) {
+    console.log(err);
+  }
+};
+const removeFavorite = async (fileId) => {
+  try {
+    await axios.delete(`/Favorite/Delete/${fileId}`);
+    setFavorites((prev) => prev.filter((id) => id !== fileId));
+  } catch (err) {
+    console.log(err);
+  }
+};
+const toggleFavorite = (fileId) => {
+  if (favorites.includes(fileId)) {
+    removeFavorite(fileId);
+  } else {
+    addFavorite(fileId);
+  }
+};
   const handleDownload = async (fileId, filePath) => {
     try {
       await axios.get(`/Api/EduFile/Download/${fileId}`);
@@ -33,7 +61,7 @@ function Files() {
       );
 
       window.open(
-        `https://corny-unevacuated-willy.ngrok-free.dev${filePath}`,
+        `${serverUrl}${filePath}`,
         "_blank",
       );
     } catch (err) {
@@ -45,52 +73,20 @@ function Files() {
     <div className="files-container">
       <h2 className="files-title">{t("file.title")}</h2>
       <p className="files-description">{t("file.description")}</p>
-      {files.map((file) => (
-        <div className="file-card" key={file.id}>
-          <div className="file-favorite">❤️</div> 
-          <div className="file-info">
-            <div className="file-icon">
-              {file.fileType === 0 && "📄"}
-              {file.fileType === 1 && "📄"}
-              {file.fileType === 2 && "📝"}
-              {file.fileType === 3 && "📌"}
-              {file.fileType === 4 && "📚"}
-              {file.fileType === 5 && "❔"}
-            </div>
-            <div className="file-details">
-              <h3 className="file-title">
-                <a
-                  href={`https://corny-unevacuated-willy.ngrok-free.dev${file.filePath}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {file.title}
-                </a>
-              </h3>
-              <span className="file-type">
-                {fileTypeLabels[file.fileType] || "Other"}
-              </span>
-              <p className="file-description">{file.description}</p>
-              <div className="file-meta">
-                <span>📚 {file.courseName}</span>
-                <span>📁 {file.categoryName}</span>
-              </div>
-              <div className="file-footer">
-                <span>👤 {file.uploadedByUserName}</span>
-                <span>⬇ {file.downloadCount}</span>
-                <span>📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            className="download-btn"
-            onClick={() => handleDownload(file.id, file.filePath)}
-          >
-            {t("file.download")}
-          </button>
-        </div>
-      ))}
+     {files.length === 0 ? (
+        <p>{t("file.noFiles")}</p>
+      ) : (
+        files.map((file) => (
+          <FavoriteFileCard
+            key={file.id || file.eduFileId}
+            file={file}
+            isFavorite={favorites.includes(file.id || file.eduFileId)}
+            toggleFavorite={toggleFavorite}
+            handleDownload={handleDownload}
+            serverUrl={serverUrl}
+          />
+        ))
+      )}
     </div>
   );
 }

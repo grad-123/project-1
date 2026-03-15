@@ -1,0 +1,92 @@
+body{
+  margin:0;
+  background:#f8fafc !important;
+}
+.files-container{
+  width:100%;
+  padding:20px 20px 60px 10px;
+  min-height:100vh;
+}
+
+
+.favorites-header{
+  margin-bottom:40px;
+}
+
+.badge{
+  background:#e6f0ff;
+  color:#2563eb;
+  font-size:12px;
+  padding:6px 14px;
+  border-radius:20px;
+  font-weight:600;
+  letter-spacing:1px;
+}
+.favorites-header h1{
+  font-size:56px;
+  margin:10px 0 10px;
+  font-weight:700;
+  color:#0f172a;
+  text-align:left;
+}
+
+.blue{
+  color:#2563eb;
+}
+
+.favorites-header p{
+  font-size:18px;
+  color:#64748b;
+  max-width:650px;
+  line-height:1.6;
+  text-align: left;
+}.file-card{
+  display: flex;              /* تخلي النص والقلب في نفس الصف */
+  align-items: center;        /* يثبتوا بمحاذاة وسطياً عمودي */
+  justify-content: space-between; /* النص على اليسار، القلب على اليمين */
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;    /* عشان العنوان والوصف تحت بعض */
+}
+
+.file-favorite{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  background: white;
+  transition: transform 0.2s;  /* للـ hover */
+}
+
+.file-card h3{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+  color:#0f172a;
+}
+
+.file-card p{
+  margin-top:6px;
+  color:#64748b;
+  font-size:14px;
+}
+
+.file-favorite:hover{
+  transform: scale(1.1);
+}
+
+.file-favorite.active{
+  color: #ef4444;
+}

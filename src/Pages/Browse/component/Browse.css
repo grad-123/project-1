@@ -258,6 +258,16 @@ html[dir="ltr"] .search-icon {
   align-items: center;
   justify-content: center;
   transition: transform 0.2s ease;  
+    color: gray;
+}
+
+.file-favorite:hover {
+  transform: scale(1.2);
+}
+
+.file-favorite.active {
+  color: red; 
+  border-color: red; 
 }
 .file-card:hover {
   transform: translateY(-4px);

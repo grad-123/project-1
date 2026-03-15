@@ -13,7 +13,7 @@ console.log(currentUser);
       <h2>EDUPRO</h2>
       <p>{t("admin.panel")}</p>
 
-      {currentUser?.permissions?.ManageFiles && (
+      {(currentUser?.permissions?.ManageFiles || currentUser?.permissions?.SuperAdmin) && (
         <button
           className={activeSection === "files" ? "active" : ""}
           onClick={() => setActiveSection("files")}
@@ -22,7 +22,7 @@ console.log(currentUser);
         </button>
       )}
 
-      {currentUser?.permissions?.ManageCategories && (
+      {(currentUser?.permissions?.ManageCategories || currentUser?.permissions?.SuperAdmin)&& (
         <button
           className={activeSection === "categories" ? "active" : ""}
           onClick={() => setActiveSection("categories")}
@@ -31,7 +31,7 @@ console.log(currentUser);
         </button>
       )}
 
-      {currentUser?.permissions?.ManageCourses && (
+      {(currentUser?.permissions?.ManageCourses || currentUser?.permissions?.SuperAdmin) && (
         <button
           className={activeSection === "courses" ? "active" : ""}
           onClick={() => setActiveSection("courses")}
@@ -409,6 +409,7 @@ const filterFiles = files.filter((file) => {
   
   return file.status === statusMapReverse[activeTab];
 });
+ const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
 
   return (
     <div className="admin-container">
@@ -460,7 +461,21 @@ const filterFiles = files.filter((file) => {
                   <tbody>
                     {filterFiles.map((file) => (
                       <tr key={file.id}>
-                        <td>{file.title}</td>
+  
+<a
+  href={file.filePath ? `${serverUrl}${file.filePath}` : "#"}
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={(e) => {
+    if (!file.filePath) {
+      e.preventDefault();
+      alert("No file URL!");
+    }
+  }}
+>
+  {file.title}
+</a>
+
 <td>{file.uploadedByUserName}</td>
 <td>{file.categoryName}</td>
 <td>{file.courseName}</td>
@@ -748,6 +763,8 @@ const filterFiles = files.filter((file) => {
                         </label>
                       </div>
                     </div>
+                    {selectedUser.roles.includes("Admin") || selectedUser.roles.includes("SuperAdmin") ? (
+                      <>
 <h4>🔑 {t("admin.users.permissions")}</h4>
                     <ul className="permissions-grid">
                       <li>
@@ -791,6 +808,8 @@ const filterFiles = files.filter((file) => {
                         </label>
                       </li>
                     </ul>
+                    </>
+                    ):null}
 
                 <button
   className="save-btn"

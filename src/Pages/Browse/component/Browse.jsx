@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import axios from "../../../api/axiosInstance";
 import { FaSearch } from "react-icons/fa";
-
+import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
 function Browse() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
@@ -19,6 +19,8 @@ function Browse() {
   const [courses, setCourses] = useState([]);
   const [courseId, setCourseId] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
 
   useEffect(() => {
     axios
@@ -32,6 +34,38 @@ function Browse() {
         setLoading(false);
       });
   }, []);
+  useEffect(()=>{
+    axios
+    .get("/favorites/Getlist")
+    .then((res)=>{
+      const favIds = res.data.data.map((f) => f.eduFileId);
+        setFavorites(favIds);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+  const addFavorite = async (fileId) => {
+  try {
+    await axios.post(`/Favorite/Add/${fileId}`);
+    setFavorites((prev) => [...prev, fileId]);
+  } catch (err) {
+    console.log(err);
+  }
+};
+const removeFavorite = async (fileId) => {
+  try {
+    await axios.delete(`/Favorite/Delete/${fileId}`);
+    setFavorites((prev) => prev.filter((id) => id !== fileId));
+  } catch (err) {
+    console.log(err);
+  }
+};
+const toggleFavorite = (fileId) => {
+  if (favorites.includes(fileId)) {
+    removeFavorite(fileId);
+  } else {
+    addFavorite(fileId);
+  }
+};
 
  useEffect(() => {
   if (!categoryId) {
@@ -150,125 +184,31 @@ function Browse() {
         </div>
       )}
 
-      {showResults && (
-        <>
-          <div className="filters">
-            <select onChange={(e) => setCategoryId(Number(e.target.value))}>
-              <option value="">{t("browse.allCategories")}</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+     {showResults && (
+  <>
+    <div className="filters">...</div>
 
-            <select
-              value={courseId}
-              onChange={(e) => setCourseId(Number(e.target.value))}
-              disabled={!categoryId}
-            >
-              <option value="">{t("browse.courses")}</option>
-              {courses.map((course) => (
-                <option key={course.id} value={course.id}>
-                  {course.name}
-                </option>
-              ))}
-            </select>
-
-            <select onChange={(e) => setFileType(e.target.value)}>
-              <option value="">{t("browse.allTypes")}</option>
-              <option value="0">Lecture</option>
-              <option value="1">Summary</option>
-              <option value="2">Exam</option>
-              <option value="3">Assignment</option>
-              <option value="4">Book</option>
-              <option value="5">Other</option>
-            </select>
-
-            <select
-              onChange={(e) =>
-                setOrderBy(e.target.value === "" ? "" : Number(e.target.value))
-              }
-            >
-              <option value="0">Most Downloaded</option>
-              <option value="1">Newest</option>
-            </select>
-
-            <select
-              onChange={(e) => setIsDescending(e.target.value === "true")}
-            >
-              <option value="true">{t("browse.descending")}</option>
-              <option value="false">{t("browse.ascending")}</option>
-            </select>
-          </div>
-          {files.length === 0 && (
-            <div className="no-results">
-              <h3>{t("browse.noFiles")}</h3>
-              <p>{t("browse.tryAnotherSearch")}</p>
-            </div>
-          )}
-          <div className="files-container">
-            {files.length > 0 &&
-              files.map((file) => (
-                <div className="file-card" key={file.id}>
-                  <div className="file-favorite">❤️</div>
-                  <div className="file-info">
-                    <div className="file-icon">
-                      {file.fileType === 0 && "📄"}
-                      {file.fileType === 1 && "📄"}
-                      {file.fileType === 2 && "📝"}
-                      {file.fileType === 3 && "📌"}
-                      {file.fileType === 4 && "📚"}
-                      {file.fileType === 5 && "❔"}
-                    </div>
-                    <div className="file-details">
-                      <h3 className="file-title">
-                        <a
-                          href={`https://corny-unevacuated-willy.ngrok-free.dev${file.filePath}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {file.title}
-                        </a>
-                      </h3>
-                      <span className="file-type">
-                        {{
-                          0: "Lecture",
-                          1: "Summary",
-                          2: "Exam",
-                          3: "Assignment",
-                          4: "Book",
-                          5: "Other",
-                        }[file.fileType] || "Other"}
-                      </span>
-                      <p className="file-description">{file.description}</p>
-                      <div className="file-meta">
-                        <span>📚 {file.courseName}</span>
-                        <span>📁 {file.categoryName}</span>
-                      </div>
-                      <div className="file-footer">
-                        <span>👤 {file.uploadedByUserName}</span>
-                        <span>⬇ {file.downloadCount}</span>
-                        <span>
-                          📅{" "}
-                          {new Date(file.uploadedAt).toLocaleDateString(
-                            "en-GB",
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    className="download-btn"
-                    onClick={() => handleDownload(file.id, file.filePath)}
-                  >
-                    {t("browse.download")}
-                  </button>
-                </div>
-              ))}
-          </div>
-        </>
-      )}
+    {files.length === 0 ? (
+      <div className="no-results">
+        <h3>{t("browse.noFiles")}</h3>
+        <p>{t("browse.tryAnotherSearch")}</p>
+      </div>
+    ) : (
+      <div className="files-container">
+        {files.map((file) => (
+          <FavoriteFileCard
+            key={file.id || file.eduFileId}
+            file={file}
+            isFavorite={favorites.includes(file.id || file.eduFileId)}
+            toggleFavorite={toggleFavorite}
+            handleDownload={handleDownload}
+            serverUrl={serverUrl}
+          />
+        ))}
+      </div>
+    )}
+  </>
+)}
     </div>
   );
 }
