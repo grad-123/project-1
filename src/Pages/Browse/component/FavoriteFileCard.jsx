@@ -1,6 +1,13 @@
 import React from "react";
 import "./Browse.css";
-
+import {
+  MdOndemandVideo,
+  MdSummarize,
+  MdQuiz,
+  MdAssignment,
+  MdMenuBook,
+  MdInsertDriveFile
+} from "react-icons/md";
 const fileTypeText = {
   0: "Lecture",
   1: "Summary",
@@ -21,12 +28,12 @@ export default function FavoriteFileCard({ file, isFavorite, toggleFavorite, han
       </div>
       <div className="file-info">
         <div className="file-icon">
-          {file.fileType === 0 && "📄"}
-          {file.fileType === 1 && "📄"}
-          {file.fileType === 2 && "📝"}
-          {file.fileType === 3 && "📌"}
-          {file.fileType === 4 && "📚"}
-          {file.fileType === 5 && " "}
+          {file.fileType === 0 && <MdOndemandVideo />}
+          {file.fileType === 1 &&  <MdSummarize />}
+          {file.fileType === 2 && <MdQuiz />}
+          {file.fileType === 3 && <MdAssignment />}
+          {file.fileType === 4 && <MdMenuBook />}
+          {file.fileType === 5 && <MdInsertDriveFile />}
         </div>
         <div className="file-details">
           <h3 className="file-title">
