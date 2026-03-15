@@ -20,7 +20,7 @@ function Browse() {
   const [courseId, setCourseId] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [favorites, setFavorites] = useState([]);
-  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
+  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
 
   useEffect(() => {
     axios
@@ -34,54 +34,55 @@ function Browse() {
         setLoading(false);
       });
   }, []);
-  useEffect(()=>{
+  useEffect(() => {
     axios
-    .get("/favorites/Getlist")
-    .then((res)=>{
-      const favIds = res.data.data.map((f) => f.eduFileId);
+      .get("/Favorite/Getlist")
+      .then((res) => {
+        const favIds = res.data.data.map((f) => f.eduFileId);
         setFavorites(favIds);
       })
       .catch((err) => console.log(err));
   }, []);
   const addFavorite = async (fileId) => {
-  try {
-    await axios.post(`/Favorite/Add/${fileId}`);
-    setFavorites((prev) => [...prev, fileId]);
-  } catch (err) {
-    console.log(err);
-  }
-};
-const removeFavorite = async (fileId) => {
-  try {
-    await axios.delete(`/Favorite/Delete/${fileId}`);
-    setFavorites((prev) => prev.filter((id) => id !== fileId));
-  } catch (err) {
-    console.log(err);
-  }
-};
-const toggleFavorite = (fileId) => {
-  if (favorites.includes(fileId)) {
-    removeFavorite(fileId);
-  } else {
-    addFavorite(fileId);
-  }
-};
+    try {
+      await axios.post(`/Favorite/Add/${fileId}`);
+      setFavorites((prev) => [...prev, fileId]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const removeFavorite = async (fileId) => {
+    try {
+      await axios.delete(`/Favorite/Delete/${fileId}`);
+      setFavorites((prev) => prev.filter((id) => id !== fileId));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const toggleFavorite = (fileId) => {
+    if (favorites.includes(fileId)) {
+      removeFavorite(fileId);
+    } else {
+      addFavorite(fileId);
+    }
+  };
 
- useEffect(() => {
-  if (!categoryId) {
-    setCourses([]);
+  useEffect(() => {
+    if (!categoryId) {
+      setCourses([]);
+      setCourseId("");
+      return;
+    }
     setCourseId("");
-    return;
-  }
-  setCourseId("");
-  axios.get(`/Api/Course/GetList/${categoryId}`)
-    .then((res) => {
-    setCourses(res.data.data || []);
-    })
-    .catch((err) => {
-      console.error("Error fetching courses:", err);
-    });
-}, [categoryId]);
+    axios
+      .get(`/Api/Course/GetList/${categoryId}`)
+      .then((res) => {
+        setCourses(res.data.data || []);
+      })
+      .catch((err) => {
+        console.error("Error fetching courses:", err);
+      });
+  }, [categoryId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -184,31 +185,81 @@ const toggleFavorite = (fileId) => {
         </div>
       )}
 
-     {showResults && (
-  <>
-    <div className="filters">...</div>
+      {showResults && (
+        <>
+          <div className="filters">
+            <select onChange={(e) => setCategoryId(Number(e.target.value))}>
+              {" "}
+              <option value="">{t("browse.allCategories")}</option>{" "}
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {" "}
+                  {cat.name}{" "}
+                </option>
+              ))}{" "}
+            </select>{" "}
+            <select
+              value={courseId}
+              onChange={(e) => setCourseId(Number(e.target.value))}
+              disabled={!categoryId}
+            >
+              {" "}
+              <option value="">{t("browse.courses")}</option>{" "}
+              {courses.map((course) => (
+                <option key={course.id} value={course.id}>
+                  {" "}
+                  {course.name}{" "}
+                </option>
+              ))}{" "}
+            </select>{" "}
+            <select onChange={(e) => setFileType(e.target.value)}>
+              {" "}
+              <option value="">{t("browse.allTypes")}</option>{" "}
+              <option value="0">Lecture</option>{" "}
+              <option value="1">Summary</option> <option value="2">Exam</option>{" "}
+              <option value="3">Assignment</option>{" "}
+              <option value="4">Book</option>{" "}
+              <option value="5">Other</option>{" "}
+            </select>{" "}
+            <select
+              onChange={(e) =>
+                setOrderBy(e.target.value === "" ? "" : Number(e.target.value))
+              }
+            >
+              {" "}
+              <option value="0">Most Downloaded</option>{" "}
+              <option value="1">Newest</option>{" "}
+            </select>{" "}
+            <select
+              onChange={(e) => setIsDescending(e.target.value === "true")}
+            >
+              {" "}
+              <option value="true">{t("browse.descending")}</option>{" "}
+              <option value="false">{t("browse.ascending")}</option>{" "}
+            </select>
+          </div>
 
-    {files.length === 0 ? (
-      <div className="no-results">
-        <h3>{t("browse.noFiles")}</h3>
-        <p>{t("browse.tryAnotherSearch")}</p>
-      </div>
-    ) : (
-      <div className="files-container">
-        {files.map((file) => (
-          <FavoriteFileCard
-            key={file.id || file.eduFileId}
-            file={file}
-            isFavorite={favorites.includes(file.id || file.eduFileId)}
-            toggleFavorite={toggleFavorite}
-            handleDownload={handleDownload}
-            serverUrl={serverUrl}
-          />
-        ))}
-      </div>
-    )}
-  </>
-)}
+          {files.length === 0 ? (
+            <div className="no-results">
+              <h3>{t("browse.noFiles")}</h3>
+              <p>{t("browse.tryAnotherSearch")}</p>
+            </div>
+          ) : (
+            <div className="files-container">
+              {files.map((file) => (
+                <FavoriteFileCard
+                  key={file.id || file.eduFileId}
+                  file={file}
+                  isFavorite={favorites.includes(file.id || file.eduFileId)}
+                  toggleFavorite={toggleFavorite}
+                  handleDownload={handleDownload}
+                  serverUrl={serverUrl}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

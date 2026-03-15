@@ -7,7 +7,7 @@ import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
 function Files() {
   const { t } = useTranslation();
   const { courseId } = useParams();
-  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
+  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [favorites, setFavorites] = useState([]);
   useEffect(() => {
@@ -21,7 +21,7 @@ function Files() {
 
   useEffect(()=>{
     axios
-    .get("/favorites/Getlist")
+    .get("/Favorite/Getlist")
     .then((res)=>{
       const favIds = res.data.data.map((f) => f.eduFileId);
         setFavorites(favIds);

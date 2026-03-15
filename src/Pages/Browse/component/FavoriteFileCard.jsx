@@ -1,6 +1,7 @@
 import React from "react";
 import "./Browse.css";
 
+
 const fileTypeText = {
   0: "Lecture",
   1: "Summary",
