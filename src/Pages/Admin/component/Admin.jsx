@@ -13,6 +13,13 @@ console.log(currentUser);
       <h2>EDUPRO</h2>
       <p>{t("admin.panel")}</p>
 
+<button
+  className={activeSection === "dashboard" ? "active" : ""}
+  onClick={() => setActiveSection("dashboard")}
+>
+{t("admin.dashboard.title")}
+</button>
+
       {(currentUser?.permissions?.ManageFiles || currentUser?.permissions?.SuperAdmin) && (
         <button
           className={activeSection === "files" ? "active" : ""}
@@ -55,12 +62,11 @@ console.log(currentUser);
 function Admin() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("Pending");
-  const [activeSection, setActiveSection] = useState("files");
-
+  const [activeSection, setActiveSection] = useState("dashboard");
   const [files, setFiles] = useState([ ]);
 
   const [categories, setCategories] = useState([ ]);
-
+const [stats, setStats] = useState(null);
   
   const [courses, setCourses] = useState([]);
   const [newCategory, setNewCategory] = useState("");
@@ -105,7 +111,7 @@ if (token) {
 };
 }
   const fetchFiles = async () => {
-  if (!statusMap[activeTab]) return; // safety
+  if (!statusMap[activeTab]) return; 
   try {
     const response = await axios.get(`/Api/EduFile/GetList/${statusMap[activeTab]}`);
     console.log(response.data);
@@ -114,6 +120,18 @@ if (token) {
     }
   } catch (error) {
     console.error("Error fetching files:", error);
+  }
+};
+const fetchStats = async () => {
+  try {
+    const res = await axios.get("/api/v1/Stats/GetAdminStats");
+
+    if (res.data.succeeded) {
+      setStats(res.data.data);
+    }
+
+  } catch (error) {
+    console.error("Stats error:", error);
   }
 };
 useEffect(() => {
@@ -335,8 +353,12 @@ const updateClaims = async () => {
 useEffect(() => {
   fetchUsers();
 }, [searchUser]);
+
 useEffect(() => {
   fetchCategories();
+}, []);
+useEffect(() => {
+  fetchStats();
 }, []);
 const banUser = async (id) => {
   try {
@@ -370,14 +392,14 @@ const unbanUser = async (id) => {
     ...prev,
     permissions: {
       ...prev.permissions,
-      [key]: !prev.permissions[key], // toggle القيمة
+      [key]: !prev.permissions[key], 
     },
   }));
 };
   const updateRoles = async () => {
   try {
     const userRoles = selectedUser.roles.map((roleName, index) => ({
-      id: 0, // أو ID الحقيقي لو متاح
+      id: 0, 
       name: roleName,
       hasRole: true
     }));
@@ -400,6 +422,9 @@ const unbanUser = async (id) => {
     console.error("Delete file error:", error);
   }
 };
+const handleReviewNow = () => {
+  setActiveSection("files");
+}
 const filterFiles = files.filter((file) => {
   const statusMapReverse = {
     Pending: 0,
@@ -421,6 +446,76 @@ const filterFiles = files.filter((file) => {
 
       <div className="admin-content">
         <div className="admin-inner">
+          {activeSection === "dashboard" && stats && (
+
+<div className="dashboard">
+<h2>{t("admin.dashboard.title")}</h2>
+<p>{t("admin.dashboard.overview")}</p>
+<div className="stats-container">
+   {(currentUser?.permissions?.ManageFiles || currentUser?.permissions?.SuperAdmin) && (
+<>
+<div className="stat-card pending">
+   <div className="stat-icon">⏳</div>
+   <div>
+<h3>{stats.pendingFilesCount}</h3>
+<p>{t("admin.dashboard.pendingFiles")}</p>
+</div>
+</div>
+
+<div className="stat-card approved">
+   <div className="stat-icon">✅</div>
+   <div>
+<h3>{stats.approvedFilesCount}</h3>
+<p>{t("admin.dashboard.approvedFiles")}</p>
+</div>
+</div>
+<div className="stat-card rejected">
+   <div className="stat-icon">❌</div>
+          <div>
+<h3>{stats.rejectedFilesCount}</h3>
+<p>{t("admin.dashboard.rejectedFiles")}</p></div>  
+</div>
+</>
+   )}
+
+<div className="stat-card downloads">
+   <div className="stat-icon">⬇️</div>
+   <div>
+<h3>{stats.totalDownloads}</h3>
+<p>{t("admin.dashboard.totalDownloads")}</p>
+</div>
+</div> 
+ <div className="additional-stats">
+    <div className="stat-card most-downloaded">
+      <div className="stat-icon">🏆</div>
+      <div className="stat-text">
+        <h3>{stats.mostDownloadedFile}</h3>
+       <p>{t("admin.dashboard.mostDownloaded")}</p>
+      </div>
+    </div> 
+
+    <div className="stat-card most-active-course">
+      <div className="stat-icon">🔥</div>
+      <div className="stat-text">
+        <h3>{stats.mostActiveCourse}</h3>
+         <p>{t("admin.dashboard.mostActiveCourse")}</p>
+      </div>
+    </div>
+  </div>
+
+  <div className="review-alert">
+     <div className="stat-icon">⚠️</div>
+    <p>{stats.pendingFilesCount} {t("admin.dashboard.reviewMessage")}</p>
+      <button onClick={handleReviewNow}>{t("admin.dashboard.reviewNow")}</button>
+  </div>
+</div>
+
+</div>
+
+
+
+
+)}
           {activeSection === "files" && (
             <div className="admin">
               <h2>{t("admin.title")}</h2>
@@ -461,7 +556,7 @@ const filterFiles = files.filter((file) => {
                   <tbody>
                     {filterFiles.map((file) => (
                       <tr key={file.id}>
-  
+  <td>
 <a
   href={file.filePath ? `${serverUrl}${file.filePath}` : "#"}
   target="_blank"
@@ -475,7 +570,7 @@ const filterFiles = files.filter((file) => {
 >
   {file.title}
 </a>
-
+</td>
 <td>{file.uploadedByUserName}</td>
 <td>{file.categoryName}</td>
 <td>{file.courseName}</td>

@@ -315,6 +315,18 @@
       "delete": "Delete",
       "save": "Save"
     },
+    "dashboard": {
+  "title": "Dashboard",
+  "overview": "Overview of your platform activity",
+  "pendingFiles": "Pending Files",
+  "approvedFiles": "Approved Files",
+  "rejectedFiles": "Rejected Files",
+  "totalDownloads": "Total Downloads",
+  "mostDownloaded": "Most Downloaded",
+  "mostActiveCourse": "Most Active Course",
+  "reviewMessage": "files waiting for your review",
+  "reviewNow": "Review Now"
+},
     "categories": {
       "title": "Manage Categories",
       "newCategory": "New Category",

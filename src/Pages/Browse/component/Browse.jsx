@@ -128,7 +128,7 @@ function Browse() {
         ),
       );
       window.open(
-        `https://corny-unevacuated-willy.ngrok-free.dev${filePath}`,
+        `https://ozie-unneedful-freely.ngrok-free.dev${filePath}`,
         "_blank",
       );
     } catch (err) {

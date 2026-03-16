@@ -317,6 +317,18 @@
       "delete": "حذف",
       "save": "حفظ"
     },
+     "dashboard": {
+    "title": "لوحة التحكم",
+    "overview": "نظرة عامة على نشاط المنصة",
+    "pendingFiles": "الملفات قيد المراجعة",
+    "approvedFiles": "الملفات المقبولة",
+    "rejectedFiles": "الملفات المرفوضة",
+    "totalDownloads": "إجمالي التحميلات",
+    "mostDownloaded": "الأكثر تحميلاً",
+    "mostActiveCourse": "المساق الأكثر نشاطاً",
+    "reviewMessage": "ملفات بانتظار المراجعة",
+    "reviewNow": "مراجعة الآن"
+  },
     "categories": {
       "title": "إدارة التخصصات",
       "newCategory": "تخصص جديد",
