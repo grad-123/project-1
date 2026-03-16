@@ -11,11 +11,12 @@ export default function FavoriteFileCard({
   const { t } = useTranslation();
 const fileTypeText = {
    0: t("browse.types.lecture"),
-  1: t("browse.types.summary"),
-  2: t("browse.types.exam"),
-  3: t("browse.types.assignment"),
-  4: t("browse.types.book"),
-  5: t("browse.types.other"),
+  1: t("browse.types.slides"),
+  2: t("browse.types.summary"),
+  3: t("browse.types.exam"),
+  4: t("browse.types.assignment"),
+  5: t("browse.types.book"),
+  6: t("browse.types.other"),
 };
   return (
     <div className="file-card">
@@ -27,13 +28,13 @@ const fileTypeText = {
       </div>
       <div className="file-info">
         <div className="file-icon">
-
-          {file.fileType === 0 && "📄"}
-           {file.fileType === 1 && "📄"}
-          {file.fileType === 2 && "📝"}
-         {file.fileType === 3 && "📌"}
-          {file.fileType === 4 && "📚"} 
-          {file.fileType === 5 && "❔"}
+          {file.fileType === 0 && "▶️"}
+          {file.fileType === 1 && "📄"}
+           {file.fileType === 2 && "📄"}
+          {file.fileType === 3 && "📝"}
+         {file.fileType === 4 && "📌"} 
+            {file.fileType === 5 && "📚"} 
+          {file.fileType === 6 && "❔"}
         
         </div>
         <div className="file-details">

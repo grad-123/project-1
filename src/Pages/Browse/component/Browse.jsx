@@ -215,11 +215,12 @@ function Browse() {
          
               <option value="">{t("browse.allTypes")}</option>
               <option value="0">{t("browse.types.lecture")}</option>
-              <option value="1">{t("browse.types.summary")}</option> 
-              <option value="2">{t("browse.types.exam")}</option>
-              <option value="3">{t("browse.types.assignment")}</option>
-              <option value="4">{t("browse.types.book")}</option>
-              <option value="5">{t("browse.types.other")}</option>
+               <option value="1">{t("browse.types.slides")}</option>
+              <option value="2">{t("browse.types.summary")}</option> 
+              <option value="3">{t("browse.types.exam")}</option>
+              <option value="4">{t("browse.types.assignment")}</option>
+              <option value="5">{t("browse.types.book")}</option>
+              <option value="6">{t("browse.types.other")}</option>
             </select>
             <select
               onChange={(e) =>

@@ -88,7 +88,8 @@
     "exam": "Exam",
     "assignment": "Assignment",
     "book": "Book",
-    "other": "Other"
+    "other": "Other",
+    "slides":"Slides"
   },
 
   "order": {
