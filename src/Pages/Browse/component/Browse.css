@@ -336,6 +336,7 @@ html[dir="ltr"] .search-icon {
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
+  margin: 7px;
 }
 
 .download-btn:hover {

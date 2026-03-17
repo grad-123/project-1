@@ -160,7 +160,7 @@ function Home() {
                 {t("home.createAccountBtn")}
               </button>
             )}
-            <button className="secbtn" onClick={() => navigate("/Auth")}>
+            <button className="secbtn" onClick={() => navigate("/Upload")}>
               {t("home.shareNotesBtn")}
             </button>
           </div>

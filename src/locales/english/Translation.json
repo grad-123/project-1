@@ -27,8 +27,8 @@
     "upload": "Upload",
     "ai": "AI",
     "login": "Login",
-    "admin":"Admin",
-    "logout":"Logout"
+    "admin": "Admin",
+    "logout": "Logout"
   },
 
   "home": {
@@ -62,11 +62,11 @@
     "createAccountBtn": "Create Free Account",
     "shareNotesBtn": "Share Your Notes",
     "copyRight": "© 2026 EDUPRO Academic Intelligence Platform. All rights reserved.",
-    "studentsCount":"Registered students",
-    "filesCount":"Uploaded files count",
-    "coursesCount":"Courses count",
-    "categoriesCount":"Categories count",
-    "totalDownloads":"Total download"
+    "studentsCount": "Registered students",
+    "filesCount": "Uploaded files count",
+    "coursesCount": "Courses count",
+    "categoriesCount": "Categories count",
+    "totalDownloads": "Total download"
   },
   "browse": {
     "searchPlaceholder": "Tape to search...",
@@ -80,22 +80,25 @@
     "sort": "Sort",
     "descending": "Descending",
     "ascending": "Ascending",
-    "courses":"All Courses",
+    "courses": "All Courses",
+    "loginFirst": "Login first to add/remove favorites!",
+    "enterKeyword": "Enter keyword or select category/course to search.",
+    "download": "Download",
+    "watchVideo": "🎥 Watch video",
+    "types": {
+      "lecture": "Lecture",
+      "summary": "Summary",
+      "exam": "Exam",
+      "assignment": "Assignment",
+      "book": "Book",
+      "other": "Other",
+      "slides": "Slides"
+    },
 
-  "types": {
-    "lecture": "Lecture",
-    "summary": "Summary",
-    "exam": "Exam",
-    "assignment": "Assignment",
-    "book": "Book",
-    "other": "Other",
-    "slides":"Slides"
-  },
-
-  "order": {
-    "mostDownloaded": "Most Downloaded",
-    "newest": "Newest"
-  }
+    "order": {
+      "mostDownloaded": "Most Downloaded",
+      "newest": "Newest"
+    }
   },
 
   "upload": {
@@ -284,11 +287,10 @@
     "success": "Password updated successfully",
     "failed": "Reset password failed",
     "passwords_not_match": "Passwords do not match",
-    "passwordRequired":"password Required",
-    "passwordMin":"Password must be at least 6 characters",
-    "passwordPattern":"Password must contain uppercase, lowercase letters and special character",
-    "message":"Password must be at least 6 characters and contain uppercase, lowercase letters and a special character"
-
+    "passwordRequired": "password Required",
+    "passwordMin": "Password must be at least 6 characters",
+    "passwordPattern": "Password must contain uppercase, lowercase letters and special character",
+    "message": "Password must be at least 6 characters and contain uppercase, lowercase letters and a special character"
   },
   "admin": {
     "title": "Admin Dashboard",
@@ -317,17 +319,17 @@
       "save": "Save"
     },
     "dashboard": {
-  "title": "Dashboard",
-  "overview": "Overview of your platform activity",
-  "pendingFiles": "Pending Files",
-  "approvedFiles": "Approved Files",
-  "rejectedFiles": "Rejected Files",
-  "totalDownloads": "Total Downloads",
-  "mostDownloaded": "Most Downloaded",
-  "mostActiveCourse": "Most Active Course",
-  "reviewMessage": "files waiting for your review",
-  "reviewNow": "Review Now"
-},
+      "title": "Dashboard",
+      "overview": "Overview of your platform activity",
+      "pendingFiles": "Pending Files",
+      "approvedFiles": "Approved Files",
+      "rejectedFiles": "Rejected Files",
+      "totalDownloads": "Total Downloads",
+      "mostDownloaded": "Most Downloaded",
+      "mostActiveCourse": "Most Active Course",
+      "reviewMessage": "files waiting for your review",
+      "reviewNow": "Review Now"
+    },
     "categories": {
       "title": "Manage Categories",
       "newCategory": "New Category",
@@ -335,61 +337,70 @@
       "placeholderName": "Category Name"
     },
     "courses": {
-  "title": "Manage Courses",
-  "newCourse": "New Course",
-  "placeholderName": "Course Name",
-  "description": "Description",
-  "selectCategory": "Select Category"
-},
-"users": {
-  "title": "Users",
-  "search": "Search",
-  "roles": "Roles",
-  "permissions": "Permissions",
-  "ban": "Ban",
-  "unban": "Unban",
-  "saveChanges": "Save Changes",
-  "updated": "User updated successfully",
-  "chooseUser": "Choose a user to manage permissions"
-},
-"sidebar": {
-  "files": "Manage Files",
-  "categories": "Manage Categories",
-  "courses": "Manage Courses",
-  "users": "Manage Users"
-},
-"roles": {
-  "admin": "Admin",
-  "student": "Student"
-},
-"permissions": {
-  "manageCategories": "Manage Categories",
-  "manageCourses": "Manage Courses",
-  "manageFiles": "Manage Files",
-  "superAdmin": "Super Admin"
-}
-},
+      "title": "Manage Courses",
+      "newCourse": "New Course",
+      "placeholderName": "Course Name",
+      "description": "Description",
+      "selectCategory": "Select Category"
+    },
+    "users": {
+      "title": "Users",
+      "search": "Search",
+      "roles": "Roles",
+      "permissions": "Permissions",
+      "ban": "Ban",
+      "unban": "Unban",
+      "saveChanges": "Save Changes",
+      "updated": "User updated successfully",
+      "chooseUser": "Choose a user to manage permissions"
+    },
+    "sidebar": {
+      "files": "Manage Files",
+      "categories": "Manage Categories",
+      "courses": "Manage Courses",
+      "users": "Manage Users"
+    },
+    "roles": {
+      "admin": "Admin",
+      "student": "Student"
+    },
+    "permissions": {
+      "manageCategories": "Manage Categories",
+      "manageCourses": "Manage Courses",
+      "manageFiles": "Manage Files",
+      "superAdmin": "Super Admin"
+    }
+  },
   "course": {
     "course": "Subjects",
     "description": "Explore available courses and start learning today"
   },
-  "file": {
+  "files": {
     "title": "Resources",
     "description": "Access useful learning materials including summaries, lectures, and resources for this course",
     "download": "Download",
-     "noFiles": "No files found"
-   
+    "noFiles": "No files found",
+    "loginMessage": "Please login to add to favorites",
+    "all": "All",
+    "lectures": "Lecture",
+    "slides": "Slides",
+    "summaries": "Summary",
+    "exams": "Exam",
+    "assignments": "Assignment",
+    "books": "Book",
+    "other": "Other",
+    "downloadError": "Failed to download the file, please try again"
   },
-  "found":{
-    "page":"Page Not Found",
-    "sorry":"Sorry, the page you are looking for doesn't exist.",
-    "go":" Go Home"
+  "found": {
+    "page": "Page Not Found",
+    "sorry": "Sorry, the page you are looking for doesn't exist.",
+    "go": " Go Home"
   },
   "favorites": {
-  "title": {
-    "first": "Saved",
-    "second": "Resources"
-  },
-  "subtitle": "Manage your personalized collection of AI summaries, course notes, and research materials for quick academic reference."
-}
+    "title": {
+      "first": "Saved",
+      "second": "Resources"
+    },
+    "subtitle": "Manage your personalized collection of AI summaries, course notes, and research materials for quick academic reference."
+  }
 }

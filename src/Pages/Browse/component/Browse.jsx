@@ -6,6 +6,7 @@ import axios from "../../../api/axiosInstance";
 import { FaSearch } from "react-icons/fa";
 import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
 function Browse() {
+  const [message, setMessage] = useState("");
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -34,16 +35,21 @@ function Browse() {
         setLoading(false);
       });
   }, []);
-  useEffect(() => {
-    axios
-      .get("/Favorite/Getlist")
-      .then((res) => {
-        const favIds = res.data.data.map((f) => f.eduFileId);
-        setFavorites(favIds);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+
+ useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+  axios
+    .get("/Favorite/Getlist")
+    .then((res) => {
+      const favIds = res.data.data.map((f) => f.eduFileId);
+      setFavorites(favIds);
+    })
+    .catch((err) => console.log(err));
+}, []);
   const addFavorite = async (fileId) => {
+   const token = localStorage.getItem("token");
+  if (!token) return;
     try {
       await axios.post(`/Favorite/Add/${fileId}`);
       setFavorites((prev) => [...prev, fileId]);
@@ -52,6 +58,8 @@ function Browse() {
     }
   };
   const removeFavorite = async (fileId) => {
+    const token = localStorage.getItem("token");
+     if (!token) return;
     try {
       await axios.delete(`/Favorite/Delete/${fileId}`);
       setFavorites((prev) => prev.filter((id) => id !== fileId));
@@ -60,6 +68,11 @@ function Browse() {
     }
   };
   const toggleFavorite = (fileId) => {
+    const token = localStorage.getItem("token");
+     if (!token) {
+  setMessage("Login first to add/remove favorites!");
+  return;
+}
     if (favorites.includes(fileId)) {
       removeFavorite(fileId);
     } else {
@@ -109,10 +122,14 @@ function Browse() {
       console.error("Search error:", err);
     }
   };
-  const handleSearch = () => {
-    setShowResults(true);
-    searchFiles();
-  };
+ const handleSearch = () => {
+  if (!searchTerm && !categoryId && !courseId) {
+    setMessage("Enter keyword or select category/course to search.");
+    return;
+  }
+  setShowResults(true);
+  searchFiles();
+};
 
   useEffect(() => {
     if (!showResults) return;
@@ -128,7 +145,7 @@ function Browse() {
         ),
       );
       window.open(
-        `https://corny-unevacuated-willy.ngrok-free.dev${filePath}`,
+        `${serverUrl}${filePath}`,
         "_blank",
       );
     } catch (err) {
@@ -148,6 +165,7 @@ function Browse() {
     <div className="browse-page">
       <h1 className="browse-title">{t("browse.categories")}</h1>
       <p className="browse-description">{t("browse.description")}</p>
+      {message && <div className="message">{message}</div>}
       <div className="search-wrapper">
         <div className="search-input-wrapper">
           <FaSearch className="search-icon" />
