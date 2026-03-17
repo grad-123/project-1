@@ -146,3 +146,24 @@
 .download-btn:hover {
   opacity: 0.6;
 }
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.tabs button {
+  padding: 8px 14px;
+  border: none;
+  background: #eee;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.tabs button.active {
+  background: #2b5cff;
+  color: white;
+}

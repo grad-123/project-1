@@ -2,11 +2,12 @@ import React from "react";
 import "./Browse.css";
 const fileTypeText = {
   0: "Lecture",
-  1: "Summary",
-  2: "Exam",
-  3: "Assignment",
-  4: "Book",
-  5: "Other",
+  1:"Slides",
+  2: "Summary",
+  3: "Exam",
+  4: "Assignment",
+  5: "Book",
+  6: "Other",
 };
 
 export default function FavoriteFileCard({
@@ -29,6 +30,7 @@ export default function FavoriteFileCard({
           {file.fileType === 0 && "🎥"}
           {file.fileType === 1 && "📄"}
           {file.fileType === 2 && "📝"}
+          {file.fileType === 3 && "🧾"}  
           {file.fileType === 3 && "📌"}
           {file.fileType === 4 && "📚"}
           {file.fileType === 5 && "📁"}
@@ -58,12 +60,23 @@ export default function FavoriteFileCard({
           </div>
         </div>
       </div>
-      <button
-        className="download-btn"
-        onClick={() => handleDownload(file.id || file.eduFileId, file.filePath)}
-      >
-        Download
-      </button>
+      {file.fileType === 0 ? (
+        <button
+          className="download-btn"
+          onClick={() => window.open(`${serverUrl}${file.filePath}`, "_blank")}
+        >
+          🎥 Watch Video
+        </button>
+      ) : (
+        <button
+          className="download-btn"
+          onClick={() =>
+            handleDownload(file.id || file.eduFileId, file.filePath)
+          }
+        >
+          Download
+        </button>
+      )}
     </div>
   );
 }
