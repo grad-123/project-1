@@ -1,19 +1,14 @@
 import React from "react";
 import "./Browse.css";
-<<<<<<< HEAD
 const fileTypeText = {
   0: "Lecture",
-  1:"Slides",
-  2: "Summary",
-  3: "Exam",
-  4: "Assignment",
-  5: "Book",
-  6: "Other",
+  1: "Summary",
+  2: "Exam",
+  3: "Assignment",
+  4: "Book",
+  5: "Other",
 };
 
-=======
-import { useTranslation } from "react-i18next";
->>>>>>> f3de5cac6da109d8abd4cfa2b57dd749a5c5244a
 export default function FavoriteFileCard({
   file,
   isFavorite,
@@ -21,16 +16,6 @@ export default function FavoriteFileCard({
   handleDownload,
   serverUrl,
 }) {
-  const { t } = useTranslation();
-const fileTypeText = {
-   0: t("browse.types.lecture"),
-  1: t("browse.types.slides"),
-  2: t("browse.types.summary"),
-  3: t("browse.types.exam"),
-  4: t("browse.types.assignment"),
-  5: t("browse.types.book"),
-  6: t("browse.types.other"),
-};
   return (
     <div className="file-card">
       <div
@@ -40,46 +25,14 @@ const fileTypeText = {
         {isFavorite ? "❤️" : "♡"}
       </div>
       <div className="file-info">
-<<<<<<< HEAD
         <div className="file-icon">
           {file.fileType === 0 && "🎥"}
           {file.fileType === 1 && "📄"}
           {file.fileType === 2 && "📝"}
-          {file.fileType === 3 && "🧾"}  
           {file.fileType === 3 && "📌"}
           {file.fileType === 4 && "📚"}
           {file.fileType === 5 && "📁"}
         </div>
-=======
-       <div className="file-icon">
-         {file.fileType === 0 && "▶️"}
-  {file.fileType === 0 && ["mp4", "avi", "mov", "mkv"].includes(file.fileExtension) ? (
-    <video width="150" controls>
-      <source
-        src={`${serverUrl}${file.filePath}`}
-        type={
-          file.fileExtension === "mp4" ? "video/mp4" :
-          file.fileExtension === "mov" ? "video/quicktime" :
-          file.fileExtension === "avi" ? "video/x-msvideo" :
-          file.fileExtension === "mkv" ? "video/x-matroska" :
-          "video/mp4" 
-        }
-       />
-      Your browser does not support the video tag.
-    </video>
-  ) : (
-   
-    <>
-      {file.fileType === 1 && "📄"}
-      {file.fileType === 2 && "📄"}
-      {file.fileType === 3 && "📝"}
-      {file.fileType === 4 && "📌"}
-      {file.fileType === 5 && "📚"}
-      {file.fileType === 6 && "❔"}
-    </>
-  )}
-</div>
->>>>>>> f3de5cac6da109d8abd4cfa2b57dd749a5c5244a
         <div className="file-details">
           <h3 className="file-title">
             <a
@@ -105,13 +58,12 @@ const fileTypeText = {
           </div>
         </div>
       </div>
-<<<<<<< HEAD
       {file.fileType === 0 ? (
         <button
           className="download-btn"
           onClick={() => window.open(`${serverUrl}${file.filePath}`, "_blank")}
         >
-          🎥 Watch Video
+          🎥 Watch
         </button>
       ) : (
         <button
@@ -123,14 +75,6 @@ const fileTypeText = {
           Download
         </button>
       )}
-=======
-      <button
-        className="download-btn"
-        onClick={() => handleDownload(file.id || file.eduFileId, file.filePath)}
-      >
-       {t("file.download")}
-      </button>
->>>>>>> f3de5cac6da109d8abd4cfa2b57dd749a5c5244a
     </div>
   );
 }
