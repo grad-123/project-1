@@ -77,16 +77,17 @@ function Home() {
             <div className="stat-icon">
               <MdPeople size={50} color="#FF6B6B" />
             </div>
-            <h2>{stats.studentsCount}+</h2>
             <p>{t("home.studentsCount")}</p>
+            <h2>{stats.studentsCount}+</h2>
           </div>
 
           <div className="stat-card">
             <div className="stat-icon">
               <MdFolder size={50} color="#FFD93D" />
-            </div>
-            <h2>{stats.filesCount}+</h2>
+            </div> 
             <p>{t("home.filesCount")}</p>
+            <h2>{stats.filesCount}+</h2>
+           
           </div>
 
           <div className="stat-card">
@@ -94,8 +95,9 @@ function Home() {
               {" "}
               <MdLibraryBooks size={50} color="#6BCB77" />{" "}
             </div>
-            <h2>{stats.coursesCount}+</h2>
             <p>{t("home.coursesCount")}</p>
+            <h2>{stats.coursesCount}+</h2>
+            
           </div>
 
           <div className="stat-card">
@@ -103,17 +105,19 @@ function Home() {
               {" "}
               <MdCategory size={50} color="#4D96FF" />
             </div>
-            <h2>{stats.categoriesCount}+</h2>
             <p>{t("home.categoriesCount")}</p>
+            <h2>{stats.categoriesCount}+</h2>
+            
           </div>
 
           <div className="stat-card">
             <div className="stat-icon">
               {" "}
               <MdDownload size={50} color="#ff6efa" />{" "}
-            </div>
-            <h2>{stats.totalDownloads}+</h2>
+            </div> 
             <p>{t("home.totalDownloads")}</p>
+            <h2>{stats.totalDownloads}+</h2>
+           
           </div>
         </div>
       </div>
@@ -160,7 +164,7 @@ function Home() {
                 {t("home.createAccountBtn")}
               </button>
             )}
-            <button className="secbtn" onClick={() => navigate("/Upload")}>
+            <button className="secbtn" onClick={() => navigate("/Auth")}>
               {t("home.shareNotesBtn")}
             </button>
           </div>
