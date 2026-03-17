@@ -105,7 +105,6 @@ function Files() {
       <h2 className="files-title">{t("files.title")}</h2>
       <p className="files-description">{t("files.description")}</p>
 
-      {message && <div className="message">{message}</div>}
 
       <div className="tabs">
         {fileTypes.map((type) => (
@@ -122,6 +121,7 @@ function Files() {
           </button>
         ))}
       </div>
+      {message && <div className="message">{message}</div>}
 
       {filteredFiles.length === 0 ? (
         <p>{t("files.noFiles")}</p>

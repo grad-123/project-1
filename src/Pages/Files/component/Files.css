@@ -170,6 +170,17 @@
   background: var(--primary);
   color: var(--text-main);
 }
+
+.message {
+  background-color:var(--bg-main); 
+  color: #d8000c;           
+  border: 1px solid #d8000c;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin: 10px 0;
+  font-size: 14px;
+  text-align: center;
+}
 @media (max-width: 768px) {
   .tabs button {
     flex: 0 0 25%;

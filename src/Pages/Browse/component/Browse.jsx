@@ -36,20 +36,20 @@ function Browse() {
       });
   }, []);
 
- useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) return;
-  axios
-    .get("/Favorite/Getlist")
-    .then((res) => {
-      const favIds = res.data.data.map((f) => f.eduFileId);
-      setFavorites(favIds);
-    })
-    .catch((err) => console.log(err));
-}, []);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    axios
+      .get("/Favorite/Getlist")
+      .then((res) => {
+        const favIds = res.data.data.map((f) => f.eduFileId);
+        setFavorites(favIds);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   const addFavorite = async (fileId) => {
-   const token = localStorage.getItem("token");
-  if (!token) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
     try {
       await axios.post(`/Favorite/Add/${fileId}`);
       setFavorites((prev) => [...prev, fileId]);
@@ -59,7 +59,7 @@ function Browse() {
   };
   const removeFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
-     if (!token) return;
+    if (!token) return;
     try {
       await axios.delete(`/Favorite/Delete/${fileId}`);
       setFavorites((prev) => prev.filter((id) => id !== fileId));
@@ -69,10 +69,10 @@ function Browse() {
   };
   const toggleFavorite = (fileId) => {
     const token = localStorage.getItem("token");
-     if (!token) {
-  setMessage("Login first to add/remove favorites!");
-  return;
-}
+    if (!token) {
+      setMessage("Login first to add/remove favorites!");
+      return;
+    }
     if (favorites.includes(fileId)) {
       removeFavorite(fileId);
     } else {
@@ -122,14 +122,14 @@ function Browse() {
       console.error("Search error:", err);
     }
   };
- const handleSearch = () => {
-  if (!searchTerm && !categoryId && !courseId) {
-    setMessage("Enter keyword or select category/course to search.");
-    return;
-  }
-  setShowResults(true);
-  searchFiles();
-};
+  const handleSearch = () => {
+    if (!searchTerm && !categoryId && !courseId) {
+      setMessage(t("browse.enterKeyword"));
+      return;
+    }
+    setShowResults(true);
+    searchFiles();
+  };
 
   useEffect(() => {
     if (!showResults) return;
@@ -144,10 +144,7 @@ function Browse() {
           f.id === fileId ? { ...f, downloadCount: f.downloadCount + 1 } : f,
         ),
       );
-      window.open(
-        `${serverUrl}${filePath}`,
-        "_blank",
-      );
+      window.open(`${serverUrl}${filePath}`, "_blank");
     } catch (err) {
       console.log("Download error:", err);
     }
@@ -207,7 +204,6 @@ function Browse() {
         <>
           <div className="filters">
             <select onChange={(e) => setCategoryId(Number(e.target.value))}>
-              
               <option value="">{t("browse.allCategories")}</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
@@ -220,21 +216,18 @@ function Browse() {
               onChange={(e) => setCourseId(Number(e.target.value))}
               disabled={!categoryId}
             >
-             
               <option value="">{t("browse.courses")}</option>
               {courses.map((course) => (
                 <option key={course.id} value={course.id}>
-               
                   {course.name}
                 </option>
               ))}
             </select>
             <select onChange={(e) => setFileType(e.target.value)}>
-         
               <option value="">{t("browse.allTypes")}</option>
               <option value="0">{t("browse.types.lecture")}</option>
-               <option value="1">{t("browse.types.slides")}</option>
-              <option value="2">{t("browse.types.summary")}</option> 
+              <option value="1">{t("browse.types.slides")}</option>
+              <option value="2">{t("browse.types.summary")}</option>
               <option value="3">{t("browse.types.exam")}</option>
               <option value="4">{t("browse.types.assignment")}</option>
               <option value="5">{t("browse.types.book")}</option>
