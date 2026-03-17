@@ -16,11 +16,12 @@ export default function Upload() {
    const [selectedFile, setSelectedFile] = useState(null);
    const fileTypes = [
   { value: 0, label: "Lecture" },
-  { value: 1, label: "Summary" },
-  { value: 2, label: "Exam" },
-  { value: 3, label: "Assignment" },
-  { value: 4, label: "Book" },
-  { value: 5, label: "Other" },
+  { value: 1, label: "Slides" },
+  { value: 2, label: "Summary" },
+  { value: 3, label: "Exam" },
+  { value: 4, label: "Assignment" },
+  { value: 5, label: "Book" },
+  { value: 6, label: "Other" },
 ];
 const [categories, setCategories] = useState([]);
 
@@ -121,7 +122,12 @@ const handleFileChange = (e) => {
   <label htmlFor="fileInput" className="upload-box">
     {selectedFile ? (
                 <div className="file-preview">
-                  <AiOutlineFile size={50} color="#007bff" />
+                   {selectedFile.type.startsWith('video') ? (
+    <video width="100" controls>
+      <source src={URL.createObjectURL(selectedFile)} type={selectedFile.type} />
+    </video>
+  ) : (
+                  <AiOutlineFile size={50} color="#007bff" />)}
                   <p>{selectedFile.name}</p>
                   <button type="button" className="remove-btn" onClick={removeFile}>
                     {t("upload.file.remove")}
@@ -144,7 +150,7 @@ const handleFileChange = (e) => {
       id="fileInput"
       type="file"
       {...register("file", { required:t("upload.form.fileRequired" )})}
-      accept=".pdf,.docx"
+      accept=".pdf,.docx,.mp4,.avi,.mov,.mkv"
       hidden
       onChange={handleFileChange}
     />
@@ -194,7 +200,7 @@ const handleFileChange = (e) => {
               <label>{t("upload.form.courseLabel")}</label>
 <select 
   {...register("course", { required: t("upload.form.courseRequired") })}
-  disabled={!selectedCategory} // منع الاختيار قبل الكاتيجوري
+  disabled={!selectedCategory} 
 >
   <option value="">{t("upload.form.courses.selectCourse")}</option>
   {courses.map((course) => (

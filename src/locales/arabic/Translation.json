@@ -83,8 +83,20 @@
     "sort": "ترتيب",
     "descending": "تنازلي",
     "ascending": "تصاعدي",
-    "download": "تحميل",
-    "courses":"جميع المساقات"
+    "courses":"جميع المساقات",
+    "types": {
+  "lecture": "محاضرة",
+  "summary": "ملخص",
+  "exam": "امتحان",
+  "assignment": "واجب",
+  "book": "كتاب",
+  "slides":"شرائح العرض",
+  "other": "أخرى"
+},
+"order": {
+  "mostDownloaded": "الأكثر تحميلاً",
+  "newest": "الأحدث"
+}
   },
 
   "upload": {
@@ -92,7 +104,7 @@
     "subtitle": "ارفع موادك الأكاديمية لمساعدة آلاف الطلاب الآخرين.",
     "file": {
       "clickText": "اضغط للرفع أو اسحب الملف هنا",
-      "subText": "PDF, DOCX حتى 50MB",
+     "subText": "ملفات PDF, DOCX, MP4, MOV, AVI, MKV حتى 500 ميغابايت",
       "remove": "إزالة"
     },
     "form": {
@@ -306,6 +318,18 @@
       "delete": "حذف",
       "save": "حفظ"
     },
+     "dashboard": {
+    "title": "لوحة التحكم",
+    "overview": "نظرة عامة على نشاط المنصة",
+    "pendingFiles": "الملفات قيد المراجعة",
+    "approvedFiles": "الملفات المقبولة",
+    "rejectedFiles": "الملفات المرفوضة",
+    "totalDownloads": "إجمالي التحميلات",
+    "mostDownloaded": "الأكثر تحميلاً",
+    "mostActiveCourse": "المساق الأكثر نشاطاً",
+    "reviewMessage": "ملفات بانتظار المراجعة",
+    "reviewNow": "مراجعة الآن"
+  },
     "categories": {
       "title": "إدارة التخصصات",
       "newCategory": "تخصص جديد",
@@ -354,11 +378,20 @@
   "file": {
     "title": "الموارد",
     "description": "يمكنك الوصول إلى مواد تعليمية مفيدة تتضمن ملخصات ومحاضرات وموارد خاصة بهذه الدورة",
-    "download": "تحميل"
+    "download": "تحميل",
+      "noFiles": "لم يتم العثور على أي ملفات"
   },
   "found":{
-    "page":"Page Not Found",
-    "sorry":"Sorry, the page you are looking for doesn't exist.",
-    "go":" Go Home"
-  }
+  "page":"الصفحة غير موجودة",
+  "sorry":"عذراً، الصفحة التي تبحث عنها غير موجودة.",
+  "go":"العودة إلى الصفحة الرئيسية"
+} ,
+"favorites": {
+  "title": {
+    "first": "الموارد",
+    "second": "المحفوظة"
+  },
+  "subtitle": "قم بإدارة مجموعتك الشخصية من الملخصات المدعومة بالذكاء الاصطناعي، ملاحظات المساقات، والمواد البحثية للوصول السريع للمراجع الأكاديمية."
+}
+
 }

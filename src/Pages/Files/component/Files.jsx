@@ -8,7 +8,7 @@ function Files() {
   const [activeType, setActiveType] = useState("all");
   const { t } = useTranslation();
   const { courseId } = useParams();
-  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
+  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [favorites, setFavorites] = useState([]);
 

@@ -108,6 +108,7 @@ tbody tr:hover {
 }
 th,
 h2,
+a,
 p {
   color: var(--primary);
   font-weight: 600;
@@ -512,3 +513,110 @@ margin-left:10px;
 .delete-btn:hover{
 background: #b02a37;
 } 
+.dashboard > h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: var(--text-main); 
+  text-align: left; 
+}
+
+.dashboard > p {
+  font-size: 13px;
+ color: var(--text-secondary); 
+  margin: 0 0 20px 0;
+  text-align: left; 
+}
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+   background: var(--bg-card);
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 90px; 
+  }
+.stat-icon {
+  font-size: 36px;   
+  flex-shrink: 0;    
+  margin-right: 12px; 
+}
+
+.stat-text h3{
+margin:0;
+font-size:22px;
+}
+
+.pending{
+  background: #fff7e6;
+  border: 1px solid #f5d7a1;
+}
+.approved{
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}
+.rejected{
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+.downloads{
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+.pending h3{
+  color:var(--color-edit); 
+}
+
+.approved h3{
+  color:var(--color-approve);  
+}
+
+.rejected h3{
+  color:var(--color-reject);  
+}
+
+.downloads h3{
+  color:var(--primary); 
+}
+.additional-stats{
+  grid-column: 1 / -1;   
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.review-alert{
+  grid-column: 1 / -1;
+display:flex;
+align-items:center;
+justify-content:space-between;
+background: var(--bg-secondary);
+border: 1px solid var(--color-edit);
+padding:15px 20px;
+border-radius:10px;
+}
+.review-alert p {
+  flex: 1;
+  margin: 0;
+  font-size: 14px;
+ color:var(--color-edit);
+}
+.review-alert button{
+background:#ff9800;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
+.review-alert button:hover {
+  background: #d97706;
+}

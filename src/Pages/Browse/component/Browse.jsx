@@ -20,7 +20,7 @@ function Browse() {
   const [courseId, setCourseId] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [favorites, setFavorites] = useState([]);
-  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
+  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
 
   useEffect(() => {
     axios
@@ -189,46 +189,47 @@ function Browse() {
         <>
           <div className="filters">
             <select onChange={(e) => setCategoryId(Number(e.target.value))}>
-              {" "}
-              <option value="">{t("browse.allCategories")}</option>{" "}
+              
+              <option value="">{t("browse.allCategories")}</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {" "}
-                  {cat.name}{" "}
+                  {cat.name}
                 </option>
-              ))}{" "}
-            </select>{" "}
+              ))}
+            </select>
             <select
               value={courseId}
               onChange={(e) => setCourseId(Number(e.target.value))}
               disabled={!categoryId}
             >
-              {" "}
-              <option value="">{t("browse.courses")}</option>{" "}
+             
+              <option value="">{t("browse.courses")}</option>
               {courses.map((course) => (
                 <option key={course.id} value={course.id}>
-                  {" "}
-                  {course.name}{" "}
+               
+                  {course.name}
                 </option>
-              ))}{" "}
-            </select>{" "}
+              ))}
+            </select>
             <select onChange={(e) => setFileType(e.target.value)}>
-              {" "}
-              <option value="">{t("browse.allTypes")}</option>{" "}
-              <option value="0">Lecture</option>{" "}
-              <option value="1">Summary</option> <option value="2">Exam</option>{" "}
-              <option value="3">Assignment</option>{" "}
-              <option value="4">Book</option>{" "}
-              <option value="5">Other</option>{" "}
-            </select>{" "}
+         
+              <option value="">{t("browse.allTypes")}</option>
+              <option value="0">{t("browse.types.lecture")}</option>
+               <option value="1">{t("browse.types.slides")}</option>
+              <option value="2">{t("browse.types.summary")}</option> 
+              <option value="3">{t("browse.types.exam")}</option>
+              <option value="4">{t("browse.types.assignment")}</option>
+              <option value="5">{t("browse.types.book")}</option>
+              <option value="6">{t("browse.types.other")}</option>
+            </select>
             <select
               onChange={(e) =>
                 setOrderBy(e.target.value === "" ? "" : Number(e.target.value))
               }
             >
               {" "}
-              <option value="0">Most Downloaded</option>{" "}
-              <option value="1">Newest</option>{" "}
+              <option value="0">{t("browse.order.mostDownloaded")}</option>{" "}
+              <option value="1">{t("browse.order.newest")}</option>{" "}
             </select>{" "}
             <select
               onChange={(e) => setIsDescending(e.target.value === "true")}

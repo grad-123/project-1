@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
         const accessToken = localStorage.getItem("token");
 
         const response = await axiosInstance.post(
-          "https://ozie-unneedful-freely.ngrok-free.dev/api/v1/Authentication/RefreshToken",
+          "https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/RefreshToken",
           {
             refreshToken: refreshToken,
             accessToken: accessToken,
