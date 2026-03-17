@@ -27,16 +27,34 @@ const fileTypeText = {
         {isFavorite ? "❤️" : "♡"}
       </div>
       <div className="file-info">
-        <div className="file-icon">
-          {file.fileType === 0 && "▶️"}
-          {file.fileType === 1 && "📄"}
-           {file.fileType === 2 && "📄"}
-          {file.fileType === 3 && "📝"}
-         {file.fileType === 4 && "📌"} 
-            {file.fileType === 5 && "📚"} 
-          {file.fileType === 6 && "❔"}
-        
-        </div>
+       <div className="file-icon">
+         {file.fileType === 0 && "▶️"}
+  {file.fileType === 0 && ["mp4", "avi", "mov", "mkv"].includes(file.fileExtension) ? (
+    <video width="150" controls>
+      <source
+        src={`${serverUrl}${file.filePath}`}
+        type={
+          file.fileExtension === "mp4" ? "video/mp4" :
+          file.fileExtension === "mov" ? "video/quicktime" :
+          file.fileExtension === "avi" ? "video/x-msvideo" :
+          file.fileExtension === "mkv" ? "video/x-matroska" :
+          "video/mp4" 
+        }
+       />
+      Your browser does not support the video tag.
+    </video>
+  ) : (
+   
+    <>
+      {file.fileType === 1 && "📄"}
+      {file.fileType === 2 && "📄"}
+      {file.fileType === 3 && "📝"}
+      {file.fileType === 4 && "📌"}
+      {file.fileType === 5 && "📚"}
+      {file.fileType === 6 && "❔"}
+    </>
+  )}
+</div>
         <div className="file-details">
           <h3 className="file-title">
             <a

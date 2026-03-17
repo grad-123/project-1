@@ -103,7 +103,7 @@
     "subtitle": "Upload your academic materials to help thousands of fellow students.",
     "file": {
       "clickText": "Click to upload or drag and drop",
-      "subText": "PDF, DOCX up to 50MB",
+      "subText": "PDF, DOCX, MP4, MOV, AVI, MKV up to 500MB",
       "remove": "Remove"
     },
     "form": {

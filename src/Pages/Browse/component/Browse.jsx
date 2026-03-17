@@ -20,7 +20,7 @@ function Browse() {
   const [courseId, setCourseId] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [favorites, setFavorites] = useState([]);
-  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
+  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
 
   useEffect(() => {
     axios
@@ -128,7 +128,7 @@ function Browse() {
         ),
       );
       window.open(
-        `https://ozie-unneedful-freely.ngrok-free.dev${filePath}`,
+        `https://corny-unevacuated-willy.ngrok-free.dev${filePath}`,
         "_blank",
       );
     } catch (err) {

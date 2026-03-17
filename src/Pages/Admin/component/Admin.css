@@ -108,6 +108,7 @@ tbody tr:hover {
 }
 th,
 h2,
+a,
 p {
   color: var(--primary);
   font-weight: 600;

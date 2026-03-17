@@ -104,7 +104,7 @@
     "subtitle": "ارفع موادك الأكاديمية لمساعدة آلاف الطلاب الآخرين.",
     "file": {
       "clickText": "اضغط للرفع أو اسحب الملف هنا",
-      "subText": "PDF, DOCX حتى 50MB",
+     "subText": "ملفات PDF, DOCX, MP4, MOV, AVI, MKV حتى 500 ميغابايت",
       "remove": "إزالة"
     },
     "form": {
