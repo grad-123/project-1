@@ -22,26 +22,26 @@ export default function FavoriteFileCard({
 }) {
   const { t } = useTranslation();
 
-  const handleDownload = async () => {
-    try {
-      const response = await axios.get(`${serverUrl}${file.filePath}`, {
-        responseType: "blob",
-      });
+const handleDownload = async () => {
+  try {
+    const response = await axios.get(`/Api/EduFile/Download/${file.id || file.eduFileId}`, {
+      responseType: "blob",
+    });
 
-      const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
-      window.open(fileUrl, "_blank");
+    const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
 
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      link.setAttribute("download", file.filePath.split("/").pop());
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (err) {
-      console.log("Download error:", err);
-    }
-  };
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = file.filePath.split("/").pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
+    window.URL.revokeObjectURL(fileUrl);
+  } catch (err) {
+    console.log("Download error:", err);
+  }
+};
   return (
     <div className="file-card">
       <div
