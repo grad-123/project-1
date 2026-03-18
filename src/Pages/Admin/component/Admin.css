@@ -620,4 +620,59 @@ cursor:pointer;
 .review-alert button:hover {
   background: #d97706;
 }
+@media (max-width: 768px) {
 
+  .admin {
+    padding: 20px;
+  }
+
+  .admin-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 10px;
+  }
+
+  .sidebar button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  .admin-content {
+    padding: 15px;
+  }
+
+  .users-section {
+    flex-direction: column;
+    margin-right: 0;
+  }
+
+  .users-list {
+    width: 100%;
+  }
+  .ban-btn,
+  .unban-btn {
+    width: 100%;
+    margin-left: 0;
+  }
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  .additional-stats {
+    grid-template-columns: 1fr;
+  }
+  .review-alert {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .review-alert button {
+    width: 100%;
+  }
+}

@@ -28,7 +28,7 @@ body{
   margin:10px 0 10px;
   font-weight:700;
  color: var(--text-main);
-  text-align:left;
+text-align: start;
 }
 
 .blue{
@@ -40,5 +40,29 @@ color: var(--primary);
  color: var(--text-secondary);
    max-width:650px;
   line-height:1.6;
-  text-align: left;
+ text-align: start;
+}
+@media (max-width: 768px) {
+  .favorites-header h1 {
+    font-size: 32px;
+  }
+
+  .favorites-header p {
+    font-size: 14px;
+  }
+
+  .files-container {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .favorites-header h1 {
+    font-size: 26px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 4px 10px;
+  }
 }

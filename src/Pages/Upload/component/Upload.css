@@ -205,3 +205,26 @@ body {
   font-size: 12px;
   margin-top: 6px;
 }
+@media (max-width: 768px) {
+  .upload-page {
+    flex-direction: column;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    margin: 10px 0;
+  }
+
+  .upload-form {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .right-section {
+    width: 100%;
+  }
+
+  .left-section {
+    width: 100%;
+  }
+}
