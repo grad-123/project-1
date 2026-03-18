@@ -61,6 +61,7 @@ console.log(currentUser);
 
 function Admin() {
   const { t } = useTranslation();
+  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
   const [activeTab, setActiveTab] = useState("Pending");
   const [activeSection, setActiveSection] = useState("dashboard");
   const [files, setFiles] = useState([ ]);
@@ -434,7 +435,7 @@ const filterFiles = files.filter((file) => {
   
   return file.status === statusMapReverse[activeTab];
 });
- const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
+ 
 
   return (
     <div className="admin-container">
