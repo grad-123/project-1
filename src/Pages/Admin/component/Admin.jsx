@@ -503,12 +503,13 @@ const filterFiles = files.filter((file) => {
       </div>
     </div>
   </div>
-
+{(currentUser?.permissions?.ManageFiles || currentUser?.permissions?.SuperAdmin) && (
   <div className="review-alert">
      <div className="stat-icon">⚠️</div>
     <p>{stats.pendingFilesCount} {t("admin.dashboard.reviewMessage")}</p>
       <button onClick={handleReviewNow}>{t("admin.dashboard.reviewNow")}</button>
-  </div>
+  </div> )}
+
 </div>
 
 </div>
