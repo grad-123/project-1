@@ -19,14 +19,12 @@
   border-radius: 8px;
   text-decoration: none;
 }
-/* Tablet */
 @media (max-width: 900px) {
   .notfound h1 {
     font-size: 70px;
   }
 }
 
-/* Mobile */
 @media (max-width: 600px) {
   .notfound {
     height: 80vh;

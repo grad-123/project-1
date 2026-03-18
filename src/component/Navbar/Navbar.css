@@ -80,7 +80,6 @@
   color: var(--primary);
 }
 
-/* Mobile */
 @media (max-width: 600px) {
   .navbar {
     flex-direction: column;
@@ -92,7 +91,6 @@
     font-size: 18px;
   }
 
-  /* ترتيب الروابط في شبكة سهلة الضغط */
   .nav-link {
     display: grid;
     width: 100%;
