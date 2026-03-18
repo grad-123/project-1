@@ -620,3 +620,109 @@ cursor:pointer;
 .review-alert button:hover {
   background: #d97706;
 }
+
+/* Tablet */
+@media (max-width: 992px) {
+
+  .admin-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .sidebar button {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .admin-content {
+    padding: 20px;
+  }
+
+  .admin-inner {
+    max-width: 100%;
+  }
+
+  .users-section {
+    flex-direction: column;
+    margin-right: 0;
+  }
+
+  .users-list {
+    width: 100%;
+  }
+
+  .user-details {
+    max-width: 100%;
+  }
+
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  .additional-stats {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+  .admin {
+    padding: 20px;
+  }
+
+  table {
+    font-size: 13px;
+  }
+
+  th, td {
+    padding: 10px;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .course-boxs,
+  .category-boxs {
+    padding: 15px;
+  }
+
+  .course-boxs button,
+  .category-boxs button {
+    width: 100%;
+  }
+
+  .course-list li,
+  .category-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .buttons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .review-alert {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .ban-btn,
+  .unban-btn {
+    margin-left: 0;
+  }
+
+}

@@ -72,3 +72,19 @@ body {
   transform: translateY(0px);
   opacity: 0.8;
 }
+
+@media (max-width: 600px) {
+
+  .check-email-card {
+    padding: 30px 25px;
+  }
+
+  .check-email-card h2 {
+    font-size: 22px;
+  }
+
+  .check-email-card p {
+    font-size: 14px;
+  }
+
+}

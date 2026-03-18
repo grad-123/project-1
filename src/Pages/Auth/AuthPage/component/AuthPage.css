@@ -114,3 +114,48 @@ html[dir="rtl"] .auth-switch button {
   margin-left: 0;
   margin-right: 6px;
 }
+
+/* Tablet */
+@media (max-width: 900px) {
+
+  .auth-container {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-image-side {
+    min-height: 300px;
+  }
+
+  .auth-form-side {
+    padding: 40px;
+    align-items: center;
+  }
+
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+  .auth-image-side {
+    display: none;
+  }
+
+  .auth-container {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-form-side {
+    padding: 25px;
+    min-height: 100vh;
+    align-items: center;
+  }
+
+  .auth-content {
+    max-width: 100%;
+  }
+
+  .brand {
+    font-size: 32px;
+  }
+
+}

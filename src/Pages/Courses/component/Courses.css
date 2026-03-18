@@ -78,3 +78,34 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   background-color: #c0e0ff;
 }
+@media (max-width: 768px) {
+  .courses-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .courses-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .courses-title {
+    font-size: 22px;
+  }
+  .course-description {
+    font-size: 16px;
+  }
+  .course-info h3 {
+    font-size: 16px;
+  }
+  .course-info p {
+    font-size: 12px;
+  }
+}
+@media (max-width: 480px) {
+  .course-box {
+    height: auto;
+    padding: 15px;
+  }
+}

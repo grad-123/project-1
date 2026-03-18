@@ -75,6 +75,16 @@ function ResetPassword() {
     }
   };
 
+useEffect(() => {
+  if (message || error) {
+    const timer = setTimeout(() => {
+      setMessage("");
+      setError("");
+    }, 3000);
+    return () => clearTimeout(timer);
+  }
+}, [message, error]);
+
   return (
     <div className="reset-container">
       <h2>{t("reset.title")}</h2>

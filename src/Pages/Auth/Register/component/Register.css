@@ -96,6 +96,7 @@ html[dir="rtl"] .icon {
 }
 .register-btn:hover {
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+opacity: 0.9;
 }
 
 .register-btn:active {
@@ -107,9 +108,7 @@ html[dir="rtl"] .icon {
   outline: none;
   box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.4);
 }
-.register-btn:hover {
-  opacity: 0.9;
-}
+
 
 .register-footer {
   margin-top: 30px;
@@ -137,4 +136,20 @@ html[dir="rtl"] .icon {
   margin-bottom: 15px;
   color: #ef4444;
   font-weight: 500;
+}
+
+@media (max-width: 600px) {
+
+  .register-box {
+    max-width: 100%;
+  }
+
+  .input-field input {
+    font-size: 13px;
+  }
+
+  .register-btn {
+    padding: 11px;
+  }
+
 }

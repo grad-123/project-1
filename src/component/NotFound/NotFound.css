@@ -19,3 +19,35 @@
   border-radius: 8px;
   text-decoration: none;
 }
+/* Tablet */
+@media (max-width: 900px) {
+  .notfound h1 {
+    font-size: 70px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .notfound {
+    height: 80vh;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .notfound h1 {
+    font-size: 55px;
+  }
+
+  .notfound h2 {
+    font-size: 20px;
+  }
+
+  .notfound p {
+    font-size: 14px;
+  }
+
+  .home-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}

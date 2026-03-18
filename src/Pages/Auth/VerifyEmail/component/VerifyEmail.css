@@ -4,8 +4,33 @@
   color: var(--text-secondary);
   margin-top: 20px;
 }
-
+.register-box {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px;
+   box-sizing: border-box;
+  padding-left: 10px;
+  padding-right: 10px;
+}
 .verify-error {
   color: #e74c3c;
   font-weight: 500;
+}
+
+.verify-message,
+.verify-error {
+  font-size: 1rem;
+}
+
+@media (max-width: 480px) {
+  .verify-message,
+  .verify-error {
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 480px) {
+  .register-box {
+    padding: 15px;
+  }
 }

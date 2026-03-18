@@ -94,7 +94,6 @@ html[dir="rtl"] .icon {
   text-align: center;
   display: block;
   margin-top: 15px;
-  margin-top: 15px;
   font-size: 13px;
   color: var(--primary);
   cursor: pointer;
@@ -113,4 +112,20 @@ html[dir="rtl"] .icon {
 }
 .google-btn {
   margin-top: 30px;
+}
+
+@media (max-width: 600px) {
+
+  .login-box {
+    width: 100%;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .login-btn {
+    padding: 11px;
+  }
+
 }

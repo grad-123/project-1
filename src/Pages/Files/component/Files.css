@@ -187,3 +187,48 @@
     text-align: center;
   }
 }
+@media (max-width: 768px) {
+  .files-container {
+    width: 95%;
+    margin-top: 20px;
+  }
+}
+@media (max-width: 768px) {
+  .file-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .file-info {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .file-footer {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+@media (max-width: 480px) {
+  .download-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .tabs button {
+    flex: 0 0 48%;
+    margin-bottom: 8px;
+  }
+}
+@media (max-width: 768px) {
+  .files-title { font-size: 24px; }
+  .files-description { font-size: 16px; }
+  .file-title { font-size: 16px; }
+}
+
+@media (max-width: 480px) {
+  .files-title { font-size: 20px; }
+  .files-description { font-size: 14px; }
+  .file-title { font-size: 14px; }
+}

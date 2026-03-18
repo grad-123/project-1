@@ -13,6 +13,7 @@ function Register() {
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [user, setUser] = useState({
     fullName: "",
     email: "",
@@ -225,18 +226,18 @@ function Register() {
             <FaLock className="icon" />
 
             <input
-              type={showPassword ? "text" : "password"}
+              type={showConfirmPassword ? "text" : "password"}
               value={user.confirmPassword}
               name="confirmPassword"
               onChange={handleChange}
               placeholder="••••••••"
             />
-             <button
+            <button
               type="button"
               className="show-btn"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
 

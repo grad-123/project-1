@@ -79,3 +79,60 @@
   background: var(--primary-dark);
   color: var(--primary);
 }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  /* ترتيب الروابط في شبكة سهلة الضغط */
+  .nav-link {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  .nav-link a {
+    font-size: 14px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-main);
+    text-align: center;
+    transition: 0.2s;
+  }
+
+  .nav-link a:hover {
+    background-color: var(--primary);
+    color: var(--text-light);
+  }
+
+  .nav-right {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .icon-btn {
+    font-size: 20px;
+    padding: 6px;
+  }
+
+  .signin-btn {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}

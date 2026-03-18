@@ -347,3 +347,56 @@ html[dir="ltr"] .search-icon {
   text-align:center;
   color:var(--text-secondary);
 }
+@media (max-width: 768px) {
+  .categories-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-container {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .filters select {
+    width: 100%;
+  }
+}
+@media (max-width: 480px) {
+  .search-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-btn {
+    width: 100%;
+  }
+}
+@media (max-width: 480px) {
+  .file-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .file-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+}
+@media (max-width: 480px) {
+  .browse-title {
+    font-size: 22px;
+  }
+
+  .file-title {
+    font-size: 16px;
+  }
+
+  .file-description {
+    font-size: 13px;
+  }
+}

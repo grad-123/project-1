@@ -89,3 +89,25 @@
   color: #ef4444;
   margin-top: 15px;
 }
+
+@media (max-width: 600px) {
+
+  .check-card {
+    padding: 25px;
+    border-radius: 18px;
+  }
+
+  .check-buttons {
+    flex-direction: column;
+  }
+
+  .check-btn {
+    width: 100%;
+  }
+
+  .check-input {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+}
