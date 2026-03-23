@@ -168,7 +168,7 @@ const rejectFile = async (id) => {
     console.error("Error fetching categories:", error);
   }
 };const fetchCourses = async () => {
-  if (!selectedCategory) return; // ما ننفذ إذا ما فيه كاتيجوري
+  if (!selectedCategory) return; 
   try {
     const response = await axios.get(`/Api/Course/GetList/${selectedCategory}`);
     if (response.data.succeeded) {

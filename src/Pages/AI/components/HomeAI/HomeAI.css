@@ -1,0 +1,137 @@
+.ai-home {
+  max-width: 1000px;
+  margin-left: auto;   
+  margin-right: 50px;  
+  padding: 10px;
+  color: var(--text-main);
+  min-height: 100vh;
+  padding-bottom: 200px;
+  box-sizing: border-box;
+}
+ .ai-banner {
+  background: linear-gradient(135deg, #2c4a7a, var(--primary));
+  border-radius: 16px;
+  padding: 35px 25px;
+   color: var(--text-light);
+  margin-bottom: 25px;
+  text-align: center;
+}
+ .banner-content h2 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  color: white;
+}
+ .banner-content p {
+  margin: 10px 0;
+  opacity: 0.9;
+  font-size: 14px;
+  color: white;
+}
+ .tags {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.tags span {
+  background: rgba(255,255,255,0.15);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+  color: white;
+}
+.tags span:hover {
+  background: rgba(255,255,255,0.25);
+}
+.section-title {
+  margin: 25px 0 12px;
+  font-size: 12px;
+   color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-align: start; 
+}
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 30px; 
+}
+.card {
+  background: var(--bg-card);
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid var(--input-border);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--text-main); 
+}
+.card p {
+    color: var(--text-secondary);
+}
+.card .emoji {
+  font-size: 25px;       
+  margin-right: 8px;     
+  vertical-align: middle; 
+}
+.capabilities {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 50px; 
+}
+.cap-card {
+  background: var(--bg-card);
+  direction: var(--dir, ltr);  
+  text-align: var(--text-align, left); 
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  color: var(--text-main);
+   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+   position: relative;
+  padding-inline-start: 60px;
+  
+}
+.cap-card strong {
+ color: var(--text-main);
+} 
+.text-content strong {
+  display: block;
+  margin-bottom: 5px;
+}
+.cap-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+} 
+.number-badge {
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  background: var(--primary);
+  border-radius: 8px;
+  text-align: center;
+  line-height: 35px;
+  font-weight: bold;
+
+  position: absolute;
+  inset-inline-start: 15px; 
+  top: 50%;
+  transform: translateY(-50%);
+}
+[dir="rtl"] .cap-card {
+  text-align: right;
+  align-items: flex-end;
+  padding-inline-start: 18px;
+  padding-inline-end: 60px;
+}
+
+[dir="rtl"] .number-badge {
+  inset-inline-start: auto;
+  inset-inline-end: 15px;
+}

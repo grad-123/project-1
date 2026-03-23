@@ -403,5 +403,30 @@
       "second": "Resources"
     },
     "subtitle": "Manage your personalized collection of AI summaries, course notes, and research materials for quick academic reference."
-  }
+  },
+  "aiHome": {
+  "title": "Your Intelligent Learning Assistant",
+  "description": "Ask questions about your study materials, get instant answers, and generate comprehensive summaries — all in one place.",
+  "whatYouCanDo": "WHAT YOU CAN DO",
+  "capabilities": "AI CAPABILITIES",
+
+  "cards": {
+    "instant": "Instant Answers",
+    "instantDesc": "Get concise answers from your study files in seconds",
+    "summary": "Smart Summaries",
+    "summaryDesc": "AI-generated summaries saved for future reference",
+    "context": "Context-Aware",
+    "contextDesc": "Answers are based on your actual file content",
+    "types": "All File Types",
+    "typesDesc": "Works with lectures, exams, books & assignments"
+  },
+    "cap": {
+    "deep": "Deep File Understanding",
+    "deepDesc": "Upload any study file and AI reads through it completely, understanding context, terminology, and structure before answering",
+    "qa": "Accurate Q&A",
+    "qaDesc": "Ask specific questions about your material and receive grounded, precise answers-never hallucinated ,always sourced from your file",
+    "summary": "One-Click Summaries",
+    "summaryDesc": "Generate a structured summary of any file instantly.Summaries are saved so you never have to regenerate for the same file"
+  } 
+}
 }
