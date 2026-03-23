@@ -1,5 +1,6 @@
 import "./Theme.css";
 import React from "react";
+import Chat from "./Pages/AI/components/chat/Chat";
 import AuthPage from "./Pages/Auth/AuthPage/component/AuthPage";
 import Admin from "./Pages/Admin/component/Admin";
 import {
@@ -60,13 +61,17 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "ai",
-        element: (
-          <ProtectedRoutes>
-          <AI />
-          </ProtectedRoutes>
-        ),
-      },
+  path: "ai",
+  element: (
+    //<ProtectedRoutes>
+    <AI />
+    //</ProtectedRoutes>
+  ),
+  children: [
+    { index: true, element: <div>Select a file</div> },
+    { path: "file/:id", element: <Chat /> },
+  ],
+},
 
       {
         path: "auth",
