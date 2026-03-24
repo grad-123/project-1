@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* AI.css */
 .ai-wrapper {
   display: flex;
@@ -16,4 +17,17 @@
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+=======
+.ai-page {
+  display: flex;
+  flex: 1;
+  min-height: 0; /* مهم جداً مع flex */
+  overflow: hidden;
+}
+
+.ai-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+>>>>>>> 4fbe4713aa8879bbc94d5d634be64455be0a6db0
 }

@@ -1,6 +1,7 @@
 import "./Theme.css";
 import React from "react";
 import Chat from "./Pages/AI/components/chat/Chat";
+import HomeAI from "./Pages/AI/components/HomeAI/HomeAI";
 import AuthPage from "./Pages/Auth/AuthPage/component/AuthPage";
 import Admin from "./Pages/Admin/component/Admin";
 import {
@@ -68,7 +69,7 @@ const router = createBrowserRouter([
     //</ProtectedRoutes>
   ),
   children: [
-    { index: true, element: <div>Select a file</div> },
+    { index: true,  element: <HomeAI/> },
     { path: "file/:id", element: <Chat /> },
   ],
 },
