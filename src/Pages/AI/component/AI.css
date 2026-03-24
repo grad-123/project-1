@@ -1,33 +1,48 @@
-<<<<<<< HEAD
-/* AI.css */
 .ai-wrapper {
   display: flex;
-  flex: 1;             /* يأخذ كل المساحة المتاحة بين Navbar وFooter */
-  overflow: hidden;
+  flex: 1;      
+  min-height: 0;
 }
 
 .ai-sidebar {
   width: 220px;         
   border-right: 1px solid #ccc;
   background-color: #f8f8f8;
-  overflow-y: auto;     /* scrollbar مستقل */
+  overflow-y: auto; 
 }
 
 .ai-content {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-=======
+}
 .ai-page {
   display: flex;
-  flex: 1;
-  min-height: 0; /* مهم جداً مع flex */
-  overflow: hidden;
+  flex-direction: column;  
+  min-height: 100vh;       
 }
 
 .ai-content {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
->>>>>>> 4fbe4713aa8879bbc94d5d634be64455be0a6db0
+}
+@media (max-width: 1024px) {
+  .ai-wrapper {
+    flex-direction: column; 
+  }
+
+  .ai-sidebar {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--input-border);
+  }
+}
+
+@media (max-width: 600px) {
+  .ai-content {
+    padding: 10px;
+  }
 }

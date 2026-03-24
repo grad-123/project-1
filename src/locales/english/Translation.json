@@ -428,5 +428,9 @@
     "summary": "One-Click Summaries",
     "summaryDesc": "Generate a structured summary of any file instantly.Summaries are saved so you never have to regenerate for the same file"
   } 
+},
+"sidebar":{
+  "AI Assistant":"AI Assistant",
+  "title":"Study Files"
 }
 }

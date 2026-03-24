@@ -1,9 +1,11 @@
 import "./Sidebar.css";
+import { FaRobot } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "../../../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
-
+import { useTranslation } from "react-i18next";
 function Sidebar() {
+  const { t } = useTranslation();
   const [files, setFiles] = useState([]);
   const [categories, setCategories] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -19,7 +21,6 @@ function Sidebar() {
 
   const navigate = useNavigate();
 
-  // ===== جلب كل الملفات بدون باراميتر =====
   const getAllFiles = async () => {
     try {
       const res = await axios.get("/Api/EduFile/Search");
@@ -29,7 +30,6 @@ function Sidebar() {
     }
   };
 
-  // ===== جلب الكاتيجوري =====
   useEffect(() => {
     axios
       .get("/api/v1/Category/GetList")
@@ -37,7 +37,6 @@ function Sidebar() {
       .catch((err) => console.log(err));
   }, []);
 
-  // ===== جلب الكورسات حسب الكاتيجوري =====
   useEffect(() => {
     if (!categoryId) {
       setCourses([]);
@@ -51,13 +50,15 @@ function Sidebar() {
       .catch((err) => console.log(err));
   }, [categoryId]);
 
-  // ===== تحميل كل الملفات أول ما الصفحة تفتح =====
   useEffect(() => {
     getAllFiles();
   }, []);
 
-  // ===== البحث مع الفلاتر =====
   const handleSearch = async () => {
+    if (!searchTerm && !categoryId && !courseId) {
+      setMessage(t("browse.enterKeyword"));
+      return;
+    }
     try {
       const res = await axios.get("/Api/EduFile/Search", {
         params: {
@@ -71,34 +72,34 @@ function Sidebar() {
       });
 
       setFiles(res.data.data || []);
+      setMessage("");
     } catch (err) {
       console.log(err);
-      setMessage("Search error");
+      setMessage(t("alerts.failText"));
     }
   };
 
-  // ===== تشغيل البحث عند تغيير الفلاتر =====
-  useEffect(() => {
-    handleSearch();
-  }, [categoryId, courseId, fileType, orderBy, isDescending]);
-
   return (
     <div className="ai-sidebar">
+      <div className="sidebar-header">
+        <FaRobot size={32} className="sidebar-icon" />
+        <h2 className="sidebar-title">{t("sidebar.AI Assistant")}</h2>
+      </div>
+
       <div className="search-wrapper">
         <input
           type="text"
-          placeholder="Search files..."
+          placeholder={t("browse.searchPlaceholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 
-        <button onClick={handleSearch}>Search</button>
+        <button onClick={handleSearch}>{t("browse.searchButton")}</button>
       </div>
 
       <div className="filters">
         <select onChange={(e) => setCategoryId(e.target.value)}>
-          <option value="">All Categories</option>
-
+          <option value="">{t("browse.allCategories")}</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
@@ -111,8 +112,7 @@ function Sidebar() {
           onChange={(e) => setCourseId(e.target.value)}
           disabled={!categoryId}
         >
-          <option value="">Courses</option>
-
+          <option value="">{t("browse.courses")}</option>
           {courses.map((course) => (
             <option key={course.id} value={course.id}>
               {course.name}
@@ -121,30 +121,29 @@ function Sidebar() {
         </select>
 
         <select onChange={(e) => setFileType(e.target.value)}>
-          <option value="">All Types</option>
-          <option value="0">Lecture</option>
-          <option value="1">Slides</option>
-          <option value="2">Summary</option>
-          <option value="3">Exam</option>
-          <option value="4">Assignment</option>
-          <option value="5">Book</option>
-          <option value="6">Other</option>
+          <option value="">{t("browse.allTypes")}</option>
+          <option value="0">{t("browse.types.lecture")}</option>
+          <option value="1">{t("browse.types.slides")}</option>
+          <option value="2">{t("browse.types.summary")}</option>
+          <option value="3">{t("browse.types.exam")}</option>
+          <option value="4">{t("browse.types.assignment")}</option>
+          <option value="5">{t("browse.types.book")}</option>
+          <option value="6">{t("browse.types.other")}</option>
         </select>
 
         <select onChange={(e) => setOrderBy(e.target.value)}>
-          <option value="">Order</option>
-          <option value="0">Most Downloaded</option>
-          <option value="1">Newest</option>
+          <option value="0">{t("browse.order.mostDownloaded")}</option>
+          <option value="1">{t("browse.order.newest")}</option>
         </select>
 
         <select onChange={(e) => setIsDescending(e.target.value === "true")}>
-          <option value="true">Descending</option>
-          <option value="false">Ascending</option>
+          <option value="true">{t("browse.descending")}</option>
+          <option value="false">{t("browse.ascending")}</option>
         </select>
       </div>
 
       {message && <p className="message">{message}</p>}
-
+        <h3 className="subtitle">{t("sidebar.title")}</h3>
       <div className="files">
         {files.map((file) => (
           <div
