@@ -22,26 +22,29 @@ export default function FavoriteFileCard({
 }) {
   const { t } = useTranslation();
 
-const handleDownload = async () => {
-  try {
-    const response = await axios.get(`/Api/EduFile/Download/${file.id || file.eduFileId}`, {
-      responseType: "blob",
-    });
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(
+        `/Api/EduFile/Download/${file.id || file.eduFileId}`,
+        {
+          responseType: "blob",
+        },
+      );
 
-    const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
+      const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
 
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = file.filePath.split("/").pop();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = file.filePath.split("/").pop();
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-    window.URL.revokeObjectURL(fileUrl);
-  } catch (err) {
-    console.log("Download error:", err);
-  }
-};
+      window.URL.revokeObjectURL(fileUrl);
+    } catch (err) {
+      console.log("Download error:", err);
+    }
+  };
   return (
     <div className="file-card">
       <div
@@ -69,7 +72,14 @@ const handleDownload = async () => {
           {file.fileType === 6 && "📁"}
         </div>
         <div className="file-details">
-          <h3 className="file-title">{file.title}</h3>
+          <h3
+            className="file-title clickable"
+            onClick={() =>
+              window.open(`${serverUrl}${file.filePath}`, "_blank")
+            }
+          >
+            {file.title}
+          </h3>{" "}
           <span className="file-type">{fileTypeText[file.fileType]}</span>
           <p className="file-description">{file.description}</p>
           <div className="file-meta">
@@ -79,7 +89,9 @@ const handleDownload = async () => {
           <div className="file-footer">
             <span>👤 {file.uploadedByUserName}</span>
             <span>⬇ {file.downloadCount}</span>
-            <span>📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}</span>
+            <span>
+              📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}
+            </span>
           </div>
         </div>
       </div>
@@ -88,7 +100,9 @@ const handleDownload = async () => {
         {file.fileType === 0 && (
           <button
             className="download-btn"
-            onClick={() => window.open(`${serverUrl}${file.filePath}`, "_blank")}
+            onClick={() =>
+              window.open(`${serverUrl}${file.filePath}`, "_blank")
+            }
           >
             {t("browse.watchVideo")}
           </button>
