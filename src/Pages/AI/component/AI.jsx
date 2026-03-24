@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 function AI() {
   return (
-    <div className="ai-page">
+    <div className="ai-wrapper">
       <Sidebar />
 
       <div className="ai-content">

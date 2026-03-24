@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Browse.css";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
 import axios from "../../../api/axiosInstance";
 import { FaSearch } from "react-icons/fa";
 import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
@@ -223,7 +224,11 @@ function Browse() {
                 </option>
               ))}
             </select>
-            <select onChange={(e) => setFileType(e.target.value)}>
+            <select
+              onChange={(e) =>
+                setFileType(e.target.value === "" ? "" : Number(e.target.value))
+              }
+            >
               <option value="">{t("browse.allTypes")}</option>
               <option value="0">{t("browse.types.lecture")}</option>
               <option value="1">{t("browse.types.slides")}</option>

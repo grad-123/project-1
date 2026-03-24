@@ -1,4 +1,19 @@
-.ai-page{
-display:flex;
-height:100vh;
+/* AI.css */
+.ai-wrapper {
+  display: flex;
+  flex: 1;             /* يأخذ كل المساحة المتاحة بين Navbar وFooter */
+  overflow: hidden;
+}
+
+.ai-sidebar {
+  width: 220px;         
+  border-right: 1px solid #ccc;
+  background-color: #f8f8f8;
+  overflow-y: auto;     /* scrollbar مستقل */
+}
+
+.ai-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
 }
