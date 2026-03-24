@@ -8,23 +8,17 @@ import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
 function Files() {
   const [message, setMessage] = useState("");
   const [activeType, setActiveType] = useState("all");
+  const [sortBy, setSortBy] = useState("none"); 
   const { t } = useTranslation();
   const { courseId } = useParams();
   const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  const filteredFiles =
-    activeType === "all"
-      ? files
-      : files.filter((file) => file.fileType === Number(activeType));
-
   useEffect(() => {
     axios
       .get(`/Api/EduFile/GetByCourseId/${courseId}`)
-      .then((res) => {
-        setFiles(res.data.data);
-      })
+      .then((res) => setFiles(res.data.data))
       .catch((err) => console.log(err));
   }, [courseId]);
 
@@ -33,10 +27,7 @@ function Files() {
     if (!token) return;
     axios
       .get("/Favorite/Getlist")
-      .then((res) => {
-        const favIds = res.data.data.map((f) => f.eduFileId);
-        setFavorites(favIds);
-      })
+      .then((res) => setFavorites(res.data.data.map(f => f.eduFileId)))
       .catch((err) => console.log(err));
   }, []);
 
@@ -45,7 +36,7 @@ function Files() {
     if (!token) return;
     try {
       await axios.post(`/Favorite/Add/${fileId}`);
-      setFavorites((prev) => [...prev, fileId]);
+      setFavorites(prev => [...prev, fileId]);
     } catch (err) {
       console.log(err);
     }
@@ -56,7 +47,7 @@ function Files() {
     if (!token) return;
     try {
       await axios.delete(`/Favorite/Delete/${fileId}`);
-      setFavorites((prev) => prev.filter((id) => id !== fileId));
+      setFavorites(prev => prev.filter(id => id !== fileId));
     } catch (err) {
       console.log(err);
     }
@@ -65,22 +56,20 @@ function Files() {
   const toggleFavorite = (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      setMessage(t("files.loginMessage")); 
+      setMessage(t("files.loginMessage"));
       return;
     }
-    if (favorites.includes(fileId)) {
-      removeFavorite(fileId);
-    } else {
-      addFavorite(fileId);
-    }
+    favorites.includes(fileId) ? removeFavorite(fileId) : addFavorite(fileId);
   };
 
   const handleDownload = async (fileId, filePath) => {
     try {
       await axios.get(`/Api/EduFile/Download/${fileId}`);
-      setFiles((prevFiles) =>
-        prevFiles.map((f) =>
-          f.id === fileId ? { ...f, downloadCount: f.downloadCount + 1 } : f
+      setFiles(prevFiles =>
+        prevFiles.map(f =>
+          f.id === fileId || f.eduFileId === fileId
+            ? { ...f, downloadCount: f.downloadCount + 1 }
+            : f
         )
       );
       window.open(`${serverUrl}${filePath}`, "_blank");
@@ -100,14 +89,21 @@ function Files() {
     { id: 6, name: t("files.other"), icon: "📁" },
   ];
 
+  const displayedFiles = [...files]
+    .filter(f => activeType === "all" || f.fileType === Number(activeType))
+    .sort((a, b) => {
+      if (sortBy === "mostDownloaded") return b.downloadCount - a.downloadCount;
+      if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+      return 0;
+    });
+
   return (
     <div className="files-container">
       <h2 className="files-title">{t("files.title")}</h2>
       <p className="files-description">{t("files.description")}</p>
 
-
       <div className="tabs">
-        {fileTypes.map((type) => (
+        {fileTypes.map(type => (
           <button
             key={type.id}
             className={activeType === type.id ? "active" : ""}
@@ -116,17 +112,33 @@ function Files() {
             {type.icon} {type.name} (
             {type.id === "all"
               ? files.length
-              : files.filter((f) => f.fileType === type.id).length}
+              : files.filter(f => f.fileType === type.id).length}
             )
           </button>
         ))}
       </div>
+
+      <div className="sort-buttons">
+        <button
+          className={sortBy === "newest" ? "active" : ""}
+          onClick={() => setSortBy("newest")}
+        >
+          🆕 {t("files.newest")}
+        </button>
+        <button
+          className={sortBy === "mostDownloaded" ? "active" : ""}
+          onClick={() => setSortBy("mostDownloaded")}
+        >
+          📈 {t("files.mostDownloaded")}
+        </button>
+      </div>
+
       {message && <div className="message">{message}</div>}
 
-      {filteredFiles.length === 0 ? (
+      {displayedFiles.length === 0 ? (
         <p>{t("files.noFiles")}</p>
       ) : (
-        filteredFiles.map((file) => (
+        displayedFiles.map(file => (
           <FavoriteFileCard
             key={file.id || file.eduFileId}
             file={file}
@@ -134,7 +146,7 @@ function Files() {
             toggleFavorite={toggleFavorite}
             handleDownload={handleDownload}
             serverUrl={serverUrl}
-            setMessage={setMessage} 
+            setMessage={setMessage}
           />
         ))
       )}

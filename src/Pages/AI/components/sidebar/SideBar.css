@@ -72,7 +72,6 @@
   padding-right: 4px;
 }
 
-/* ===== file item ===== */
 .file-item {
   display: flex;
   gap: 10px;
@@ -107,14 +106,14 @@
   color: var(--text-secondary);
 }
 
-.filters {
+.filterss {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 15px;
 }
 
-.filters select {
+.filterss select {
   width: 100%;
   padding: 6px 8px;
   border-radius: 6px;
@@ -125,7 +124,7 @@
   cursor: pointer;
 }
 
-.filters select:focus {
+.filterss select:focus {
   outline: none;
   border-color: var(--primary);
 }

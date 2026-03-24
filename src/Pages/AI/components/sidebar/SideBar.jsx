@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "../../../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
 function Sidebar() {
   const { t } = useTranslation();
   const [files, setFiles] = useState([]);
@@ -16,7 +17,7 @@ function Sidebar() {
   const [categoryId, setCategoryId] = useState("");
   const [courseId, setCourseId] = useState("");
   const [fileType, setFileType] = useState("");
-  const [orderBy, setOrderBy] = useState("");
+  const [orderBy, setOrderBy] = useState("0"); 
   const [isDescending, setIsDescending] = useState(true);
 
   const navigate = useNavigate();
@@ -43,7 +44,6 @@ function Sidebar() {
       setCourseId("");
       return;
     }
-
     axios
       .get(`/Api/Course/GetList/${categoryId}`)
       .then((res) => setCourses(res.data.data || []))
@@ -55,10 +55,6 @@ function Sidebar() {
   }, []);
 
   const handleSearch = async () => {
-    if (!searchTerm && !categoryId && !courseId) {
-      setMessage(t("browse.enterKeyword"));
-      return;
-    }
     try {
       const res = await axios.get("/Api/EduFile/Search", {
         params: {
@@ -66,12 +62,26 @@ function Sidebar() {
           CategoryId: categoryId || undefined,
           CourseId: courseId || undefined,
           FileType: fileType || undefined,
-          OrderBy: orderBy || undefined,
-          IsDescending: isDescending,
         },
       });
+      let data = res.data.data || [];
 
-      setFiles(res.data.data || []);
+      data = data.sort((a, b) => {
+        if (orderBy === "0") {
+          return isDescending
+            ? b.downloadCount - a.downloadCount
+            : a.downloadCount - b.downloadCount;
+        }
+        if (orderBy === "1") {
+          // Newest
+          return isDescending
+            ? new Date(b.createdAt) - new Date(a.createdAt)
+            : new Date(a.createdAt) - new Date(b.createdAt);
+        }
+        return 0;
+      });
+
+      setFiles(data);
       setMessage("");
     } catch (err) {
       console.log(err);
@@ -93,11 +103,10 @@ function Sidebar() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-
         <button onClick={handleSearch}>{t("browse.searchButton")}</button>
       </div>
 
-      <div className="filters">
+      <div className="filterss">
         <select onChange={(e) => setCategoryId(e.target.value)}>
           <option value="">{t("browse.allCategories")}</option>
           {categories.map((cat) => (
@@ -143,7 +152,8 @@ function Sidebar() {
       </div>
 
       {message && <p className="message">{message}</p>}
-        <h3 className="subtitle">{t("sidebar.title")}</h3>
+
+      <h3 className="subtitle">{t("sidebar.title")}</h3>
       <div className="files">
         {files.map((file) => (
           <div
@@ -160,10 +170,8 @@ function Sidebar() {
               {file.fileType === 5 && "📚"}
               {file.fileType === 6 && "📁"}
             </div>
-
             <div className="file-info">
               <h4>{file.title}</h4>
-
               <p className="meta">
                 {file.courseName} • {file.categoryName}
               </p>
