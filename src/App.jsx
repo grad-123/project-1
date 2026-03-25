@@ -1,5 +1,6 @@
 import "./Theme.css";
 import React from "react";
+import Profile from "./Pages/profile/component/Profile";
 import Chat from "./Pages/AI/components/chat/Chat";
 import HomeAI from "./Pages/AI/components/HomeAI/HomeAI";
 import AuthPage from "./Pages/Auth/AuthPage/component/AuthPage";
@@ -35,13 +36,13 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "browse", element: <Browse /> },
-      { path: "courses/:categoryId",element: <Courses />,},
+      { path: "courses/:categoryId", element: <Courses /> },
       { path: "files/:courseId", element: <Files /> },
       {
         path: "admin",
         element: (
           <ProtectedAdmin>
-          <Admin />
+            <Admin />
           </ProtectedAdmin>
         ),
       },
@@ -49,30 +50,38 @@ const router = createBrowserRouter([
         path: "upload",
         element: (
           <ProtectedRoutes>
-          <Upload />
+            <Upload />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <ProtectedRoutes>
+            <Profile />
           </ProtectedRoutes>
         ),
       },
       {
         path: "favorites",
         element: (
-          <ProtectedRoutes>
-          <Favorites />
-          </ProtectedRoutes>
+          //<ProtectedRoutes>
+            <Favorites />
+          //</ProtectedRoutes>
         ),
       },
       {
-  path: "ai",
-  element: (
-    //<ProtectedRoutes>
-    <AI />
-    //</ProtectedRoutes>
-  ),
-  children: [
-    { index: true,  element: <HomeAI/> },
-    { path: "file/:id", element: <Chat /> },
-  ],
-},
+        path: "ai",
+        element: (
+          //<ProtectedRoutes>
+          <AI />
+          //</ProtectedRoutes>
+        ),
+        children: [
+          { index: true, element: <HomeAI /> },
+          { path: "file/:id", element: <Chat /> },
+        ],
+      },
 
       {
         path: "auth",
