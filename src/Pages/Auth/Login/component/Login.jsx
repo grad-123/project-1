@@ -144,10 +144,7 @@ function Login() {
       localStorage.setItem("token", data.data.accessToken);
 
       if (data.data.refreshToken?.tokenString) {
-        localStorage.setItem(
-          "refreshToken",
-          data.data.refreshToken.tokenString,
-        );
+        localStorage.setItem("refreshToken", data.data.refreshToken.tokenString);
       }
 
       const decoded = jwtDecode(data.data.accessToken);
