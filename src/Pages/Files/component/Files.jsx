@@ -11,7 +11,7 @@ function Files() {
   const [sortBy, setSortBy] = useState("none"); 
   const { t } = useTranslation();
   const { courseId } = useParams();
-  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
+  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [favorites, setFavorites] = useState([]);
 

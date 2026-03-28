@@ -128,6 +128,8 @@
       "materialTypeRequired": "اختر نوع المادة",
       "descriptionRequired": "اكتب وصفاً قصيراً",
       "fileRequired": "اختر ملف للرفع",
+      "coursePlaceholder": "اكتب اسم المساق...",
+      "newCourseInfo": "هذا المساق غير موجود – سيتم إرسال طلب لإضافته",
       "categories": {
         "selectCategory": "اختر الفئة",
         "computer_science": "علوم الحاسوب",
@@ -136,6 +138,7 @@
         "business": "الأعمال",
         "engineering": "الهندسة",
         "medicine": "الطب"
+        
       },
       "courses": {
         "selectCourse": "اختر المساق"
@@ -163,11 +166,15 @@
       ]
     },
     "alerts": {
-      "successTitle": "تم رفع الملف بنجاح! 🎉",
-      "successText": "",
-      "failTitle": "فشل رفع الملف ❌",
-      "failText": "حدث خطأ. حاول مرة أخرى.",
-      "ok": "موافق"
+      "courseNotExistTitle": "المساق غير موجود",
+  "courseNotExistText": "هل تريد إرسال طلب لإضافته؟",
+  "yes": "نعم",
+  "cancel": "إلغاء",
+  "successTitle": "تم رفع الملف بنجاح! 🎉",
+  "successText": "",
+  "failTitle": "فشل رفع الملف ❌",
+  "failText": "حدث خطأ. حاول مرة أخرى.",
+  "ok": "موافق"
     }
   },
   "login": {
@@ -319,7 +326,7 @@
       "reject": "رفض",
       "add": "إضافة",
       "edit": "تعديل",
-      "delete": "حذف",
+      "disabled": "حذف",
       "save": "حفظ"
     },
     "dashboard": {

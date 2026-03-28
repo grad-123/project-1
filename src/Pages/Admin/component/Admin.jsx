@@ -61,7 +61,7 @@ console.log(currentUser);
 
 function Admin() {
   const { t } = useTranslation();
-  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
+  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
   const [activeTab, setActiveTab] = useState("Pending");
   const [activeSection, setActiveSection] = useState("dashboard");
   const [files, setFiles] = useState([ ]);
@@ -87,6 +87,8 @@ const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [bannedUsers, setBannedUsers] = useState([]);
+  const [selectedFileId, setSelectedFileId] = useState(null);
+  const [allCourses, setAllCourses] = useState([]);
 
   const statusMap = {
   Pending: "pending",
@@ -155,8 +157,24 @@ const rejectFile = async (id) => {
     console.error("Reject file error:", error);
   }
 };
+const fetchAllCourses = async () => {
+  try {
+    const allResults = await Promise.all(
+      categories.map(cat => axios.get(`/Api/Course/GetList/${cat.id}`))
+    );
+    const merged = allResults.flatMap(res => 
+      res.data.succeeded ? res.data.data : []
+    );
+    setAllCourses(merged);
+  } catch (error) {
+    console.error("Error fetching all courses:", error);
+  }
+};
 
-  
+useEffect(() => {
+  if (categories.length > 0) fetchAllCourses();
+}, [categories]);
+
   const fetchCategories = async () => {
   try {
     const response = await axios.get("/api/v1/Category/GetList");
@@ -167,7 +185,8 @@ const rejectFile = async (id) => {
   } catch (error) {
     console.error("Error fetching categories:", error);
   }
-};const fetchCourses = async () => {
+};
+const fetchCourses = async () => {
   if (!selectedCategory) return; 
   try {
     const response = await axios.get(`/Api/Course/GetList/${selectedCategory}`);
@@ -236,20 +255,31 @@ const addCourse = async () => {
   if (!newCourse.trim() || !selectedCategory) return;
 
   try {
-    const categoryObj = categories.find(cat => cat.id === selectedCategory);
-    const categoryId = categoryObj ? categoryObj.id : selectedCategory;
-
     const response = await axios.post("/Api/Course/Create", {
       name: newCourse,
       description: newCourseDesc,
-      categoryId: categoryId,
+      categoryId: selectedCategory,
+      eduFileId: selectedFileId
     });
 
     if (response.data.succeeded) {
+      
+      // 🔥 اعملي approve للملف
+      if (selectedFileId) {
+        await axios.put(`/Api/EduFile/Approve/${selectedFileId}`);
+      }
+
+      // تحديث
+      fetchFiles();
+      fetchCourses();
+
+      // تنظيف
       setNewCourse("");
       setNewCourseDesc("");
-      await fetchCourses();
+      setSelectedCategory("");
+      setSelectedFileId(null);
     }
+
   } catch (error) {
     console.error("Add Course Error:", error);
   }
@@ -397,6 +427,7 @@ const unbanUser = async (id) => {
     },
   }));
 };
+
   const updateRoles = async () => {
   try {
     const userRoles = selectedUser.roles.map((roleName, index) => ({
@@ -426,6 +457,7 @@ const unbanUser = async (id) => {
 const handleReviewNow = () => {
   setActiveSection("files");
 }
+
 const filterFiles = files.filter((file) => {
   const statusMapReverse = {
     Pending: 0,
@@ -574,8 +606,39 @@ const filterFiles = files.filter((file) => {
 </a>
 </td>
 <td>{file.uploadedByUserName}</td>
-<td>{file.categoryName}</td>
-<td>{file.courseName}</td>
+<td>{file.categoryName}</td> 
+
+<td>
+  {!allCourses.some(c => c.name === file.courseName)&& file.status === 0 ? (
+    <span
+      style={{
+        cursor: "pointer",
+         textDecoration: "underline",
+        color: "red"
+      }}
+      onClick={() => {
+  setActiveSection("courses");
+
+  setNewCourse(file.courseName);
+
+  const category = categories.find(
+    (cat) => cat.name === file.categoryName
+  );
+
+  if (category) {
+    setSelectedCategory(category.id);
+  }
+  setSelectedFileId(file.id);
+}}
+    >
+      {file.courseName || "Unknown Course"}
+    </span>
+  ) : (
+    
+    <span>{file.courseName}</span>
+  )}
+</td>
+  
 <td>{new Date(file.uploadedAt).toLocaleString()}</td>
                         <td>
                        {file.status === 0 ? (
@@ -599,13 +662,14 @@ const filterFiles = files.filter((file) => {
     <span>
      {file.status === 1 ? t("admin.tabs.approved") : t("admin.tabs.rejected")}
     </span>
-
+{file.status === 1 && (
     <button
       className="delete-btn"
       onClick={() => deleteFile(file.id)}
     >
-      {t("admin.buttons.delete")}
-    </button>
+      {t("admin.buttons.disabled")}
+    </button> 
+)}
   </div>
 )}
                         </td>
@@ -676,7 +740,7 @@ const filterFiles = files.filter((file) => {
                             className="delete"
                             onClick={() => deleteCategory(category.id)}
                           >
-                            {t("admin.buttons.delete")}
+                            {t("admin.buttons.disabled")}
                           </button>
                         </div>
                       </>
@@ -758,7 +822,7 @@ const filterFiles = files.filter((file) => {
                             className="delete"
                             onClick={() => deleteCourse(course.id)}
                           >
-                            {t("admin.buttons.delete")}
+                            {t("admin.buttons.disabled")}
                           </button>
                         </div>
                       </>

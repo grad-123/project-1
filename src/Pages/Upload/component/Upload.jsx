@@ -14,6 +14,9 @@ export default function Upload() {
  const { register, handleSubmit, watch, formState: { errors } } = useForm();
  const selectedCategory = watch("category");
    const [selectedFile, setSelectedFile] = useState(null);
+   const [courseInput, setCourseInput] = useState("");
+const [filteredCourses, setFilteredCourses] = useState([]);
+const [isNewCourse, setIsNewCourse] = useState(false);
    const fileTypes = [
   { value: 0, label: "Lecture" },
   { value: 1, label: "Slides" },
@@ -50,42 +53,97 @@ console.log(res.data);
   } catch (error) {
     console.log(error);
   }
+}; 
+const normalizeCourseName = (name) => {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")        // حذف المسافات الزايدة
+    .replace(/s$/, "");          // حذف s من النهاية (Structures → Structure)
 };
 useEffect(() => {
+  // امسحي الكورس المكتوب
+  setCourseInput("");
 
- if (!selectedCategory) {
-   setCourses([]);
-   return;
- }
- fetchCourses(selectedCategory);
+  if (!selectedCategory) {
+    setCourses([]);
+    return;
+  }
+
+  // جيب الكورسات
+  fetchCourses(selectedCategory);
+
 }, [selectedCategory]);
 
-  const onSubmit = async (data) => {
+useEffect(() => {
+  if (!courseInput) {
+    setFilteredCourses([]);
+    setIsNewCourse(false);
+    return;
+  }
+  const filtered = courses.filter(course =>
+   normalizeCourseName(course.name).includes(normalizeCourseName(courseInput))
+  );
+
+  setFilteredCourses(filtered);
+
+const exists = courses.some(
+  c => normalizeCourseName(c.name) === normalizeCourseName(courseInput)
+);  
+
+  setIsNewCourse(!exists);
+}, [courseInput, courses]);
+
+ const onSubmit = async (data) => {
   if (!selectedFile) return;
 
-  const formData = new FormData();
-  formData.append("File", selectedFile);           
-  formData.append("Title", data.materialTitle);    
-  formData.append("Description", data.description); 
-  formData.append("FileType", data.materialType);  
-  formData.append("CourseId", data.course);     
-formData.append("CategoryId", data.category); 
   try {
-    const response = await axios.post("/Api/EduFile/Upload", formData);
-    Swal.fire({
-      title: t("upload.alerts.successTitle"),
-      text: t("upload.alerts.successText"),
-      icon: "success",
-      confirmButtonText: t("upload.alerts.ok"),
-    });
+    let courseId = 0;
+let isNewCourseFlag = false;
+    const existingCourse = courses.find(
+ c => normalizeCourseName(c.name) === normalizeCourseName(courseInput)
+    );
+
+    if (existingCourse) {
+      courseId = existingCourse.id;
+    } else {
+        isNewCourseFlag = true;
+
+const confirm = await Swal.fire({
+  title: t("upload.alerts.courseNotExistTitle"),
+  text: t("upload.alerts.courseNotExistText"),
+  icon: "question",
+  showCancelButton: true,
+  confirmButtonText: t("upload.alerts.yes"),
+  cancelButtonText: t("upload.alerts.cancel"),
+});
+
+      if (!confirm.isConfirmed) return;
+}
+    
+    const formData = new FormData();
+    formData.append("File", selectedFile);
+    formData.append("Title", data.materialTitle);
+    formData.append("Description", data.description);
+    formData.append("FileType", data.materialType);
+    formData.append("CategoryId", data.category);
+if (existingCourse) {
+  formData.append("CourseId",  existingCourse.id);
+}
+else {
+      formData.append("RequestedCourseName", courseInput);
+       const selectedCategoryName = categories.find(cat => cat.id == data.category)?.name;
+formData.append("RequestedCategoryName", selectedCategoryName);
+    }
+    await axios.post("/Api/EduFile/Upload", formData);
+
+    Swal.fire("Success", "File uploaded successfully", "success");
     setSelectedFile(null);
-  } catch (error) {
-    Swal.fire({
-      title: t("upload.alerts.failTitle"),
-      text: t("upload.alerts.failText"),
-      icon: "error",
-      confirmButtonText: t("upload.alerts.oK"),
-    });
+    setCourseInput("");
+
+  } 
+  catch (error) {
+Swal.fire("Error", "Something went wrong", "error");
   }
 };
 
@@ -96,14 +154,15 @@ const handleFileChange = (e) => {
   const removeFile = () => {
     setSelectedFile(null);
   };
-
+const [showSuggestions, setShowSuggestions] = useState(false);
   
-  const isFormComplete = selectedFile &&
-    !errors.materialTitle &&
-    !errors.course &&
-    !errors.category &&
-    !errors.materialType &&
-    !errors.description;
+  const isFormComplete =
+  selectedFile &&
+  courseInput &&
+  !errors.materialTitle &&
+  !errors.category &&
+  !errors.materialType &&
+  !errors.description;
   
   return ( 
      <div className="page-wrapper">
@@ -180,7 +239,7 @@ const handleFileChange = (e) => {
            <select
  {...register("category", { required: "Category required" })}
 >
-<option value="">Select Category</option>
+<option value="">{t("upload.form.categories.selectCategory")}</option>
 
 {categories.map((cat) => (
   <option key={cat.id} value={cat.id}>
@@ -198,20 +257,39 @@ const handleFileChange = (e) => {
 <div className="form-row">
           <div className="form-group">
               <label>{t("upload.form.courseLabel")}</label>
-<select 
-  {...register("course", { required: t("upload.form.courseRequired") })}
-  disabled={!selectedCategory} 
->
-  <option value="">{t("upload.form.courses.selectCourse")}</option>
-  {courses.map((course) => (
-    <option key={course.id} value={course.id}>
-      {course.name}
-    </option>
-  ))}
-</select>
-            {errors.course && (
-              <span className="error">{errors.course.message}</span>
-            )}
+  <input
+    type="text"
+    value={courseInput}
+    onChange={(e) => {setCourseInput(e.target.value)
+      setShowSuggestions(true);
+    }}
+     onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+  onFocus={() => setShowSuggestions(true)}
+    placeholder={t("upload.form.coursePlaceholder")}
+    disabled={!selectedCategory}
+  />
+  {showSuggestions &&filteredCourses.length > 0 && (
+    <ul className="suggestions">
+      {filteredCourses.map((course) => (
+        <li
+          key={course.id}
+          onClick={() => {
+            setCourseInput(course.name);
+            setFilteredCourses([]);
+            setIsNewCourse(false);
+            setShowSuggestions(false);
+          }}
+        >
+          {course.name}
+        </li>
+      ))}
+    </ul>
+  )}
+  {isNewCourse && courseInput && (
+    <span className="info-text">
+     {t("upload.form.newCourseInfo")}
+    </span>
+  )}
           </div>
         
 
@@ -222,7 +300,7 @@ const handleFileChange = (e) => {
  required: t("upload.form.materialTypeRequired"),
 })}
 >
-<option value="">Select Type</option>
+<option value="">{t("upload.form.materialTypes.selectMaterialType")}</option>
 
 {fileTypes.map((type) => (
   <option key={type.value} value={type.value}>

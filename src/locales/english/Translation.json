@@ -126,6 +126,8 @@
       "materialTypeRequired": "Please select a material type",
       "descriptionRequired": "Please write a short description",
       "fileRequired": "Choose a file to upload",
+       "coursePlaceholder": "Type course name...",
+       "newCourseInfo":"This course does not exist – a request to add it will be sent",
       "categories": {
         "selectCategory": "Select Category",
         "computer_science": "Computer Science",
@@ -207,12 +209,16 @@
     "processing": "Creating account..."
   },
   "alerts": {
-    "successTitle": "Success! 🎉",
-    "successText": "The operation was completed successfully.",
-    "failTitle": "Failed ❌",
-    "failText": "Something went wrong. Please try again.",
-    "ok": "OK"
-  },
+  "courseNotExistTitle": "Course does not exist",
+  "courseNotExistText": "Do you want to send a request to add it?",
+  "yes": "Yes",
+  "cancel": "Cancel",
+  "successTitle": "File uploaded successfully! 🎉",
+  "successText": "",
+  "failTitle": "File upload failed ❌",
+  "failText": "Something went wrong. Please try again.",
+  "ok": "OK"
+},
   "validation": {
     "usernameRequired": "Username is required",
     "usernamePattern": "Username can contain letters, numbers and @ + _ . only",
@@ -315,7 +321,7 @@
       "reject": "Reject",
       "add": "Add",
       "edit": "Edit",
-      "delete": "Delete",
+      "disabled": "disabled",
       "save": "Save"
     },
     "dashboard": {
