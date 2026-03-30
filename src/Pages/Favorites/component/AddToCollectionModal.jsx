@@ -16,7 +16,7 @@ function AddToCollectionModal({ isOpen, onClose, collections = [], onAdd, onCrea
     if (!newCollectionName.trim()) return;
     setIsCreating(true);
     try {
-      await axios.post("/api/v1/collection/Create", {
+      await axios.post("api/v1/Collection/CreateLibrary", {
         name: newCollectionName,
         description: newCollectionDesc
       });

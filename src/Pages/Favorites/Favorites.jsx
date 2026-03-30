@@ -10,7 +10,7 @@ import { FaSearch } from "react-icons/fa";
 
 function Favorites() {
   const { t } = useTranslation();
-  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
+  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [filteredFiles, setFilteredFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -65,7 +65,7 @@ function Favorites() {
 
   const fetchCollections = useCallback(async () => {
     try {
-      const res = await axios.get("/api/v1/collection/GetList");
+      const res = await axios.get("api/v1/Collection/GetLibraryCollections");
       if (res.data && res.data.data) {
         setCollections(res.data.data);
       }

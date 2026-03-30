@@ -14,7 +14,7 @@ function CreateCollectionModal({ isOpen, onClose, onSuccess }) {
     if (!name.trim()) return;
     setIsCreating(true);
     try {
-      await axios.post("/api/v1/collection/Create", {
+      await axios.post("api/v1/Collection/CreateLibrary", {
         name: name.trim(),
         description: description.trim()
       });
