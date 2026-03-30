@@ -29,6 +29,24 @@ export default function Upload() {
     { value: 6, label: "Other" },
   ];
   const [categories, setCategories] = useState([]);
+export default function Upload() { 
+   const { t } = useTranslation();
+ const { register, handleSubmit, watch, formState: { errors } } = useForm();
+ const selectedCategory = watch("category");
+   const [selectedFile, setSelectedFile] = useState(null);
+   const [courseInput, setCourseInput] = useState("");
+const [filteredCourses, setFilteredCourses] = useState([]);
+const [isNewCourse, setIsNewCourse] = useState(false);
+   const fileTypes = [
+  { value: 0, label: "Lecture" },
+  { value: 1, label: "Slides" },
+  { value: 2, label: "Summary" },
+  { value: 3, label: "Exam" },
+  { value: 4, label: "Assignment" },
+  { value: 5, label: "Book" },
+  { value: 6, label: "Other" },
+];
+const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetchCategories();
@@ -64,6 +82,89 @@ export default function Upload() {
   const onSubmit = async (data) => {
     if (!selectedFile) return;
 
+ } catch (error) {
+   console.error(error);
+ }
+};
+    const [courses, setCourses] = useState([]);
+    const fetchCourses = async (categoryId) => {
+  try {
+
+    const res = await axios.get(`/Api/Course/GetList/${categoryId}`);
+
+    setCourses(res.data.data);
+
+  } catch (error) {
+    console.log(error);
+  }
+}; 
+const normalizeCourseName = (name) => {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ")        // حذف المسافات الزايدة
+    .replace(/s$/, "");          // حذف s من النهاية (Structures → Structure)
+};
+useEffect(() => {
+  // امسحي الكورس المكتوب
+  setCourseInput("");
+
+  if (!selectedCategory) {
+    setCourses([]);
+    return;
+  }
+
+  // جيب الكورسات
+  fetchCourses(selectedCategory);
+
+}, [selectedCategory]);
+
+useEffect(() => {
+  if (!courseInput) {
+    setFilteredCourses([]);
+    setIsNewCourse(false);
+    return;
+  }
+  const filtered = courses.filter(course =>
+   normalizeCourseName(course.name).includes(normalizeCourseName(courseInput))
+  );
+
+  setFilteredCourses(filtered);
+
+const exists = courses.some(
+  c => normalizeCourseName(c.name) === normalizeCourseName(courseInput)
+);  
+
+  setIsNewCourse(!exists);
+}, [courseInput, courses]);
+
+ const onSubmit = async (data) => {
+  if (!selectedFile) return;
+
+  try {
+    let courseId = 0;
+let isNewCourseFlag = false;
+    const existingCourse = courses.find(
+ c => normalizeCourseName(c.name) === normalizeCourseName(courseInput)
+    );
+
+    if (existingCourse) {
+      courseId = existingCourse.id;
+    } else {
+        isNewCourseFlag = true;
+
+const confirm = await Swal.fire({
+  title: t("upload.alerts.courseNotExistTitle"),
+  text: t("upload.alerts.courseNotExistText"),
+  icon: "question",
+  showCancelButton: true,
+  confirmButtonText: t("upload.alerts.yes"),
+  cancelButtonText: t("upload.alerts.cancel"),
+});
+
+      if (!confirm.isConfirmed) return;
+}
+    
     const formData = new FormData();
     formData.append("File", selectedFile);
     formData.append("Title", data.materialTitle);
@@ -89,6 +190,26 @@ export default function Upload() {
       });
     }
   };
+    formData.append("CategoryId", data.category);
+if (existingCourse) {
+  formData.append("CourseId",  existingCourse.id);
+}
+else {
+      formData.append("RequestedCourseName", courseInput);
+       const selectedCategoryName = categories.find(cat => cat.id == data.category)?.name;
+formData.append("RequestedCategoryName", selectedCategoryName);
+    }
+    await axios.post("/Api/EduFile/Upload", formData);
+
+    Swal.fire("Success", "File uploaded successfully", "success");
+    setSelectedFile(null);
+    setCourseInput("");
+
+  } 
+  catch (error) {
+Swal.fire("Error", "Something went wrong", "error");
+  }
+};
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -105,6 +226,19 @@ export default function Upload() {
     !errors.category &&
     !errors.materialType &&
     !errors.description;
+const [showSuggestions, setShowSuggestions] = useState(false);
+  
+  const isFormComplete =
+  selectedFile &&
+  courseInput &&
+  !errors.materialTitle &&
+  !errors.category &&
+  !errors.materialType &&
+  !errors.description;
+  
+  return ( 
+     <div className="page-wrapper">
+  <div className="upload-page">
 
   return (
     <div className="page-wrapper">
@@ -289,6 +423,87 @@ export default function Upload() {
                 <li key={index}>{item}</li>
               ))}
             </ul>
+
+          <div className="form-group"> 
+              <label>{t("upload.form.categoryLabel")}</label>
+
+          
+           <select
+ {...register("category", { required: "Category required" })}
+>
+<option value="">{t("upload.form.categories.selectCategory")}</option>
+
+{categories.map((cat) => (
+  <option key={cat.id} value={cat.id}>
+    {cat.name}
+  </option>
+))}
+
+</select>
+            {errors.category && (
+              <span className="error">{errors.category.message}</span>
+            )}
+          </div>
+          </div>
+
+<div className="form-row">
+          <div className="form-group">
+              <label>{t("upload.form.courseLabel")}</label>
+  <input
+    type="text"
+    value={courseInput}
+    onChange={(e) => {setCourseInput(e.target.value)
+      setShowSuggestions(true);
+    }}
+     onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+  onFocus={() => setShowSuggestions(true)}
+    placeholder={t("upload.form.coursePlaceholder")}
+    disabled={!selectedCategory}
+  />
+  {showSuggestions &&filteredCourses.length > 0 && (
+    <ul className="suggestions">
+      {filteredCourses.map((course) => (
+        <li
+          key={course.id}
+          onClick={() => {
+            setCourseInput(course.name);
+            setFilteredCourses([]);
+            setIsNewCourse(false);
+            setShowSuggestions(false);
+          }}
+        >
+          {course.name}
+        </li>
+      ))}
+    </ul>
+  )}
+  {isNewCourse && courseInput && (
+    <span className="info-text">
+     {t("upload.form.newCourseInfo")}
+    </span>
+  )}
+          </div>
+        
+
+          <div className="form-group">
+              <label>{t("upload.form.materialTypeLabel")}</label>
+            <select
+              {...register("materialType", {
+ required: t("upload.form.materialTypeRequired"),
+})}
+>
+<option value="">{t("upload.form.materialTypes.selectMaterialType")}</option>
+
+{fileTypes.map((type) => (
+  <option key={type.value} value={type.value}>
+    {type.label}
+  </option>
+))}
+
+</select>
+            {errors.materialType && (
+              <span className="error">{errors.materialType.message}</span>
+            )}
           </div>
         </div>
       </div>

@@ -205,6 +205,29 @@ body {
   font-size: 12px;
   margin-top: 6px;
 }
+.suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0;
+  border: 1px solid #ddd;
+  max-height: 150px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.suggestions li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestions li:hover {
+  background-color: #f1f1f1;
+}
+
+.info-text {
+  color: orange;
+  font-size: 12px;
+}
 @media (max-width: 768px) {
   .upload-page {
     flex-direction: column;
