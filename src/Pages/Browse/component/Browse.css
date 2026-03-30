@@ -347,6 +347,41 @@ html[dir="ltr"] .search-icon {
   text-align:center;
   color:var(--text-secondary);
 }
+.collection-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #6f42c1;
+  color: white;
+  transition: 0.3s;
+}
+
+.collection-btn:hover {
+  opacity: 0.85;
+}
+
+.add-to-collection-btn-card {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.add-to-collection-btn-card:hover {
+  background: #45a049;
+}
+
+.file-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 @media (max-width: 768px) {
   .categories-container {
     grid-template-columns: repeat(2, 1fr);
@@ -398,5 +433,18 @@ html[dir="ltr"] .search-icon {
 
   .file-description {
     font-size: 13px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .categories-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    max-width: 700px;
+    margin: auto;
+  }
+
+  .category-card {
+    width: 100%;
   }
 }

@@ -33,7 +33,7 @@ function Register() {
 
     password: string()
       .required(t("validation.passwordRequired"))
-      .min(6, t("validation.passwordMin"))
+      .min(8, t("validation.passwordMin"))
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).+$/,
         t("validation.passwordPattern"),

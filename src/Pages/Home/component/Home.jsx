@@ -164,7 +164,8 @@ function Home() {
                 {t("home.createAccountBtn")}
               </button>
             )}
-            <button className="secbtn" onClick={() => navigate("/Auth")}>
+            
+            <button className="secbtn" onClick={() => navigate((token ? "/Upload" : "/Auth"))}>
               {t("home.shareNotesBtn")}
             </button>
           </div>

@@ -73,7 +73,6 @@ function Sidebar() {
             : a.downloadCount - b.downloadCount;
         }
         if (orderBy === "1") {
-          // Newest
           return isDescending
             ? new Date(b.createdAt) - new Date(a.createdAt)
             : new Date(a.createdAt) - new Date(b.createdAt);

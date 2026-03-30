@@ -8,17 +8,27 @@ import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
 function Files() {
   const [message, setMessage] = useState("");
   const [activeType, setActiveType] = useState("all");
-  const [sortBy, setSortBy] = useState("none"); 
   const { t } = useTranslation();
   const { courseId } = useParams();
   const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [downloadingId, setDownloadingId] = useState(null);
 
   useEffect(() => {
     axios
       .get(`/Api/EduFile/GetByCourseId/${courseId}`)
-      .then((res) => setFiles(res.data.data))
+      .then((res) => {
+        const filesWithId = res.data.data.map(file => ({
+          ...file,
+          eduFileId: file.eduFileId || file.id,
+          id: file.id || file.eduFileId,
+          fileType: file.fileType !== undefined ? Number(file.fileType) : file.type,
+          uploadedAt: file.uploadedAt || file.createdAt || file.upload_date,
+          downloadCount: file.downloadCount || file.download_count || 0
+        }));
+        setFiles(filesWithId);
+      })
       .catch((err) => console.log(err));
   }, [courseId]);
 
@@ -27,7 +37,11 @@ function Files() {
     if (!token) return;
     axios
       .get("/Favorite/Getlist")
-      .then((res) => setFavorites(res.data.data.map(f => f.eduFileId)))
+      .then((res) => {
+        if (res.data && res.data.data) {
+          setFavorites(res.data.data.map(f => f.eduFileId));
+        }
+      })
       .catch((err) => console.log(err));
   }, []);
 
@@ -37,8 +51,12 @@ function Files() {
     try {
       await axios.post(`/Favorite/Add/${fileId}`);
       setFavorites(prev => [...prev, fileId]);
+      setMessage(t("files.addedToFavorites") || "Added to favorites");
+      setTimeout(() => setMessage(""), 3000);
     } catch (err) {
       console.log(err);
+      setMessage(t("files.error") || "Error adding to favorites");
+      setTimeout(() => setMessage(""), 3000);
     }
   };
 
@@ -48,8 +66,12 @@ function Files() {
     try {
       await axios.delete(`/Favorite/Delete/${fileId}`);
       setFavorites(prev => prev.filter(id => id !== fileId));
+      setMessage(t("files.removedFromFavorites") || "Removed from favorites");
+      setTimeout(() => setMessage(""), 3000);
     } catch (err) {
       console.log(err);
+      setMessage(t("files.error") || "Error removing from favorites");
+      setTimeout(() => setMessage(""), 3000);
     }
   };
 
@@ -57,24 +79,44 @@ function Files() {
     const token = localStorage.getItem("token");
     if (!token) {
       setMessage(t("files.loginMessage"));
+      setTimeout(() => setMessage(""), 3000);
       return;
     }
     favorites.includes(fileId) ? removeFavorite(fileId) : addFavorite(fileId);
   };
 
   const handleDownload = async (fileId, filePath) => {
+    setDownloadingId(fileId);
     try {
-      await axios.get(`/Api/EduFile/Download/${fileId}`);
+      const response = await axios.get(`/Api/EduFile/Download/${fileId}`, {
+        responseType: "blob",
+      });
+
+      const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = filePath.split("/").pop();
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(fileUrl);
+
       setFiles(prevFiles =>
         prevFiles.map(f =>
-          f.id === fileId || f.eduFileId === fileId
-            ? { ...f, downloadCount: f.downloadCount + 1 }
+          (f.id === fileId || f.eduFileId === fileId)
+            ? { ...f, downloadCount: (f.downloadCount || 0) + 1 }
             : f
         )
       );
-      window.open(`${serverUrl}${filePath}`, "_blank");
+
+      setMessage(t("files.downloadStarted") || "Download started!");
+      setTimeout(() => setMessage(""), 3000);
     } catch (err) {
       console.log("Download error:", err);
+      setMessage(t("files.downloadError") || "Download failed");
+      setTimeout(() => setMessage(""), 3000);
+    } finally {
+      setDownloadingId(null);
     }
   };
 
@@ -89,13 +131,9 @@ function Files() {
     { id: 6, name: t("files.other"), icon: "📁" },
   ];
 
-  const displayedFiles = [...files]
-    .filter(f => activeType === "all" || f.fileType === Number(activeType))
-    .sort((a, b) => {
-      if (sortBy === "mostDownloaded") return b.downloadCount - a.downloadCount;
-      if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
-      return 0;
-    });
+  const displayedFiles = [...files].filter(
+    f => activeType === "all" || f.fileType === Number(activeType)
+  );
 
   return (
     <div className="files-container">
@@ -118,21 +156,6 @@ function Files() {
         ))}
       </div>
 
-      <div className="sort-buttons">
-        <button
-          className={sortBy === "newest" ? "active" : ""}
-          onClick={() => setSortBy("newest")}
-        >
-          🆕 {t("files.newest")}
-        </button>
-        <button
-          className={sortBy === "mostDownloaded" ? "active" : ""}
-          onClick={() => setSortBy("mostDownloaded")}
-        >
-          📈 {t("files.mostDownloaded")}
-        </button>
-      </div>
-
       {message && <div className="message">{message}</div>}
 
       {displayedFiles.length === 0 ? (
@@ -147,6 +170,7 @@ function Files() {
             handleDownload={handleDownload}
             serverUrl={serverUrl}
             setMessage={setMessage}
+            downloadingId={downloadingId}
           />
         ))
       )}

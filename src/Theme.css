@@ -14,14 +14,28 @@
   --footer-bg: #f4f4f4;
   --overlay-color: rgba(255, 255, 255, 0.5);
   --text-on-image: #000000;
-   --color-approve: #28a745;
+  --color-approve: #28a745;
   --color-reject: #dc3545;
   --color-edit: #ffc107;
   --color-save: #007bff;
   --color-ban: #dc3545;
   --color-unban: #28a745;
   --color-delete: #dc3545;
-    
+  
+  --bg-gradient-start: #667eea;
+  --bg-gradient-end: #764ba2;
+  --card-border: #e0e0e0;
+  --card-hover-shadow: rgba(0, 0, 0, 0.1);
+  --badge-bg: #e3f2fd;
+  --badge-color: #1976d2;
+  --progress-bg: rgba(0, 0, 0, 0.1);
+  --drag-handle-color: #999;
+  --drag-handle-hover: #4f46e5;
+   --learning-text-primary: #ffffff;
+  --learning-text-secondary: rgba(255, 255, 255, 0.9);
+  --learning-accent: #ffd89b;
+  --progress-complete: #4caf50;
+  --progress-complete-dark: #45a049;
 }
 
 [data-theme="dark"] {
@@ -40,36 +54,25 @@
   --footer-bg: #111827;
   --overlay-color: rgba(0, 0, 0, 0.65);
   --text-on-image: #ffffff;
-   --color-approve: #218838;
+  --color-approve: #218838;
   --color-reject: #c82333;
   --color-edit: #d4a017;
   --color-save: #0056b3;
   --color-ban: #c82333;
   --color-unban: #218838;
-  --color-delete: #b02a37; 
-
-}
-html {
-  direction: ltr;
-}
-
-html[dir="rtl"] {
-  direction: rtl;
-}
-::-webkit-scrollbar {
-  width: 3px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
-  transition: background 0.3s;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.45);
+  --color-delete: #b02a37;
+    --bg-gradient-start: #5a67d8;
+  --bg-gradient-end: #6b46c1;
+  --card-border: #334155;
+  --card-hover-shadow: rgba(0, 0, 0, 0.3);
+  --badge-bg: #1e293b;
+  --badge-color: #60a5fa;
+  --progress-bg: rgba(255, 255, 255, 0.1);
+  --drag-handle-color: #64748b;
+  --drag-handle-hover: #818cf8;
+   --learning-text-primary: #f1f5f9;
+  --learning-text-secondary: #cbd5e1;
+  --learning-accent: #fbbf24;
+  --progress-complete: #4caf50;
+  --progress-complete-dark: #45a049;
 }
