@@ -1,0 +1,284 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-color);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.add-collection-modal {
+  background: var(--bg-card);
+  border-radius: 16px;
+  width: 450px;
+  max-width: 90%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.modal-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: var(--text-main);
+}
+
+.collections-list-modal {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.collection-option {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.collection-option:hover {
+  background: var(--bg-secondary);
+}
+
+.collection-option .collection-info h4 {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-main);
+}
+
+.collection-option .collection-info p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collection-option .collection-info span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.no-collections {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 2rem;
+}
+
+.create-new-link {
+  margin: 1rem 1.5rem;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.create-new-link:hover {
+  background: var(--bg-card);
+  border-color: var(--primary);
+}
+
+.create-collection-form {
+  padding: 1.5rem;
+}
+
+.create-collection-form input,
+.create-collection-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--input-bg);
+  color: var(--text-main);
+  box-sizing: border-box;
+}
+
+.create-collection-form input:focus,
+.create-collection-form textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.create-collection-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.form-buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form-buttons button:first-child {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.form-buttons button:first-child:hover {
+  background: var(--card-border);
+}
+
+.form-buttons button:last-child {
+  background: var(--primary);
+  color: white;
+}
+
+.form-buttons button:last-child:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.form-buttons button:last-child:disabled {
+  background: var(--card-border);
+  cursor: not-allowed;
+}
+
+/* CreateCollectionModal specific */
+.create-collection-modal {
+  background: var(--bg-card);
+  border-radius: 16px;
+  width: 450px;
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body input,
+.modal-body textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: var(--input-bg);
+  color: var(--text-main);
+  box-sizing: border-box;
+}
+
+.modal-body input:focus,
+.modal-body textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.modal-body textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.modal-footer button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.cancel-btn:hover {
+  background: var(--card-border);
+}
+
+.create-btn {
+  background: var(--primary);
+  color: white;
+}
+
+.create-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.create-btn:disabled {
+  background: var(--card-border);
+  cursor: not-allowed;
+}
+
+/* Scrollbar */
+.collections-list-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.collections-list-modal::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+.collections-list-modal::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 4px;
+}
+
+.collections-list-modal::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+.collections-list-modal {
+  scrollbar-width: thin;
+  scrollbar-color: var(--card-border) var(--bg-secondary);
+}

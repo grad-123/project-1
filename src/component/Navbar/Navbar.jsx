@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { HiSun, HiOutlineGlobeAlt } from "react-icons/hi";
-import { FiUpload, FiMoon } from "react-icons/fi";
+import { FiUpload, FiMoon, FiUser } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Navbar.css";
+
 
 function Navbar() {
   const navigate = useNavigate();
@@ -23,7 +24,6 @@ function Navbar() {
     const parsed = JSON.parse(storedRole);
     role = Array.isArray(parsed) ? parsed : [parsed];
   } catch {
-    // لو JSON.parse فشل، اعتبر النص مفصول بفواصل
     role = storedRole ? storedRole.split(",") : [];
   }
 
@@ -121,6 +121,13 @@ function Navbar() {
         <button className="icon-btn" onClick={toggleLang}>
           <HiOutlineGlobeAlt />
         </button>
+         
+{token && isStudent && (
+    <Link to="/profile" className="icon-btn profile-btn" title={t("navbar.profile")}>
+      <FiUser />
+    </Link>
+  )}
+
 
         {token ? (
           <button className="signin-btn" onClick={handleLogout}>

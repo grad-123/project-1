@@ -13,7 +13,7 @@ import {
 import Root from "./routes/Root";
 import Home from "./Pages/Home/component/Home";
 import Browse from "./Pages/Browse/component/Browse";
-import Favorites from "./Pages/Favorites/component/Favorites";
+import Favorites from "./Pages/Favorites/Favorites";
 import Upload from "./Pages/Upload/component/Upload";
 import Courses from "./Pages/Courses/component/Courses";
 import Files from "./Pages/Files/component/Files";
