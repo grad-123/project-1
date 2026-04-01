@@ -14,8 +14,10 @@ function CollectionSidebar({
   activeTab = "my",
   onTabChange,
   showMessage,
-  className = "" // ✅ إضافة className
+  className = ""
 }) {
+
+
   const { t } = useTranslation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingCollection, setEditingCollection] = useState(null);
@@ -23,57 +25,77 @@ function CollectionSidebar({
   const [newDescription, setNewDescription] = useState("");
   const [copyingId, setCopyingId] = useState(null);
 
+  // ✅ دالة مساعدة للحصول على ID المجموعة بشكل موحد
+  const getCollectionId = (collection) => {
+    return collection.collectionId || collection.id;
+  };
+
   const handleSelectCollection = async (collection) => {
-    if (!collection || !collection.id) return;
+  const collectionId = getCollectionId(collection);
+  if (!collectionId) return;
+  
+  console.log("🔵 Selecting collection:", { collectionId, collection });
+  
+  try {
+    const res = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
+    console.log("🟢 Collection details from API:", res.data);
     
-    try {
-      const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
-      console.log("Collection details from API:", res.data);
+    if (res.data && res.data.succeeded && res.data.data) {
+      // ✅ تأكد من تحويل الملفات بشكل صحيح
+      const files = res.data.data.files || [];
+      console.log("📁 Files in collection:", files.length);
       
-      if (res.data && res.data.succeeded && res.data.data) {
-        const fullCollection = {
-          ...collection,
-          id: collection.id,
-          name: res.data.data.name || collection.name,
-          description: res.data.data.description || collection.description,
-          files: res.data.data.files || [],
-          filesCount: res.data.data.files?.length || 0,
-          courseName: res.data.data.courseName || collection.courseName,
-          uploaderName: res.data.data.uploaderName || collection.uploaderName,
-          source: activeTab,
-          isFavorite: activeTab === "favorite"
-        };
-        
-        console.log("Full collection with files:", fullCollection.files.length, "files");
-        
-        if (onSelectCollection) {
-          onSelectCollection(fullCollection);
-        }
-      } else {
-        console.log("Using existing collection data");
-        if (onSelectCollection) {
-          onSelectCollection({ 
-            ...collection, 
-            source: activeTab, 
-            isFavorite: activeTab === "favorite",
-            files: [],
-            filesCount: collection.filesCount || 0
-          });
-        }
-      }
-    } catch (err) {
-      console.error("Error fetching collection details:", err);
+      const fullCollection = {
+        ...collection,
+        id: collectionId,
+        collectionId: collectionId,
+        name: res.data.data.name || collection.name,
+        description: res.data.data.description || collection.description,
+        files: files, // ✅ تمرير الملفات مباشرة
+        filesCount: files.length,
+        courseName: res.data.data.courseName || collection.courseName,
+        uploaderName: res.data.data.uploaderName || collection.uploaderName,
+        source: activeTab,
+        isFavorite: activeTab === "favorite"
+      };
+      
+      console.log("✅ Full collection prepared:", { 
+        name: fullCollection.name, 
+        filesCount: fullCollection.files.length 
+      });
+      
       if (onSelectCollection) {
+        onSelectCollection(fullCollection);
+      }
+    } else {
+      console.log("⚠️ Using existing collection data");
+      if (onSelectCollection) {
+        // ✅ إذا فشل API، استخدم البيانات الموجودة مع محاولة جلب الملفات
         onSelectCollection({ 
           ...collection, 
+          id: collectionId,
           source: activeTab, 
           isFavorite: activeTab === "favorite",
-          files: [],
-          filesCount: collection.filesCount || 0
+          files: collection.files || [], // ✅ استخدم الملفات إذا كانت موجودة
+          filesCount: collection.filesCount || collection.files?.length || 0
         });
       }
     }
-  };
+  } catch (err) {
+    console.error("🔴 Error fetching collection details:", err);
+    // ✅ حتى لو فشل، حاول عرض المجموعة بالبيانات الموجودة
+    if (onSelectCollection) {
+      onSelectCollection({ 
+        ...collection, 
+        id: collectionId,
+        source: activeTab, 
+        isFavorite: activeTab === "favorite",
+        files: collection.files || [],
+        filesCount: collection.filesCount || collection.files?.length || 0
+      });
+    }
+  }
+};
 
   const handleDeleteCollection = async (id, e) => {
     e.stopPropagation();
@@ -109,202 +131,176 @@ function CollectionSidebar({
     }
   };
 
-  // الحل البديل: نسخ المجموعة عن طريق جلب الملفات وإنشاء مجموعة جديدة
-  const copyCollectionAlternative = async (collectionId, collectionName, collectionDesc) => {
-    try {
-      console.log("Fetching original collection details...");
-      const getResponse = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
-      if (!getResponse.data || !getResponse.data.data) {
-        throw new Error("Could not fetch collection files");
-      }
-      
-      const originalCollection = getResponse.data.data;
-      const originalFiles = originalCollection.files || [];
-      console.log("Original files to copy:", originalFiles.length);
-      
-      // 2. إنشاء مجموعة جديدة
-      const newName = `${collectionName} (Copy)`;
-      console.log("Creating new collection with name:", newName);
-      
-      const createResponse = await axios.post("/api/v1/Collection/CreateLibrary", {
-        name: newName,
-        description: collectionDesc || `Copied from ${collectionName}`
-      });
-      
-      console.log("Create collection response:", createResponse.data);
-      
-      // انتظر قليلاً للتأكد من إنشاء المجموعة في قاعدة البيانات
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // جلب قائمة المجموعات المحدثة للعثور على المجموعة الجديدة
-      const collectionsRes = await axios.get("/api/v1/Collection/GetLibraryCollections");
-      console.log("All collections after creation:", collectionsRes.data);
-      
-      let newCollectionId = null;
-      
-      if (collectionsRes.data && collectionsRes.data.data) {
-        // البحث عن المجموعة الجديدة بالاسم
-        const newCollection = collectionsRes.data.data.find(c => c.name === newName);
-        if (newCollection) {
-          newCollectionId = newCollection.id;
-          console.log("Found new collection with ID:", newCollectionId);
-        } else {
-          // إذا لم نجدها بالاسم، خذ آخر مجموعة
-          const lastCollection = collectionsRes.data.data[collectionsRes.data.data.length - 1];
-          if (lastCollection) {
-            newCollectionId = lastCollection.id;
-            console.log("Using last collection ID:", newCollectionId);
-          }
-        }
-      }
-      
-      if (!newCollectionId) {
-        throw new Error("Could not get new collection ID");
-      }
-      
-      console.log("New collection created with ID:", newCollectionId);
-      
-      // 3. إضافة الملفات إلى المجموعة الجديدة
-      let addedCount = 0;
-      for (const file of originalFiles) {
-        const fileId = file.eduFileId || file.id;
-        console.log("Attempting to add file:", fileId, "Title:", file.title);
-        
-        if (!fileId) {
-          console.log("File has no ID, skipping:", file);
-          continue;
-        }
-        
-        try {
-          await axios.post("/api/v1/collection/AddFile", {
-            collectionId: Number(newCollectionId),
-            edufileId: Number(fileId)
-          });
-          addedCount++;
-          console.log("File added successfully");
-          
-        } catch (err) {
-          console.log("Error adding file:", fileId, err.response?.data);
-        }
-      }
-      
-      console.log(`Added ${addedCount} of ${originalFiles.length} files to new collection`);
-      
-      if (addedCount === 0 && originalFiles.length > 0) {
-        throw new Error("No files could be added to the new collection");
-      }
-      
-      if (showMessage) {
-        showMessage(`✅ Collection copied successfully! Added ${addedCount} files to "${newName}"`, "success");
-      }
-      
-      return { success: true, newCollectionId };
-      
-    } catch (err) {
-      console.error("Alternative copy failed:", err);
-      throw err;
-    }
-  };
-
-  // دالة النسخ المعدلة - مع تحديث القوائم فوراً
-  const handleCopyCollection = async (collectionId, e) => {
-    e.stopPropagation();
-    setCopyingId(collectionId);
+  const copyCollectionAlternative = async (collectionId, collectionName, collectionDesc, existingFiles = []) => {
+  try {
+    console.log("📦 Copying collection with files from prop:", existingFiles.length);
     
-    console.log("Starting copy process for collection:", collectionId);
+    // ✅ استخدم الملفات الموجودة في الـ prop إذا كانت موجودة
+    let originalFiles = existingFiles;
     
-    const collectionToCopy = safeFavoriteCollections.find(c => (c.collectionId || c.id) === collectionId);
-    const collectionName = collectionToCopy?.name || "Collection";
-    const collectionDesc = collectionToCopy?.description || "";
-    
-    try {
-      let copySuccess = false;
-      let newCollectionId = null;
-      
-      // المحاولة الأولى: استخدام API النسخ الأصلي
+    // إذا لم تكن هناك ملفات في الـ prop، حاول جلبها من API
+    if (!originalFiles || originalFiles.length === 0) {
+      console.log("🔄 No files in prop, trying to fetch from API...");
       try {
-        console.log("Trying original copy API...");
-        const copyResponse = await axios.post(`/api/v1/Collection/Copy/${collectionId}`);
-        console.log("Copy API response:", copyResponse.data);
-        
-        if (copyResponse.data && copyResponse.data.succeeded) {
-          copySuccess = true;
-          newCollectionId = copyResponse.data.data?.id;
-          if (showMessage) showMessage(t("collection.copiedSuccessfully"), "success");
-        } else {
-          throw new Error("Original copy API failed");
+        const getResponse = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
+        if (getResponse.data && getResponse.data.data) {
+          originalFiles = getResponse.data.data.files || [];
         }
-      } catch (originalErr) {
-        console.log("Original copy API failed, trying alternative method...");
-        
-        // المحاولة الثانية: استخدام الطريقة البديلة
-        try {
-          const result = await copyCollectionAlternative(collectionId, collectionName, collectionDesc);
-          copySuccess = result.success;
-          newCollectionId = result.newCollectionId;
-        } catch (altErr) {
-          console.log("Alternative method also failed:", altErr);
-          throw new Error("Both copy methods failed");
-        }
+      } catch (err) {
+        console.log("⚠️ Could not fetch from API:", err.message);
       }
-      
-      if (copySuccess) {
-        if (showMessage) {
-          showMessage(t("collection.copiedSuccessfullyToMyCollections") || "✨ Collection copied to My Collections successfully!", "success");
-        }
-        
-        // ✅ تحديث قائمة My Collections فوراً
-        if (onCollectionUpdate) {
-          await onCollectionUpdate();
-          console.log("✅ My Collections updated");
-        }
-        
-        // ✅ تحديث قائمة Favorite Collections أيضاً
-        if (onFavoriteCollectionsUpdate) {
-          await onFavoriteCollectionsUpdate();
-          console.log("✅ Favorite Collections updated");
-        }
-        
-        // ✅ فتح المجموعة الجديدة مباشرة
-        if (newCollectionId && onSelectCollection) {
-          try {
-            const newCollectionRes = await axios.get(`/api/v1/Collection/GetById/${newCollectionId}`);
-            if (newCollectionRes.data && newCollectionRes.data.data) {
-              const fullCollection = {
-                id: newCollectionId,
-                name: newCollectionRes.data.data.name,
-                description: newCollectionRes.data.data.description,
-                files: newCollectionRes.data.data.files || [],
-                filesCount: newCollectionRes.data.data.files?.length || 0,
-                source: "my",
-                isFavorite: false
-              };
-              onSelectCollection(fullCollection);
-              console.log("✅ New collection opened");
-            }
-          } catch (err) {
-            console.log("Error opening new collection:", err);
-          }
-        }
-      }
-      
-    } catch (err) {
-      console.log("Error in copy process:", err);
-      
-      let errorMessage = t("collection.copyError") || "❌ Error copying collection";
-      
-      if (err.response?.data?.message) {
-        errorMessage += ": " + err.response.data.message;
-      } else if (err.message) {
-        errorMessage += ": " + err.message;
-      }
-      
-      if (showMessage) showMessage(errorMessage, "error");
-    } finally {
-      setCopyingId(null);
     }
-  };
+    
+    console.log("📁 Files to copy:", originalFiles.length);
+    
+    // إنشاء مجموعة جديدة
+    const newName = `${collectionName} (Copy)`;
+    console.log("Creating new collection:", newName);
+    
+    const createResponse = await axios.post("/api/v1/Collection/CreateLibrary", {
+      name: newName,
+      description: collectionDesc || `Copied from ${collectionName}`
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // جلب المجموعات للعثور على ID الجديد
+    const collectionsRes = await axios.get("/api/v1/Collection/GetLibraryCollections");
+    
+    let newCollectionId = null;
+    if (collectionsRes.data && collectionsRes.data.data) {
+      const newCollection = collectionsRes.data.data.find(c => c.name === newName);
+      if (newCollection) {
+        newCollectionId = newCollection.id;
+      } else {
+        const lastCollection = collectionsRes.data.data[collectionsRes.data.data.length - 1];
+        if (lastCollection) {
+          newCollectionId = lastCollection.id;
+        }
+      }
+    }
+    
+    if (!newCollectionId) {
+      throw new Error("Could not get new collection ID");
+    }
+    
+    // إضافة الملفات
+    let addedCount = 0;
+    for (const file of originalFiles) {
+      const fileId = file.eduFileId || file.id;
+      if (!fileId) continue;
+      
+      try {
+        await axios.post("/api/v1/collection/AddFile", {
+          collectionId: Number(newCollectionId),
+          edufileId: Number(fileId)
+        });
+        addedCount++;
+      } catch (err) {
+        console.log("Error adding file:", fileId);
+      }
+    }
+    
+    const message = addedCount > 0 
+      ? `✅ Collection copied! Added ${addedCount} files to "${newName}"`
+      : `⚠️ Collection "${newName}" created but no files were added`;
+    
+    if (showMessage) showMessage(message, addedCount > 0 ? "success" : "warning");
+    
+    return { success: true, newCollectionId, addedCount };
+    
+  } catch (err) {
+    console.error("Alternative copy failed:", err);
+    throw err;
+  }
+};
 
+ const handleCopyCollection = async (collectionId, e) => {
+  e.stopPropagation();
+  setCopyingId(collectionId);
+  
+  const collectionToCopy = safeFavoriteCollections.find(c => (c.collectionId || c.id) === collectionId);
+  const collectionName = collectionToCopy?.name || "Collection";
+  const collectionDesc = collectionToCopy?.description || "";
+  const existingFiles = collectionToCopy?.files || [];
+  
+  console.log("📦 Copying collection with files:", existingFiles.length);
+  
+  try {
+    // ✅ الخطوة 1: محاولة جعل جميع الملفات مفضلة (إذا كانت غير مفضلة، سيتم إضافتها)
+    console.log("🔄 Step 1: Making all files in collection favorites...");
+    let favoritedCount = 0;
+    
+    for (const file of existingFiles) {
+      const fileId = file.eduFileId || file.id;
+      if (!fileId) continue;
+      
+      try {
+        // محاولة إضافة الملف إلى المفضلة (إذا كان موجوداً بالفعل، سيرجع خطأ 409 أو رسالة)
+        await axios.post(`/Favorite/Add/${fileId}`);
+        favoritedCount++;
+        console.log(`✅ Added file ${fileId} to favorites`);
+      } catch (err) {
+        // إذا كان الملف مفضلاً بالفعل، تجاهل الخطأ
+        if (err.response?.status === 409 || err.response?.data?.message?.includes("already")) {
+          console.log(`ℹ️ File ${fileId} is already favorite`);
+        } else {
+          console.log(`⚠️ Could not favorite file ${fileId}:`, err.message);
+        }
+      }
+    }
+    
+    if (favoritedCount > 0) {
+      console.log(`✅ Added ${favoritedCount} new files to favorites`);
+      // إرسال حدث لتحديث صفحة Favorites
+      window.dispatchEvent(new CustomEvent('favoriteAdded', { detail: { count: favoritedCount } }));
+      // تحديث القائمة المحلية
+      if (window.refreshFavorites) {
+        window.refreshFavorites();
+      }
+    }
+    
+    // ✅ الخطوة 2: نسخ المجموعة
+    console.log("🔄 Step 2: Copying collection...");
+    const result = await copyCollectionAlternative(collectionId, collectionName, collectionDesc, existingFiles);
+    
+    if (result.success) {
+      const message = favoritedCount > 0 
+        ? `✨ Collection copied! ${favoritedCount} file${favoritedCount > 1 ? 's were' : ' was'} added to favorites first.`
+        : "✨ Collection copied to My Collections successfully!";
+      if (showMessage) showMessage(message, "success");
+      
+      if (onCollectionUpdate) await onCollectionUpdate();
+      if (onFavoriteCollectionsUpdate) await onFavoriteCollectionsUpdate();
+      
+      if (result.newCollectionId && onSelectCollection) {
+        try {
+          const newCollectionRes = await axios.get(`/api/v1/Collection/GetById/${result.newCollectionId}`);
+          if (newCollectionRes.data && newCollectionRes.data.data) {
+            const fullCollection = {
+              id: result.newCollectionId,
+              name: newCollectionRes.data.data.name,
+              description: newCollectionRes.data.data.description,
+              files: newCollectionRes.data.data.files || [],
+              filesCount: newCollectionRes.data.data.files?.length || 0,
+              source: "my",
+              isFavorite: false
+            };
+            onSelectCollection(fullCollection);
+          }
+        } catch (err) {
+          console.log("Error opening new collection:", err);
+        }
+      }
+    }
+    
+  } catch (err) {
+    console.log("Error in copy process:", err);
+    if (showMessage) showMessage("❌ Error copying collection", "error");
+  } finally {
+    setCopyingId(null);
+  }
+};
   const handleRenameStart = (collection, e) => {
     e.stopPropagation();
     setEditingCollection(collection);
@@ -330,10 +326,17 @@ function CollectionSidebar({
   };
 
   const safeCollections = Array.isArray(collections) ? collections : [];
-  const safeFavoriteCollections = Array.isArray(favoriteCollections) ? favoriteCollections : [];
-
+  
+  // ✅ تحويل favoriteCollections إلى تنسيق موحد مع id
+  const safeFavoriteCollections = Array.isArray(favoriteCollections) 
+    ? favoriteCollections.map(collection => ({
+        ...collection,
+        id: collection.collectionId || collection.id,  // ✅ تأكد من وجود id
+        collectionId: collection.collectionId || collection.id
+      }))
+    : [];
   return (
-    <div className={`collection-sidebar ${className}`}> {/* ✅ إضافة className هنا */}
+    <div className={`collection-sidebar ${className}`}>
       <div className="sidebar-header">
         <h3>{t("collection.collections")}</h3>
         {activeTab === "my" && (

@@ -26,68 +26,127 @@ function CollectionFilesView({
   const collectionIdRef = useRef(collection?.id);
 
   // تحميل الملفات
-  useEffect(() => {
-    const loadFiles = async () => {
-      if (!collection?.id) {
-        setLoading(false);
-        return;
-      }
-      
-      if (collectionIdRef.current === collection.id && hasLoadedRef.current) {
-        return;
-      }
-      
-      collectionIdRef.current = collection.id;
-      setLoading(true);
-      
-      try {
-        const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+  // تحميل الملفات
+useEffect(() => {
+  const loadFiles = async () => {
+    if (!collection?.id) {
+      setLoading(false);
+      return;
+    }
+    
+    if (collectionIdRef.current === collection.id && hasLoadedRef.current) {
+      return;
+    }
+    
+    collectionIdRef.current = collection.id;
+    setLoading(true);
+    
+    try {
+      // ✅ أولاً: إذا كانت الملفات موجودة بالفعل في الـ collection prop، استخدمها مباشرة
+      if (collection.files && Array.isArray(collection.files) && collection.files.length > 0) {
+        console.log("✅ Using files from collection prop:", collection.files.length);
+        const formattedFiles = collection.files.map((file, index) => ({
+          ...file,
+          id: file.eduFileId || file.id,
+          eduFileId: file.eduFileId || file.id,
+          fileType: Number(file.fileType),
+          title: file.title || file.name || "Untitled",
+          filePath: file.filePath,
+          courseName: file.courseName,
+          categoryName: file.categoryName,
+          downloadCount: file.downloadCount || 0,
+          order: file.order !== undefined ? file.order : index
+        }));
         
-        if (res.data && res.data.data && res.data.data.files) {
-          const formattedFiles = res.data.data.files.map((file, index) => ({
-            ...file,
-            id: file.eduFileId || file.id,
-            eduFileId: file.eduFileId || file.id,
-            fileType: Number(file.fileType),
-            title: file.title || file.name || "Untitled",
-            filePath: file.filePath,
-            courseName: file.courseName,
-            categoryName: file.categoryName,
-            downloadCount: file.downloadCount || 0,
-            order: file.order !== undefined ? file.order : index
-          }));
-          
-          formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
-          setFiles(formattedFiles);
-          
-          const savedProgress = localStorage.getItem(`learning_progress_${collection.id}`);
-          if (savedProgress) {
-            try {
-              const progress = JSON.parse(savedProgress);
-              setCompletedCount(progress.completedCount || 0);
-              setCurrentFileIndex(progress.currentFileIndex || 0);
-            } catch (e) {
-              console.log("Error parsing saved progress");
-            }
+        formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
+        setFiles(formattedFiles);
+        
+        // استعادة التقدم المحفوظ
+        const savedProgress = localStorage.getItem(`learning_progress_${collection.id}`);
+        if (savedProgress) {
+          try {
+            const progress = JSON.parse(savedProgress);
+            setCompletedCount(progress.completedCount || 0);
+            setCurrentFileIndex(progress.currentFileIndex || 0);
+          } catch (e) {
+            console.log("Error parsing saved progress");
           }
-        } else {
-          setFiles([]);
         }
-      } catch (err) {
-        console.error("Error loading files:", err);
-        setFiles([]);
-        if (showMessage) {
-          showMessage(t("collection.errorLoadingFiles") + ": " + (err.response?.data?.message || err.message), "error");
-        }
-      } finally {
+        
         setLoading(false);
         hasLoadedRef.current = true;
+        return;
       }
-    };
-    
-    loadFiles();
-  }, [collection?.id, showMessage, t]);
-
+      
+      // ✅ ثانياً: إذا لم تكن هناك ملفات، جرب جلبها من الـ API
+      console.log("🔄 Fetching files from API for collection:", collection.id);
+      const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+      
+      if (res.data && res.data.data && res.data.data.files) {
+        const formattedFiles = res.data.data.files.map((file, index) => ({
+          ...file,
+          id: file.eduFileId || file.id,
+          eduFileId: file.eduFileId || file.id,
+          fileType: Number(file.fileType),
+          title: file.title || file.name || "Untitled",
+          filePath: file.filePath,
+          courseName: file.courseName,
+          categoryName: file.categoryName,
+          downloadCount: file.downloadCount || 0,
+          order: file.order !== undefined ? file.order : index
+        }));
+        
+        formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
+        setFiles(formattedFiles);
+        
+        const savedProgress = localStorage.getItem(`learning_progress_${collection.id}`);
+        if (savedProgress) {
+          try {
+            const progress = JSON.parse(savedProgress);
+            setCompletedCount(progress.completedCount || 0);
+            setCurrentFileIndex(progress.currentFileIndex || 0);
+          } catch (e) {
+            console.log("Error parsing saved progress");
+          }
+        }
+      } else {
+        setFiles([]);
+      }
+    } catch (err) {
+      console.error("Error loading files:", err);
+      // ✅ ثالثاً: إذا فشل الـ API، حاول استخدام الملفات من الـ collection prop حتى لو كانت فارغة
+      if (collection.files && Array.isArray(collection.files)) {
+        console.log("⚠️ API failed, using files from collection prop as fallback:", collection.files.length);
+        const formattedFiles = collection.files.map((file, index) => ({
+          ...file,
+          id: file.eduFileId || file.id,
+          eduFileId: file.eduFileId || file.id,
+          fileType: Number(file.fileType),
+          title: file.title || file.name || "Untitled",
+          filePath: file.filePath,
+          courseName: file.courseName,
+          categoryName: file.categoryName,
+          downloadCount: file.downloadCount || 0,
+          order: file.order !== undefined ? file.order : index
+        }));
+        
+        formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
+        setFiles(formattedFiles);
+      } else {
+        setFiles([]);
+      }
+      
+      if (showMessage) {
+        showMessage(t("collection.errorLoadingFiles") + ": " + (err.response?.data?.message || err.message), "error");
+      }
+    } finally {
+      setLoading(false);
+      hasLoadedRef.current = true;
+    }
+  };
+  
+  loadFiles();
+}, [collection?.id, showMessage, t]);
   // حفظ حالة التقدم
   const saveProgress = useCallback(() => {
     if (!collection?.id) return;

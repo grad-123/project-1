@@ -65,38 +65,30 @@ function Files() {
       .catch((err) => console.log(err));
   }, [courseId]);
 
-  // جلب المجموعات (Collections) في Browse
+  // جلب المجموعات (Collections) في Browse - النسخة المعدلة (تعرض كل المجموعات)
   useEffect(() => {
     setLoadingCollections(true);
     axios
       .get(`/api/v1/Collection/GetByCourseId/${courseId}`)
-      .then(async (res) => {
+      .then((res) => {
         console.log("Collections response:", res.data);
-        let rawCollections = [];
+        let allCollections = [];
         
         if (res.data && res.data.succeeded && res.data.data) {
-          rawCollections = res.data.data.filter(col => col && col.id);
+          allCollections = res.data.data.filter(col => col && col.id);
         } else if (res.data && Array.isArray(res.data)) {
-          rawCollections = res.data.filter(col => col && col.id);
+          allCollections = res.data.filter(col => col && col.id);
         }
         
-        const validCollections = [];
-        for (const collection of rawCollections) {
-          try {
-            const checkRes = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
-            if (checkRes.data && checkRes.data.succeeded && checkRes.data.data) {
-              validCollections.push(collection);
-              console.log(`✅ Collection ${collection.id} (${collection.name}) is valid`);
-            } else {
-              console.log(`❌ Collection ${collection.id} (${collection.name}) is invalid, skipping`);
-            }
-          } catch (err) {
-            console.log(`❌ Collection ${collection.id} (${collection.name}) not found (404), skipping`);
-          }
-        }
+        console.log(`✅ Showing ${allCollections.length} collections from all students`);
+        console.log("All collections:", allCollections.map(c => ({ 
+          id: c.id, 
+          name: c.name, 
+          uploaderName: c.uploaderName,
+          filesCount: c.filesCount 
+        })));
         
-        console.log("✅ Available collection IDs:", validCollections.map(c => ({ id: c.id, name: c.name, filesCount: c.filesCount })));
-        setCollections(validCollections);
+        setCollections(allCollections);
         setLoadingCollections(false);
       })
       .catch((err) => {
@@ -126,6 +118,8 @@ function Files() {
     if (!token) return;
     try {
       const res = await axios.get("/Favorite/GetCollections");
+      console.log("Favorite collections response:", res.data);
+      
       if (res.data && res.data.succeeded && res.data.data) {
         const validFavorites = [];
         for (const item of res.data.data) {
@@ -135,16 +129,16 @@ function Files() {
               validFavorites.push(item.collectionId);
               console.log(`✅ Favorite collection ${item.collectionId} (${item.name}) is valid`);
             } else {
-              console.log(`❌ Favorite collection ${item.collectionId} (${item.name}) is invalid, removing`);
-              await axios.delete(`/Favorite/RemoveCollection/${item.collectionId}`).catch(() => {});
+              console.log(`⚠️ Favorite collection ${item.collectionId} (${item.name}) is invalid, but KEEPING it`);
+              validFavorites.push(item.collectionId);
             }
           } catch (err) {
-            console.log(`❌ Favorite collection ${item.collectionId} (${item.name}) not found, removing`);
-            await axios.delete(`/Favorite/RemoveCollection/${item.collectionId}`).catch(() => {});
+            console.log(`⚠️ Error fetching collection ${item.collectionId} (${item.name}): ${err.message} - KEEPING it`);
+            validFavorites.push(item.collectionId);
           }
         }
         setFavoriteCollections(validFavorites);
-        console.log("Favorite collections:", validFavorites);
+        console.log("Favorite collections (kept all):", validFavorites);
       } else if (Array.isArray(res.data)) {
         const favoriteIds = res.data.map((item) => item.collectionId || item.id);
         setFavoriteCollections(favoriteIds);
@@ -158,10 +152,9 @@ function Files() {
     fetchFavoriteCollections();
   }, [fetchFavoriteCollections]);
 
-  // دالة حذف ملف من مجموعات الطالب (My Collections) - تجلب من API مباشرة
+  // دالة حذف ملف من مجموعات الطالب (My Collections)
   const removeFileFromMyCollections = async (fileId) => {
     try {
-      // جلب مجموعات الطالب من الـ API (GetLibraryCollections)
       const collectionsRes = await axios.get("/api/v1/Collection/GetLibraryCollections");
       const myCollections = collectionsRes.data?.data || [];
       
@@ -214,6 +207,10 @@ function Files() {
           "✨ Collection added to favorites!",
       );
       setTimeout(() => setMessage(""), 3000);
+
+      window.dispatchEvent(new CustomEvent('favoriteAdded', { 
+        detail: { collectionId } 
+      }));
 
       if (window.refreshFavoriteCollections) {
         window.refreshFavoriteCollections();
@@ -368,22 +365,18 @@ function Files() {
     }
   };
 
-  // إزالة من المفضلة (ملف) - مع حذف من مجموعات الطالب
+  // إزالة من المفضلة (ملف)
   const removeFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
     
     try {
-      // 1. حذف الملف من مجموعات الطالب (My Collections)
       const removedFromMyCollections = await removeFileFromMyCollections(fileId);
       
-      // 2. حذف الملف من المفضلة
       await axios.delete(`/Favorite/Delete/${fileId}`);
       
-      // 3. تحديث القائمة المحلية للمفضلات
       setFavorites((prev) => prev.filter((id) => id !== fileId));
       
-      // 4. عرض رسالة مناسبة
       if (removedFromMyCollections > 0) {
         setMessage(`${t("files.removedFromFavorites")} ${t("files.removedFromMyCollections", { count: removedFromMyCollections })}`);
       } else {
@@ -391,7 +384,6 @@ function Files() {
       }
       setTimeout(() => setMessage(""), 3000);
       
-      // 5. إرسال حدث لتحديث صفحة Favorites
       window.dispatchEvent(new CustomEvent('favoriteRemoved', { detail: { fileId } }));
       
     } catch (err) {
