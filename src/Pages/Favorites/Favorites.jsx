@@ -17,19 +17,17 @@ function Favorites() {
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [collections, setCollections] = useState([]);
+  const [favoriteCollections, setFavoriteCollections] = useState([]);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
   const [loading, setLoading] = useState(true);
-  
-  // New state for collection view
   const [selectedCollection, setSelectedCollection] = useState(null);
-  
-  // Search and Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [sidebarActiveTab, setSidebarActiveTab] = useState("my");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
-  // File types for tabs with translations
   const fileTypes = [
     { id: "all", name: t("fileTypes.all"), icon: "📂" },
     { id: 0, name: t("fileTypes.videos"), icon: "🎥" },
@@ -40,6 +38,15 @@ function Favorites() {
     { id: 5, name: t("fileTypes.books"), icon: "📚" },
     { id: 6, name: t("fileTypes.other"), icon: "📁" },
   ];
+
+  // كشف حجم الشاشة
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchFavorites = useCallback(async () => {
     try {
@@ -74,12 +81,68 @@ function Favorites() {
     }
   }, []);
 
+  const fetchFavoriteCollections = useCallback(async () => {
+    try {
+      const res = await axios.get("/Favorite/GetCollections");
+      if (res.data && res.data.succeeded && res.data.data) {
+        const validFavorites = [];
+        for (const item of res.data.data) {
+          try {
+            const checkRes = await axios.get(`/api/v1/Collection/GetById/${item.collectionId}`);
+            if (checkRes.data && checkRes.data.succeeded && checkRes.data.data) {
+              validFavorites.push({
+                id: item.collectionId,
+                collectionId: item.collectionId,
+                name: item.name,
+                description: item.description,
+                filesCount: item.filesCount,
+                uploaderName: item.uploaderName,
+                addedAt: item.addedAt,
+                courseName: item.courseName,
+                isFavorite: true
+              });
+            } else {
+              await axios.delete(`/Favorite/RemoveCollection/${item.collectionId}`).catch(() => {});
+            }
+          } catch (err) {
+            await axios.delete(`/Favorite/RemoveCollection/${item.collectionId}`).catch(() => {});
+          }
+        }
+        setFavoriteCollections(validFavorites);
+      } else if (Array.isArray(res.data)) {
+        const formatted = res.data.map(item => ({
+          id: item.collectionId || item.id,
+          collectionId: item.collectionId || item.id,
+          name: item.name,
+          description: item.description,
+          filesCount: item.filesCount,
+          uploaderName: item.uploaderName,
+          addedAt: item.addedAt,
+          isFavorite: true
+        }));
+        setFavoriteCollections(formatted);
+      }
+    } catch (err) {
+      console.log("Error fetching favorite collections:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.refreshFavoriteCollections = () => {
+      fetchFavoriteCollections();
+    };
+    
+    return () => {
+      delete window.refreshFavoriteCollections;
+    };
+  }, [fetchFavoriteCollections]);
+
   useEffect(() => {
     fetchFavorites();
     fetchCollections();
-  }, [fetchFavorites, fetchCollections]);
+    fetchFavoriteCollections();
+  }, [fetchFavorites, fetchCollections, fetchFavoriteCollections]);
 
-  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -87,13 +150,11 @@ function Favorites() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Apply filters whenever filter criteria change (only for favorites view)
   useEffect(() => {
-    if (selectedCollection) return; // Don't filter when viewing collection
+    if (selectedCollection) return;
     
     let result = [...files];
     
-    // Filter by search term
     if (debouncedSearch) {
       result = result.filter(file => 
         file.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
@@ -102,7 +163,6 @@ function Favorites() {
       );
     }
     
-    // Filter by file type tab
     if (activeTab !== "all") {
       result = result.filter(file => Number(file.fileType) === Number(activeTab));
     }
@@ -110,14 +170,92 @@ function Favorites() {
     setFilteredFiles(result);
   }, [files, debouncedSearch, activeTab, selectedCollection]);
 
+  useEffect(() => {
+    const handleFavoriteRemoved = (event) => {
+      const { fileId } = event.detail;
+      setFiles(prev => prev.filter(f => (f.eduFileId || f.id) !== fileId));
+      setFilteredFiles(prev => prev.filter(f => (f.eduFileId || f.id) !== fileId));
+    };
+    
+    const handleFavoriteAdded = (event) => {
+      fetchFavorites();
+    };
+    
+    window.addEventListener('favoriteRemoved', handleFavoriteRemoved);
+    window.addEventListener('favoriteAdded', handleFavoriteAdded);
+    
+    return () => {
+      window.removeEventListener('favoriteRemoved', handleFavoriteRemoved);
+      window.removeEventListener('favoriteAdded', handleFavoriteAdded);
+    };
+  }, [fetchFavorites]);
+
+  const removeFileFromMyCollections = async (fileId) => {
+    try {
+      const myCollections = [...collections];
+      let removedCount = 0;
+      let updatedCollections = [...collections];
+      
+      for (const collection of myCollections) {
+        const collectionId = collection.id;
+        if (!collectionId) continue;
+        
+        try {
+          const collectionDetails = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
+          const filesInCollection = collectionDetails.data?.data?.files || [];
+          const fileExists = filesInCollection.some(f => (f.eduFileId || f.id) === fileId);
+          
+          if (fileExists) {
+            await axios.delete("/api/v1/collection/RemoveFile", {
+              data: {
+                collectionId: collectionId,
+                eduFileId: fileId
+              }
+            });
+            removedCount++;
+            
+            const indexInCollections = updatedCollections.findIndex(c => c.id === collectionId);
+            if (indexInCollections !== -1) {
+              updatedCollections[indexInCollections] = {
+                ...updatedCollections[indexInCollections],
+                filesCount: Math.max(0, (updatedCollections[indexInCollections].filesCount || 0) - 1)
+              };
+            }
+          }
+        } catch (err) {
+          console.log(`Error checking/removing from My Collection ${collectionId}:`, err);
+        }
+      }
+      
+      setCollections(updatedCollections);
+      return removedCount;
+      
+    } catch (err) {
+      console.log("Error removing file from my collections:", err);
+      return 0;
+    }
+  };
+
   const toggleFavorite = async (fileId) => {
     try {
+      const removedFromMyCollections = await removeFileFromMyCollections(fileId);
+      
       await axios.delete(`/Favorite/Delete/${fileId}`);
+      
       setFiles(prev => prev.filter(f => (f.eduFileId || f.id) !== fileId));
       if (isSelectMode) {
         setSelectedFiles(prev => prev.filter(id => id !== fileId));
       }
-      showMessage(t("favorites.removedFromFavorites"), "success");
+      
+      if (removedFromMyCollections > 0) {
+        showMessage(`${t("favorites.removedFromFavorites")} ${t("favorites.removedFromMyCollections", { count: removedFromMyCollections })}`, "success");
+      } else {
+        showMessage(t("favorites.removedFromFavorites"), "success");
+      }
+      
+      await fetchCollections();
+      window.dispatchEvent(new CustomEvent('favoriteRemoved', { detail: { fileId } }));
+      
     } catch (err) {
       console.log("Error removing favorite:", err);
       showMessage(t("favorites.errorRemovingFromFavorites"), "error");
@@ -154,18 +292,23 @@ function Favorites() {
       const addedFiles = [];
       const duplicateFiles = [];
       
-      // Get existing files in collection from localStorage
-      const storageKey = `collection_files_${collectionId}`;
-      const existingFiles = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      const existingIds = new Set(existingFiles.map(f => f.id || f.eduFileId));
-      const existingTitles = new Set(existingFiles.map(f => f.title?.toLowerCase()));
+      let existingFileIds = new Set();
+      let existingFileTitles = new Set();
+      
+      try {
+        const collectionDetails = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
+        const existingFilesInCollection = collectionDetails.data?.data?.files || [];
+        existingFileIds = new Set(existingFilesInCollection.map(f => f.eduFileId || f.id));
+        existingFileTitles = new Set(existingFilesInCollection.map(f => f.title?.toLowerCase()));
+      } catch (err) {
+        console.log("Error fetching collection details:", err);
+      }
       
       for (const fileId of selectedFiles) {
         const fileDetails = files.find(f => (f.eduFileId || f.id) === fileId);
         
-        // Check if file already exists
-        const isDuplicate = existingIds.has(fileId) || 
-                            (fileDetails && existingTitles.has(fileDetails.title?.toLowerCase()));
+        const isDuplicate = existingFileIds.has(fileId) || 
+                            (fileDetails && existingFileTitles.has(fileDetails.title?.toLowerCase()));
         
         if (isDuplicate) {
           duplicateCount++;
@@ -188,21 +331,29 @@ function Favorites() {
           }
           successCount++;
           
+          existingFileIds.add(fileId);
+          if (fileDetails?.title) {
+            existingFileTitles.add(fileDetails.title.toLowerCase());
+          }
+          
         } catch (err) {
-          if (err.response?.data?.message?.includes("already")) {
+          console.log("Error adding file:", err);
+          if (err.response?.data?.message?.includes("already") || err.response?.status === 409) {
             duplicateCount++;
+            if (fileDetails) {
+              duplicateFiles.push(fileDetails.title);
+            }
           } else {
             failCount++;
           }
         }
       }
       
-      // Show duplicate message if any
       if (duplicateCount > 0) {
         const duplicateNames = duplicateFiles.slice(0, 3).join(', ');
         const message = duplicateCount === 1 
-          ? `⚠️ ${t("favorites.fileAlreadyInCollection") || "File already exists in this collection"}: ${duplicateNames}`
-          : `⚠️ ${duplicateCount} ${t("favorites.filesAlreadyInCollection") || "files already exist in this collection"}`;
+          ? `⚠️ ${t("favorites.fileAlreadyInCollection")}: ${duplicateNames}`
+          : `⚠️ ${duplicateCount} ${t("favorites.filesAlreadyInCollection")}`;
         showMessage(message, "warning");
       }
       
@@ -210,22 +361,16 @@ function Favorites() {
         const collectionName = collections.find(c => c.id === collectionId)?.name;
         showMessage(t("favorites.addedToCollection", { count: successCount, name: collectionName }), "success");
         
-        if (addedFiles.length > 0) {
-          // Save files to localStorage
-          const updated = [...existingFiles, ...addedFiles];
-          localStorage.setItem(storageKey, JSON.stringify(updated));
-
-          // Dispatch event to show files immediately
-          const event = new CustomEvent('filesAddedToCollection', {
-            detail: {
-              collectionId: collectionId,
-              files: addedFiles
-            }
-          });
-          window.dispatchEvent(event);
-        }
-        
         await fetchCollections();
+        await fetchFavoriteCollections();
+        
+        const event = new CustomEvent('filesAddedToCollection', {
+          detail: {
+            collectionId: collectionId,
+            files: addedFiles
+          }
+        });
+        window.dispatchEvent(event);
       }
       
       if (failCount > 0) {
@@ -237,6 +382,7 @@ function Favorites() {
       setIsSelectMode(false);
       
     } catch (err) {
+      console.log("Error in add to collection:", err);
       showMessage(t("favorites.errorAddingToCollection"), "error");
     }
   };
@@ -248,7 +394,11 @@ function Favorites() {
 
   const handleSelectCollection = (collection) => {
     console.log("Collection selected:", collection);
-    setSelectedCollection(collection);
+    if (collection && collection.files) {
+      console.log("Files in collection:", collection.files.length);
+    }
+    const isFavorite = collection.isFavorite || sidebarActiveTab === "favorite";
+    setSelectedCollection({ ...collection, isFavorite });
   };
 
   const handleBackToFavorites = () => {
@@ -276,9 +426,17 @@ function Favorites() {
     <div className="favorites-page">
       <CollectionSidebar 
         collections={collections}
-        onCollectionUpdate={fetchCollections}
+        favoriteCollections={favoriteCollections}
+        onCollectionUpdate={() => {
+          fetchCollections();
+          fetchFavoriteCollections();
+        }}
+        onFavoriteCollectionsUpdate={fetchFavoriteCollections}
         onSelectCollection={handleSelectCollection}
         selectedCollectionId={selectedCollection?.id}
+        activeTab={sidebarActiveTab}
+        onTabChange={setSidebarActiveTab}
+        showMessage={showMessage}
       />
       
       <div className="favorites-main">
@@ -286,9 +444,13 @@ function Favorites() {
           <CollectionFilesView
             collection={selectedCollection}
             onBack={handleBackToFavorites}
-            onCollectionUpdate={fetchCollections}
+            onCollectionUpdate={() => {
+              fetchCollections();
+              fetchFavoriteCollections();
+            }}
             serverUrl={serverUrl}
             showMessage={showMessage}
+            isFavoriteCollection={selectedCollection.isFavorite || false}
           />
         ) : (
           <>
@@ -300,7 +462,6 @@ function Favorites() {
               <p>{t("favorites.subtitle")}</p>
             </div>
 
-            {/* Search Bar */}
             <div className="search-wrapper">
               <div className="search-input-wrapper">
                 <FaSearch className="search-icon" />
@@ -319,7 +480,6 @@ function Favorites() {
               )}
             </div>
 
-            {/* Tabs */}
             <div className="tabs-container">
               {fileTypes.map(type => (
                 <button
@@ -335,7 +495,6 @@ function Favorites() {
               ))}
             </div>
 
-            {/* Toolbar */}
             <div className="favorites-toolbar">
               <div className="toolbar-left">
                 <span className="files-count">{filteredFiles.length} {t("favorites.filesSaved")}</span>

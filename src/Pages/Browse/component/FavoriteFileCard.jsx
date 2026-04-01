@@ -19,8 +19,8 @@ export default function FavoriteFileCard({
   toggleFavorite,
   serverUrl,
   setMessage,
-  showAddButton = true,        // 👈 أضف هذا
-  onAddToCollection = null,    // 👈 أضف هذا
+  showAddButton = true,
+  onAddToCollection = null,
 }) {
   const { t } = useTranslation();
 
@@ -47,7 +47,7 @@ export default function FavoriteFileCard({
       console.log("Download error:", err);
     }
   };
-  
+
   return (
     <div className="file-card">
       <div
@@ -82,7 +82,7 @@ export default function FavoriteFileCard({
             }
           >
             {file.title}
-          </h3>{" "}
+          </h3>
           <span className="file-type">{fileTypeText[file.fileType]}</span>
           <p className="file-description">{file.description}</p>
           <div className="file-meta">
@@ -113,15 +113,15 @@ export default function FavoriteFileCard({
         <button className="download-btn" onClick={handleDownload}>
           {t("browse.download")}
         </button>
-        
-         {showAddButton && onAddToCollection && (
-    <button 
-      className="add-to-collection-btn-card"
-      onClick={onAddToCollection}
-    >
-      + Add to Collection
-    </button>
-  )}
+
+        {showAddButton && onAddToCollection && (
+          <button
+            className="add-to-collection-btn-card"
+            onClick={onAddToCollection}
+          >
+            + {t("addToCollection.title")}
+          </button>
+        )}
       </div>
     </div>
   );

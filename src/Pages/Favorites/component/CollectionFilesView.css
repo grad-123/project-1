@@ -1,3 +1,5 @@
+/* ========== Collection Files View Styles ========== */
+
 .collection-files-view {
   padding: 2rem;
   animation: fadeIn 0.3s ease;
@@ -16,6 +18,7 @@
   }
 }
 
+/* ========== Header Section ========== */
 .collection-view-header {
   margin-bottom: 2rem;
 }
@@ -41,9 +44,9 @@
   background: var(--bg-secondary);
   border-color: var(--primary);
   transform: translateX(-2px);
+  color: var(--text-main);
 }
 
-/* RTL Support for back button */
 html[dir="rtl"] .back-btn:hover {
   transform: translateX(2px);
 }
@@ -53,6 +56,11 @@ html[dir="rtl"] .back-btn:hover {
   margin: 0 0 0.5rem 0;
   color: var(--text-main);
   font-weight: 700;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.2;
 }
 
 .collection-info-header p {
@@ -60,6 +68,10 @@ html[dir="rtl"] .back-btn:hover {
   margin: 0 0 0.75rem 0;
   font-size: 1rem;
   line-height: 1.5;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .files-count-badge {
@@ -75,7 +87,14 @@ html[dir="rtl"] .back-btn:hover {
   border: 1px solid var(--card-border);
 }
 
-/* Learning Section */
+.collection-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ========== Learning Section ========== */
 .learning-section-collection {
   background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   padding: 1.8rem;
@@ -99,7 +118,6 @@ html[dir="rtl"] .back-btn:hover {
   pointer-events: none;
 }
 
-/* RTL Support for decorative circle */
 html[dir="rtl"] .learning-section-collection::before {
   right: auto;
   left: -20%;
@@ -112,6 +130,7 @@ html[dir="rtl"] .learning-section-collection::before {
   margin-bottom: 1.5rem;
   position: relative;
   z-index: 1;
+  flex-wrap: wrap;
 }
 
 .progress-bar {
@@ -132,12 +151,10 @@ html[dir="rtl"] .learning-section-collection::before {
   overflow: hidden;
 }
 
-/* RTL Support for progress fill direction */
 html[dir="rtl"] .progress-fill {
   background: linear-gradient(270deg, var(--learning-accent), #c7e9fb);
 }
 
-/* عندما تكون النسبة 100% */
 .progress-fill[style*="width: 100%"] {
   background: linear-gradient(90deg, var(--progress-complete), var(--progress-complete-dark));
 }
@@ -207,28 +224,20 @@ html[dir="rtl"] .progress-fill[style*="width: 100%"] {
 .current-file-name {
   font-weight: 600;
   max-width: 350px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: break-word;
   font-size: 0.95rem;
-  color: var(--learning-text-primary);
-}
-
-.current-progress {
-  background: rgba(255, 255, 255, 0.25);
-  padding: 0.25rem 0.75rem;
-  border-radius: 30px;
-  font-size: 0.8rem;
-  font-weight: 600;
   color: var(--learning-text-primary);
 }
 
 .learning-buttons {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
-/* Start Learning Button */
 .start-learning-btn {
   display: inline-flex;
   align-items: center;
@@ -311,29 +320,42 @@ html[dir="rtl"] .progress-fill[style*="width: 100%"] {
 }
 
 .next-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
-  background: var(--bg-secondary);
-  color: var(--progress-complete);
 }
 
-/* Files List */
+/* ========== Files List Section ========== */
 .files-list-collection h3 {
   margin-bottom: 1rem;
   color: var(--text-main);
   font-size: 1.35rem;
   font-weight: 700;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: break-word;
 }
 
-.drag-hint {
-  font-size: 0.8rem;
+.sort-dropdown {
+  float: right;
+  font-size: 0.85rem;
+  font-weight: normal;
   color: var(--text-secondary);
-  margin-bottom: 1.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--bg-card);
-  border-radius: 12px;
-  display: inline-block;
+  background: var(--bg-secondary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  cursor: pointer;
   border: 1px solid var(--card-border);
+  transition: all 0.2s;
+}
+
+.sort-dropdown:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+
+html[dir="rtl"] .sort-dropdown {
+  float: left;
 }
 
 .files-grid-collection {
@@ -342,7 +364,6 @@ html[dir="rtl"] .progress-fill[style*="width: 100%"] {
   gap: 1.25rem;
 }
 
-/* File Card */
 .collection-file-card {
   background: var(--bg-card);
   border-radius: 20px;
@@ -362,20 +383,12 @@ html[dir="rtl"] .progress-fill[style*="width: 100%"] {
   border-color: var(--primary);
 }
 
-.collection-file-card.drag-over {
-  border: 2px solid var(--primary);
-  background: var(--bg-secondary);
-  transform: scale(1.01);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
 .collection-file-card.active-file-card {
   border: 2px solid var(--primary);
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Drag Handle - RTL Support */
 .drag-handle {
   position: absolute;
   top: 12px;
@@ -393,6 +406,10 @@ html[dir="rtl"] .progress-fill[style*="width: 100%"] {
   border-radius: 6px;
 }
 
+.drag-handle:active {
+  cursor: grabbing;
+}
+
 html:not([dir="rtl"]) .drag-handle {
   left: 12px;
   right: auto;
@@ -408,11 +425,6 @@ html[dir="rtl"] .drag-handle {
   background: var(--bg-secondary);
 }
 
-.collection-file-card:active .drag-handle {
-  cursor: grabbing;
-}
-
-/* File Icon - RTL Support */
 .file-icon-large {
   font-size: 2.5rem;
   width: 56px;
@@ -423,6 +435,7 @@ html[dir="rtl"] .drag-handle {
   background: var(--bg-secondary);
   border-radius: 16px;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 html:not([dir="rtl"]) .file-icon-large {
@@ -439,7 +452,6 @@ html[dir="rtl"] .file-icon-large {
   transform: scale(1.05);
 }
 
-/* File Details */
 .file-details-collection {
   flex: 1;
   min-width: 0;
@@ -450,9 +462,20 @@ html[dir="rtl"] .file-icon-large {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-main);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.completed-check {
+  color: #10b981;
+  font-size: 0.85rem;
 }
 
 .file-details-collection p {
@@ -490,9 +513,76 @@ html[dir="rtl"] .file-icon-large {
   color: var(--badge-color);
   font-weight: 500;
   border: 1px solid var(--card-border);
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: break-word;
 }
 
-/* Remove Button - RTL Support */
+/* ========== File Actions Buttons ========== */
+.file-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  z-index: 2;
+  position: relative;
+  flex-shrink: 0;
+}
+
+html:not([dir="rtl"]) .file-actions {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+html[dir="rtl"] .file-actions {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+.download-file-btn-collection {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  transition: all 0.2s;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.download-file-btn-collection:hover {
+  color: var(--primary);
+  background: var(--bg-secondary);
+  transform: scale(1.1);
+}
+
+.watch-video-btn-collection {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  transition: all 0.2s;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.watch-video-btn-collection:hover {
+  color: #ff4444;
+  background: var(--bg-secondary);
+  transform: scale(1.1);
+}
+
 .remove-file-btn-collection {
   background: none;
   border: none;
@@ -501,23 +591,12 @@ html[dir="rtl"] .file-icon-large {
   color: var(--text-secondary);
   padding: 0.25rem 0.5rem;
   transition: all 0.2s;
-  align-self: flex-start;
   border-radius: 8px;
   width: 28px;
   height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  z-index: 2;
-}
-
-html:not([dir="rtl"]) .remove-file-btn-collection {
-  margin-left: auto;
-}
-
-html[dir="rtl"] .remove-file-btn-collection {
-  margin-right: auto;
 }
 
 .remove-file-btn-collection:hover {
@@ -526,43 +605,7 @@ html[dir="rtl"] .remove-file-btn-collection {
   transform: scale(1.1);
 }
 
-/* Current Indicator Badge - RTL Support */
-.current-indicator-badge {
-  position: absolute;
-  top: -12px;
-  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 30px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  animation: pulseGlow 2s ease infinite;
-  z-index: 3;
-}
-
-html:not([dir="rtl"]) .current-indicator-badge {
-  right: 12px;
-  left: auto;
-}
-
-html[dir="rtl"] .current-indicator-badge {
-  left: 12px;
-  right: auto;
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 1;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-  50% {
-    opacity: 0.9;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  }
-}
-
-/* Empty State */
+/* ========== Empty & Loading States ========== */
 .empty-files-message {
   text-align: center;
   padding: 4rem 2rem;
@@ -580,13 +623,6 @@ html[dir="rtl"] .current-indicator-badge {
   color: var(--text-main);
 }
 
-.hint {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-top: 0.5rem;
-}
-
-/* Loading State */
 .collection-loading {
   display: flex;
   flex-direction: column;
@@ -612,11 +648,288 @@ html[dir="rtl"] .current-indicator-badge {
   100% { transform: rotate(360deg); }
 }
 
+.favorite-badge {
+  font-size: 0.9rem;
+  background: linear-gradient(135deg, #ff6b6b, #ef4444);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-left: 12px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.files-grid-collection.readonly-grid .collection-file-card {
+  cursor: pointer;
+}
+
+.files-grid-collection.readonly-grid .collection-file-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.files-grid-collection.readonly-grid .file-actions {
+  opacity: 0.7;
+}
+
+/* ========== Learning Mode Bar ========== */
+.learning-mode-bar {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 20px;
+  padding: 1.25rem 1.75rem;
+  margin-bottom: 1.75rem;
+  border: 2px solid var(--primary);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.learning-progress-container {
+  margin-bottom: 1rem;
+}
+
+.learning-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.learning-progress-text {
+  color: #1e3a8a;
+  font-weight: 700;
+  background: #e0e7ff;
+  padding: 0.3rem 1rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+}
+
+.learning-remaining-text {
+  font-size: 0.85rem;
+  background: #e5e7eb;
+  padding: 0.3rem 1rem;
+  border-radius: 30px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.learning-progress-bar {
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.learning-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #1e40af, #2563eb);
+  border-radius: 12px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+}
+
+.learning-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 1.8s infinite;
+}
+
+.learning-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.learning-stop-btn,
+.learning-next-btn,
+.learning-done-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.learning-stop-btn {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.learning-stop-btn:hover {
+  background: #dc2626;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.learning-next-btn {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.learning-next-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.learning-done-btn {
+  background: #16a34a;
+  color: white;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.learning-done-btn:hover {
+  background: #15803d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.4);
+}
+
+/* ========== Reordering Overlay ========== */
+.reordering-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.loading-spinner-small {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--input-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.reordering-overlay p {
+  color: white;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
 /* ============================================ */
 /* Dark Mode Specific Overrides */
 /* ============================================ */
 
-/* Progress Fill in Dark Mode */
+[data-theme="dark"] .collection-files-view {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .back-btn {
+  background: var(--bg-card);
+  border-color: var(--card-border);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .back-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .collection-info-header h1 {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .collection-info-header p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .files-count-badge {
+  background: var(--badge-bg);
+  color: var(--badge-color);
+}
+
+[data-theme="dark"] .learning-mode-bar {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] .learning-progress-text {
+  background: rgba(37, 99, 235, 0.2);
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .learning-remaining-text {
+  background: rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .learning-progress-bar {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .learning-progress-fill {
+  background: linear-gradient(90deg, #3b82f6, #1e40af, #3b82f6);
+}
+
+[data-theme="dark"] .learning-stop-btn {
+  background: rgba(220, 38, 38, 0.15);
+  color: #f87171;
+  border-color: #f87171;
+}
+
+[data-theme="dark"] .learning-stop-btn:hover {
+  background: #dc2626;
+  color: white;
+}
+
+[data-theme="dark"] .learning-next-btn {
+  background: #3b82f6;
+  color: white;
+}
+
+[data-theme="dark"] .learning-next-btn:hover {
+  background: #2563eb;
+}
+
+[data-theme="dark"] .learning-done-btn {
+  background: #22c55e;
+  color: white;
+}
+
+[data-theme="dark"] .learning-done-btn:hover {
+  background: #16a34a;
+}
+
 [data-theme="dark"] .progress-fill {
   background: linear-gradient(90deg, var(--learning-accent), #fde047);
 }
@@ -633,13 +946,11 @@ html[dir="rtl"][data-theme="dark"] .progress-fill[style*="width: 100%"] {
   background: linear-gradient(270deg, var(--progress-complete), var(--progress-complete-dark));
 }
 
-/* Progress Text in Dark Mode */
 [data-theme="dark"] .progress-text {
   background: rgba(0, 0, 0, 0.4);
   color: var(--learning-accent);
 }
 
-/* Current File Info in Dark Mode */
 [data-theme="dark"] .current-file-info {
   background: rgba(0, 0, 0, 0.4);
   border-color: rgba(255, 255, 255, 0.15);
@@ -653,12 +964,6 @@ html[dir="rtl"][data-theme="dark"] .progress-fill[style*="width: 100%"] {
   color: var(--learning-text-primary);
 }
 
-[data-theme="dark"] .current-progress {
-  background: rgba(0, 0, 0, 0.5);
-  color: var(--learning-accent);
-}
-
-/* Buttons in Dark Mode */
 [data-theme="dark"] .start-learning-btn {
   background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
   color: var(--learning-accent);
@@ -669,11 +974,6 @@ html[dir="rtl"][data-theme="dark"] .progress-fill[style*="width: 100%"] {
   color: var(--learning-accent);
 }
 
-[data-theme="dark"] .next-btn:disabled {
-  background: rgba(0, 0, 0, 0.3);
-  color: var(--progress-complete);
-}
-
 [data-theme="dark"] .stop-learning-btn {
   background: rgba(0, 0, 0, 0.3);
 }
@@ -682,20 +982,137 @@ html[dir="rtl"][data-theme="dark"] .progress-fill[style*="width: 100%"] {
   background: rgba(0, 0, 0, 0.4);
 }
 
-/* Drag Handle in Dark Mode */
 [data-theme="dark"] .drag-handle:hover {
   background: var(--bg-card);
 }
 
-/* Active File Card in Dark Mode */
+[data-theme="dark"] .collection-file-card {
+  background: var(--bg-card);
+  border-color: var(--card-border);
+}
+
 [data-theme="dark"] .collection-file-card.active-file-card {
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] .file-details-collection h4 {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .file-details-collection p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .file-type-badge {
+  background: var(--bg-secondary);
+  border-color: var(--card-border);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .course-name {
+  background: var(--badge-bg);
+  color: var(--badge-color);
+}
+
+[data-theme="dark"] .download-file-btn-collection {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .download-file-btn-collection:hover {
+  color: var(--primary);
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .watch-video-btn-collection {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .watch-video-btn-collection:hover {
+  color: #ff6666;
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .remove-file-btn-collection {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .remove-file-btn-collection:hover {
+  color: var(--color-delete);
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .empty-files-message {
+  background: var(--bg-card);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .empty-files-message p:first-child {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .empty-files-message p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .collection-loading {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .loading-spinner {
+  border-color: var(--card-border);
+  border-top-color: var(--primary);
+}
+
+[data-theme="dark"] .sort-dropdown {
+  background: var(--bg-secondary);
+  border-color: var(--card-border);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .sort-dropdown:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .reordering-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .loading-spinner-small {
+  border-color: #444;
+  border-top-color: var(--primary);
 }
 
 /* ============================================ */
 /* Responsive Design */
 /* ============================================ */
 
+/* للتابلت (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .collection-files-view {
+    padding: 1.5rem;
+  }
+  
+  .files-grid-collection {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+  }
+  
+  .collection-info-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .learning-mode-bar {
+    padding: 1rem 1.5rem;
+  }
+  
+  .learning-progress-info {
+    font-size: 0.85rem;
+  }
+}
+
+/* للتابلت الصغير والموبايل الكبير (481px - 768px) */
 @media (max-width: 768px) {
   .collection-files-view {
     padding: 1rem;
@@ -709,6 +1126,15 @@ html[dir="rtl"][data-theme="dark"] .progress-fill[style*="width: 100%"] {
     font-size: 1.5rem;
   }
   
+  .collection-info-header p {
+    font-size: 0.9rem;
+  }
+  
+  .collection-stats {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
   .learning-controls {
     flex-direction: column;
     align-items: stretch;
@@ -716,10 +1142,13 @@ html[dir="rtl"][data-theme="dark"] .progress-fill[style*="width: 100%"] {
   
   .current-file-info {
     justify-content: center;
+    flex-wrap: wrap;
   }
   
   .current-file-name {
-    max-width: 200px;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
   }
   
   .learning-buttons {
@@ -739,9 +1168,61 @@ html[dir="rtl"][data-theme="dark"] .progress-fill[style*="width: 100%"] {
     margin-right: 28px;
     margin-left: 0;
   }
+  
+  .sort-dropdown {
+    float: none;
+    display: inline-block;
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  html[dir="rtl"] .sort-dropdown {
+    float: none;
+    margin-right: 1rem;
+    margin-left: 0;
+  }
+  
+  .drag-handle {
+    top: 8px;
+  }
+  
+  html:not([dir="rtl"]) .drag-handle {
+    left: 8px;
+  }
+  
+  html[dir="rtl"] .drag-handle {
+    right: 8px;
+  }
+  
+  .learning-progress-info {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .learning-mode-bar {
+    padding: 1rem;
+  }
+  
+  .learning-controls {
+    justify-content: center;
+    margin-top: 0.75rem;
+  }
+  
+  .learning-stop-btn,
+  .learning-next-btn,
+  .learning-done-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
 }
 
+/* للموبايل الصغير (480px وما دون) */
 @media (max-width: 480px) {
+  .collection-files-view {
+    padding: 0.75rem;
+  }
+  
   .collection-file-card {
     flex-direction: column;
     align-items: center;
@@ -749,11 +1230,11 @@ html[dir="rtl"][data-theme="dark"] .progress-fill[style*="width: 100%"] {
   }
   
   .file-icon-large {
-    margin-left: 0;
-  }
-  
-  html[dir="rtl"] .file-icon-large {
-    margin-right: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 48px;
+    height: 48px;
+    font-size: 2rem;
   }
   
   .drag-handle {
@@ -772,91 +1253,195 @@ html[dir="rtl"][data-theme="dark"] .progress-fill[style*="width: 100%"] {
     text-align: center;
   }
   
+  .file-details-collection h4 {
+    justify-content: center;
+  }
+  
   .file-meta {
     justify-content: center;
   }
-}
-/* File Actions Container */
-.file-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  z-index: 2;
-  position: relative;
+  
+  .file-actions {
+    justify-content: center;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 0.5rem;
+  }
+  
+  .collection-info-header h1 {
+    font-size: 1.3rem;
+  }
+  
+  .collection-info-header p {
+    font-size: 0.85rem;
+  }
+  
+  .files-count-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+  }
+  
+  .start-learning-btn {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.85rem;
+  }
+  
+  .favorite-badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    margin-left: 8px;
+  }
+  
+  .files-list-collection h3 {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+  
+  .sort-dropdown {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 0.5rem 0 0 0 !important;
+  }
+  
+  .learning-mode-bar {
+    padding: 0.75rem;
+  }
+  
+  .learning-controls {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .learning-stop-btn,
+  .learning-next-btn,
+  .learning-done-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .learning-progress-text,
+  .learning-remaining-text {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.75rem;
+  }
+  
+  .empty-files-message {
+    padding: 2rem 1rem;
+  }
+  
+  .empty-files-message p:first-child {
+    font-size: 1rem;
+  }
+  
+  .back-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
 }
 
-/* Download Button */
-.download-file-btn-collection {
-  background: none;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  color: var(--text-secondary);
-  padding: 0.25rem 0.5rem;
-  transition: all 0.2s;
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* للموبايل الصغير جداً (380px وما دون) */
+@media (max-width: 380px) {
+  .collection-files-view {
+    padding: 0.5rem;
+  }
+  
+  .collection-info-header h1 {
+    font-size: 1.1rem;
+  }
+  
+  .collection-info-header p {
+    font-size: 0.8rem;
+  }
+  
+  .collection-file-card {
+    padding: 0.75rem;
+  }
+  
+  .file-details-collection h4 {
+    font-size: 0.85rem;
+  }
+  
+  .file-details-collection p {
+    font-size: 0.7rem;
+  }
+  
+  .file-type-badge,
+  .course-name {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.5rem;
+  }
+  
+  .download-file-btn-collection,
+  .watch-video-btn-collection {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+  
+  .remove-file-btn-collection {
+    width: 26px;
+    height: 26px;
+    font-size: 1rem;
+  }
 }
 
-.download-file-btn-collection:hover {
-  color: var(--primary);
-  background: var(--bg-secondary);
-  transform: scale(1.1);
+/* للشاشات الأفقية */
+@media (max-height: 600px) and (orientation: landscape) {
+  .collection-files-view {
+    padding: 0.75rem;
+  }
+  
+  .files-grid-collection {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+  
+  .collection-file-card {
+    padding: 0.6rem;
+  }
+  
+  .learning-mode-bar {
+    padding: 0.75rem;
+  }
+  
+  .learning-controls {
+    margin-top: 0.5rem;
+  }
 }
 
-/* Watch Video Button */
-.watch-video-btn-collection {
-  background: none;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  color: var(--text-secondary);
-  padding: 0.25rem 0.5rem;
-  transition: all 0.2s;
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.watch-video-btn-collection:hover {
-  color: #ff4444;
-  background: var(--bg-secondary);
-  transform: scale(1.1);
-}
-
-/* RTL Support for buttons */
-html[dir="rtl"] .file-actions {
-  margin-right: auto;
-  margin-left: 0;
-}
-
-html:not([dir="rtl"]) .file-actions {
-  margin-left: auto;
-  margin-right: 0;
-}
-
-/* Dark mode support */
-[data-theme="dark"] .download-file-btn-collection {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .download-file-btn-collection:hover {
-  color: var(--primary);
-  background: var(--bg-card);
-}
-
-[data-theme="dark"] .watch-video-btn-collection {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .watch-video-btn-collection:hover {
-  color: #ff6666;
-  background: var(--bg-card);
+/* تحسينات للتفاعل باللمس */
+@media (hover: none) and (pointer: coarse) {
+  .collection-file-card {
+    cursor: pointer;
+  }
+  
+  .drag-handle {
+    cursor: grab;
+  }
+  
+  .file-actions {
+    opacity: 1;
+  }
+  
+  .collection-file-card:hover {
+    transform: none;
+  }
+  
+  .collection-file-card:active {
+    transform: scale(0.98);
+  }
+  
+  .back-btn:active,
+  .start-learning-btn:active,
+  .learning-stop-btn:active,
+  .learning-next-btn:active,
+  .learning-done-btn:active {
+    transform: scale(0.97);
+  }
+  
+  .download-file-btn-collection:active,
+  .watch-video-btn-collection:active,
+  .remove-file-btn-collection:active {
+    transform: scale(0.95);
+  }
 }

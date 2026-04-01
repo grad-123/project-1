@@ -1,3 +1,5 @@
+/* ========== Modal Styles ========== */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -10,8 +12,19 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  animation: fadeIn 0.2s ease;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========== Add Collection Modal ========== */
 .add-collection-modal {
   background: var(--bg-card);
   border-radius: 16px;
@@ -22,6 +35,18 @@
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal-header {
@@ -30,6 +55,7 @@
   align-items: center;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--card-border);
+  background: var(--bg-card);
 }
 
 .modal-header h3 {
@@ -46,34 +72,45 @@
   cursor: pointer;
   color: var(--text-secondary);
   padding: 0.25rem;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-btn:hover {
   color: var(--text-main);
+  background: var(--bg-secondary);
+  transform: rotate(90deg);
 }
 
 .collections-list-modal {
   flex: 1;
   overflow-y: auto;
   padding: 0.5rem 0;
+  background: var(--bg-card);
 }
 
 .collection-option {
   padding: 1rem 1.5rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   border-bottom: 1px solid var(--card-border);
 }
 
 .collection-option:hover {
   background: var(--bg-secondary);
+  transform: translateX(4px);
 }
 
 .collection-option .collection-info h4 {
   font-size: 1rem;
   margin-bottom: 0.25rem;
   color: var(--text-main);
+  font-weight: 600;
 }
 
 .collection-option .collection-info p {
@@ -88,12 +125,16 @@
 .collection-option .collection-info span {
   font-size: 0.75rem;
   color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .no-collections {
   text-align: center;
   color: var(--text-secondary);
   padding: 2rem;
+  font-size: 0.9rem;
 }
 
 .create-new-link {
@@ -105,16 +146,21 @@
   cursor: pointer;
   color: var(--primary);
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  text-align: center;
 }
 
 .create-new-link:hover {
   background: var(--bg-card);
   border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* ========== Create Collection Form ========== */
 .create-collection-form {
   padding: 1.5rem;
+  background: var(--bg-card);
 }
 
 .create-collection-form input,
@@ -128,23 +174,27 @@
   background: var(--input-bg);
   color: var(--text-main);
   box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
 .create-collection-form input:focus,
 .create-collection-form textarea:focus {
   outline: none;
   border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .create-collection-form textarea {
   min-height: 80px;
   resize: vertical;
+  font-family: inherit;
 }
 
 .form-buttons {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+  margin-top: 0.5rem;
 }
 
 .form-buttons button {
@@ -152,7 +202,8 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
 .form-buttons button:first-child {
@@ -162,6 +213,7 @@
 
 .form-buttons button:first-child:hover {
   background: var(--card-border);
+  color: var(--text-main);
 }
 
 .form-buttons button:last-child {
@@ -172,14 +224,17 @@
 .form-buttons button:last-child:hover:not(:disabled) {
   opacity: 0.9;
   transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .form-buttons button:last-child:disabled {
   background: var(--card-border);
   cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
 }
 
-/* CreateCollectionModal specific */
+/* ========== Create Collection Modal ========== */
 .create-collection-modal {
   background: var(--bg-card);
   border-radius: 16px;
@@ -189,10 +244,12 @@
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
 }
 
 .modal-body {
   padding: 1.5rem;
+  background: var(--bg-card);
 }
 
 .modal-body input,
@@ -206,17 +263,20 @@
   background: var(--input-bg);
   color: var(--text-main);
   box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
 .modal-body input:focus,
 .modal-body textarea:focus {
   outline: none;
   border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .modal-body textarea {
   min-height: 80px;
   resize: vertical;
+  font-family: inherit;
 }
 
 .modal-footer {
@@ -225,6 +285,7 @@
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
+  background: var(--bg-card);
 }
 
 .modal-footer button {
@@ -232,7 +293,8 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
 .cancel-btn {
@@ -242,6 +304,7 @@
 
 .cancel-btn:hover {
   background: var(--card-border);
+  color: var(--text-main);
 }
 
 .create-btn {
@@ -252,14 +315,17 @@
 .create-btn:hover:not(:disabled) {
   opacity: 0.9;
   transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .create-btn:disabled {
   background: var(--card-border);
   cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
 }
 
-/* Scrollbar */
+/* ========== Scrollbar Styling ========== */
 .collections-list-modal::-webkit-scrollbar {
   width: 8px;
 }
@@ -272,6 +338,7 @@
 .collections-list-modal::-webkit-scrollbar-thumb {
   background: var(--card-border);
   border-radius: 4px;
+  transition: background 0.2s;
 }
 
 .collections-list-modal::-webkit-scrollbar-thumb:hover {
@@ -281,4 +348,252 @@
 .collections-list-modal {
   scrollbar-width: thin;
   scrollbar-color: var(--card-border) var(--bg-secondary);
+}
+
+/* ========== Dark Mode Specific Styles ========== */
+[data-theme="dark"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .add-collection-modal,
+[data-theme="dark"] .create-collection-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .modal-header {
+  background: var(--bg-card);
+  border-bottom-color: var(--card-border);
+}
+
+[data-theme="dark"] .modal-header h3 {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .close-btn {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .close-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .collections-list-modal {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .collection-option {
+  border-bottom-color: var(--card-border);
+}
+
+[data-theme="dark"] .collection-option:hover {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .collection-option .collection-info h4 {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .collection-option .collection-info p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .collection-option .collection-info span {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .no-collections {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .create-new-link {
+  background: var(--bg-secondary);
+  border-color: var(--card-border);
+  color: var(--primary);
+}
+
+[data-theme="dark"] .create-new-link:hover {
+  background: var(--bg-card);
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .create-collection-form {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .create-collection-form input,
+[data-theme="dark"] .create-collection-form textarea,
+[data-theme="dark"] .modal-body input,
+[data-theme="dark"] .modal-body textarea {
+  background: var(--input-bg);
+  border-color: var(--card-border);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .create-collection-form input:focus,
+[data-theme="dark"] .create-collection-form textarea:focus,
+[data-theme="dark"] .modal-body input:focus,
+[data-theme="dark"] .modal-body textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+[data-theme="dark"] .create-collection-form input::placeholder,
+[data-theme="dark"] .create-collection-form textarea::placeholder,
+[data-theme="dark"] .modal-body input::placeholder,
+[data-theme="dark"] .modal-body textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+[data-theme="dark"] .form-buttons button:first-child,
+[data-theme="dark"] .cancel-btn {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .form-buttons button:first-child:hover,
+[data-theme="dark"] .cancel-btn:hover {
+  background: var(--card-border);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .form-buttons button:last-child,
+[data-theme="dark"] .create-btn {
+  background: var(--primary);
+  color: white;
+}
+
+[data-theme="dark"] .form-buttons button:last-child:hover:not(:disabled),
+[data-theme="dark"] .create-btn:hover:not(:disabled) {
+  background: var(--primary-dark, #2563eb);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+[data-theme="dark"] .modal-footer {
+  background: var(--bg-card);
+  border-top-color: var(--card-border);
+}
+
+[data-theme="dark"] .collections-list-modal::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .collections-list-modal::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+}
+
+[data-theme="dark"] .collections-list-modal::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ========== Responsive Styles ========== */
+@media (max-width: 768px) {
+  .add-collection-modal,
+  .create-collection-modal {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .collection-option {
+    padding: 0.875rem 1rem;
+  }
+
+  .collection-option .collection-info h4 {
+    font-size: 0.95rem;
+  }
+
+  .collection-option .collection-info p {
+    font-size: 0.8rem;
+  }
+
+  .create-collection-form,
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-footer {
+    padding: 0.875rem 1rem;
+  }
+
+  .form-buttons button,
+  .modal-footer button {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 0.875rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+  }
+
+  .close-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+
+  .collection-option {
+    padding: 0.75rem;
+  }
+
+  .collection-option .collection-info h4 {
+    font-size: 0.9rem;
+  }
+
+  .collection-option .collection-info p {
+    font-size: 0.75rem;
+  }
+
+  .create-collection-form input,
+  .create-collection-form textarea,
+  .modal-body input,
+  .modal-body textarea {
+    padding: 0.625rem;
+    font-size: 0.85rem;
+  }
+
+  .form-buttons,
+  .modal-footer {
+    gap: 0.75rem;
+  }
+
+  .form-buttons button,
+  .modal-footer button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* ========== Animations ========== */
+@keyframes modalPulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.add-collection-modal,
+.create-collection-modal {
+  animation: modalPulse 0.25s ease-out;
 }

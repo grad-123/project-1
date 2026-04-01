@@ -1,67 +1,268 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "../../../api/axiosInstance";
 import { useTranslation } from "react-i18next";
-import { FaArrowLeft, FaPlay, FaStop, FaStepForward, FaDownload, FaVideo } from "react-icons/fa";
+import { FaArrowLeft, FaPlay, FaStop, FaDownload, FaVideo, FaArrowRight, FaCheck } from "react-icons/fa";
 import "./CollectionFilesView.css";
 
-function CollectionFilesView({ collection, onBack, onCollectionUpdate, serverUrl, showMessage }) {
+function CollectionFilesView({ 
+  collection, 
+  onBack, 
+  onCollectionUpdate, 
+  serverUrl, 
+  showMessage,
+  isFavoriteCollection = false 
+}) {
   const { t } = useTranslation();
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLearningMode, setIsLearningMode] = useState(false);
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
-  const [progressState, setProgressState] = useState({});
-  const [localFilesCache, setLocalFilesCache] = useState({});
+  const [completedCount, setCompletedCount] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [isReordering, setIsReordering] = useState(false);
   
-  const [draggedFile, setDraggedFile] = useState(null);
-  const [dragOverIndex, setDragOverIndex] = useState(null);
-  
-  const isMounted = useRef(true);
-  const isLoadingRef = useRef(false);
+  const hasLoadedRef = useRef(false);
+  const collectionIdRef = useRef(collection?.id);
 
+  // تحميل الملفات
   useEffect(() => {
-    const savedProgress = localStorage.getItem("collectionProgress");
-    if (savedProgress) {
-      setProgressState(JSON.parse(savedProgress));
-    }
-    
-    const savedCache = localStorage.getItem("collectionFilesCache");
-    if (savedCache) {
-      setLocalFilesCache(JSON.parse(savedCache));
-    }
-    
-    return () => {
-      isMounted.current = false;
+    const loadFiles = async () => {
+      if (!collection?.id) {
+        setLoading(false);
+        return;
+      }
+      
+      if (collectionIdRef.current === collection.id && hasLoadedRef.current) {
+        return;
+      }
+      
+      collectionIdRef.current = collection.id;
+      setLoading(true);
+      
+      try {
+        const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+        
+        if (res.data && res.data.data && res.data.data.files) {
+          const formattedFiles = res.data.data.files.map((file, index) => ({
+            ...file,
+            id: file.eduFileId || file.id,
+            eduFileId: file.eduFileId || file.id,
+            fileType: Number(file.fileType),
+            title: file.title || file.name || "Untitled",
+            filePath: file.filePath,
+            courseName: file.courseName,
+            categoryName: file.categoryName,
+            downloadCount: file.downloadCount || 0,
+            order: file.order !== undefined ? file.order : index
+          }));
+          
+          formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
+          setFiles(formattedFiles);
+          
+          const savedProgress = localStorage.getItem(`learning_progress_${collection.id}`);
+          if (savedProgress) {
+            try {
+              const progress = JSON.parse(savedProgress);
+              setCompletedCount(progress.completedCount || 0);
+              setCurrentFileIndex(progress.currentFileIndex || 0);
+            } catch (e) {
+              console.log("Error parsing saved progress");
+            }
+          }
+        } else {
+          setFiles([]);
+        }
+      } catch (err) {
+        console.error("Error loading files:", err);
+        setFiles([]);
+        if (showMessage) {
+          showMessage(t("collection.errorLoadingFiles") + ": " + (err.response?.data?.message || err.message), "error");
+        }
+      } finally {
+        setLoading(false);
+        hasLoadedRef.current = true;
+      }
     };
-  }, []);
+    
+    loadFiles();
+  }, [collection?.id, showMessage, t]);
 
-  const updateCache = useCallback((collectionId, filesData) => {
-    setLocalFilesCache(prevCache => {
-      const newCache = { ...prevCache, [collectionId]: filesData };
-      localStorage.setItem("collectionFilesCache", JSON.stringify(newCache));
-      return newCache;
-    });
-  }, []);
+  // حفظ حالة التقدم
+  const saveProgress = useCallback(() => {
+    if (!collection?.id) return;
+    const progress = {
+      completedCount: completedCount,
+      currentFileIndex: currentFileIndex,
+      lastUpdated: new Date().toISOString()
+    };
+    localStorage.setItem(`learning_progress_${collection.id}`, JSON.stringify(progress));
+  }, [collection?.id, completedCount, currentFileIndex]);
+
+  const getProgressPercentage = () => {
+    if (files.length === 0) return 0;
+    return ((completedCount / files.length) * 100).toFixed(0);
+  };
+
+  const startLearningMode = () => {
+    if (files.length === 0) {
+      showMessage(t("collection.noFilesToLearn"), "warning");
+      return;
+    }
+    
+    if (completedCount >= files.length) {
+      setCompletedCount(0);
+      setCurrentFileIndex(0);
+      localStorage.removeItem(`learning_progress_${collection.id}`);
+    }
+    
+    setIsLearningMode(true);
+  };
+
+  const stopLearningMode = () => {
+    saveProgress();
+    setIsLearningMode(false);
+  };
+
+  const nextFile = () => {
+    if (currentFileIndex + 1 < files.length) {
+      setCurrentFileIndex(currentFileIndex + 1);
+      setCompletedCount(completedCount + 1);
+      setTimeout(() => saveProgress(), 100);
+    } else {
+      setCompletedCount(files.length);
+      setCurrentFileIndex(files.length - 1);
+      setTimeout(() => saveProgress(), 100);
+    }
+  };
+
+  const completeLearning = () => {
+    const finalProgress = {
+      completedCount: files.length,
+      currentFileIndex: files.length - 1,
+      lastUpdated: new Date().toISOString()
+    };
+    localStorage.setItem(`learning_progress_${collection.id}`, JSON.stringify(finalProgress));
+    setIsLearningMode(false);
+    showMessage(t("collection.congratulations"), "success");
+  };
+
+  const remainingFiles = files.length - completedCount;
+  const isCompleted = completedCount >= files.length && files.length > 0;
+  const progressPercentage = getProgressPercentage();
+
+  // إعادة ترتيب الملفات - تبديل الملفين فقط
+  const handleDragStart = (e, index) => {
+    if (isFavoriteCollection) return;
+    setIsDragging(true);
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", index);
+  };
+
+  const handleDragOver = (e) => {
+    if (isFavoriteCollection) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = async (e, dropIndex) => {
+    if (isFavoriteCollection) return;
+    e.preventDefault();
+    
+    let dragIndex = draggedIndex;
+    if (dragIndex === null) {
+      const dragIndexStr = e.dataTransfer.getData("text/plain");
+      if (dragIndexStr) {
+        dragIndex = parseInt(dragIndexStr, 10);
+      }
+    }
+    
+    if (dragIndex === null || dragIndex === dropIndex) {
+      setIsDragging(false);
+      setDraggedIndex(null);
+      return;
+    }
+    
+    setIsReordering(true);
+    
+    const newFiles = [...files];
+    // تبديل الملفين فقط
+    const temp = newFiles[dragIndex];
+    newFiles[dragIndex] = newFiles[dropIndex];
+    newFiles[dropIndex] = temp;
+    
+    setFiles(newFiles);
+    
+    const reorderData = {
+      collectionId: collection.id,
+      files: newFiles.map((file, idx) => ({
+        eduFileId: file.id || file.eduFileId,
+        order: idx
+      }))
+    };
+    
+    console.log("Swapping files at positions:", dragIndex, "and", dropIndex);
+    
+    try {
+      await axios.put("/api/v1/Collection/Reorder", reorderData, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (showMessage) showMessage(t("collection.orderUpdated"), "success");
+      
+      const updatedFiles = newFiles.map((file, idx) => ({ ...file, order: idx }));
+      setFiles(updatedFiles);
+      
+    } catch (err) {
+      console.log("Error updating order:", err);
+      if (showMessage) showMessage(t("collection.orderUpdateError"), "error");
+      
+      try {
+        const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+        if (res.data && res.data.data && res.data.data.files) {
+          const formattedFiles = res.data.data.files.map((file, idx) => ({
+            ...file,
+            id: file.eduFileId || file.id,
+            eduFileId: file.eduFileId || file.id,
+            fileType: Number(file.fileType),
+            title: file.title || file.name || "Untitled",
+            filePath: file.filePath,
+            courseName: file.courseName,
+            categoryName: file.categoryName,
+            downloadCount: file.downloadCount || 0,
+            order: file.order !== undefined ? file.order : idx
+          }));
+          formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
+          setFiles(formattedFiles);
+        }
+      } catch (reloadErr) {
+        console.log("Error reloading files:", reloadErr);
+      }
+    } finally {
+      setIsReordering(false);
+      setIsDragging(false);
+      setDraggedIndex(null);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDraggedIndex(null);
+  };
 
   const handleDownload = async (file, e) => {
     e.stopPropagation();
     if (!file || !file.id) {
-      if (showMessage) {
-        showMessage(t("collectionFiles.fileIdNotAvailable") || "File ID not available", "error");
-      }
+      if (showMessage) showMessage(t("collection.fileIdNotAvailable"), "error");
       return;
     }
     
     try {
-      const response = await axios.get(
-        `/Api/EduFile/Download/${file.id}`,
-        {
-          responseType: "blob",
-        }
-      );
+      const response = await axios.get(`/Api/EduFile/Download/${file.id}`, {
+        responseType: "blob",
+      });
 
       const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
-
       const link = document.createElement("a");
       link.href = fileUrl;
       const fileName = file.filePath?.split("/").pop() || file.title || 'download';
@@ -69,401 +270,66 @@ function CollectionFilesView({ collection, onBack, onCollectionUpdate, serverUrl
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
       window.URL.revokeObjectURL(fileUrl);
       
-      if (showMessage) {
-        showMessage(t("collectionFiles.downloadStarted") || "Download started!", "success");
-      }
+      if (showMessage) showMessage(t("collection.downloadStarted"), "success");
     } catch (err) {
       console.log("Download error:", err);
-      if (showMessage) {
-        showMessage(t("collectionFiles.downloadError") || "Error downloading file", "error");
-      }
+      if (showMessage) showMessage(t("collection.downloadError"), "error");
     }
   };
 
   const handleWatchVideo = (file, e) => {
     e.stopPropagation();
     if (!file || !file.filePath) {
-      if (showMessage) {
-        showMessage(t("collectionFiles.filePathNotAvailable") || "File path not available", "error");
-      }
+      if (showMessage) showMessage(t("collection.filePathNotAvailable"), "error");
       return;
     }
     const fileUrl = `${serverUrl}${file.filePath}`;
     window.open(fileUrl, "_blank");
-    
-    if (showMessage) {
-      showMessage(t("collectionFiles.watchingVideo") || "Opening video...", "info");
-    }
+    if (showMessage) showMessage(t("collection.watchingVideo"), "info");
   };
-
-  const loadCollectionFiles = useCallback(async () => {
-    if (!collection?.id || isLoadingRef.current) return;
-    
-    isLoadingRef.current = true;
-    
-    try {
-      setLoading(true);
-      
-      const progress = progressState[collection.id];
-      if (progress) {
-        setCurrentFileIndex(progress.currentIndex || 0);
-        setIsLearningMode(progress.isLearningMode || false);
-      } else {
-        setCurrentFileIndex(0);
-        setIsLearningMode(false);
-      }
-      
-      if (localFilesCache[collection.id] && localFilesCache[collection.id].length > 0) {
-        setFiles(localFilesCache[collection.id]);
-        console.log(`✅ Loaded ${localFilesCache[collection.id].length} files from cache`);
-        setLoading(false);
-        isLoadingRef.current = false;
-        return;
-      }
-      
-      const oldStorageKey = `collection_files_${collection.id}`;
-      const oldSavedFiles = localStorage.getItem(oldStorageKey);
-      if (oldSavedFiles) {
-        const parsedFiles = JSON.parse(oldSavedFiles);
-        if (parsedFiles.length > 0) {
-          console.log(`✅ Loaded ${parsedFiles.length} files from old storage format`);
-          setFiles(parsedFiles);
-          updateCache(collection.id, parsedFiles);
-          setLoading(false);
-          isLoadingRef.current = false;
-          return;
-        }
-      }
-      
-      console.log("No files found in cache or storage");
-      setFiles([]);
-      
-    } catch (err) {
-      console.log("Error loading files:", err);
-      setFiles([]);
-    } finally {
-      if (isMounted.current) {
-        setLoading(false);
-      }
-      isLoadingRef.current = false;
-    }
-  }, [collection, progressState, localFilesCache, updateCache]);
-
-  useEffect(() => {
-    if (collection?.id) {
-      loadCollectionFiles();
-    }
-  }, [collection?.id, loadCollectionFiles]);
-
-  const prevFilesRef = useRef();
-  useEffect(() => {
-    if (collection?.id && files.length > 0 && JSON.stringify(prevFilesRef.current) !== JSON.stringify(files)) {
-      prevFilesRef.current = files;
-      updateCache(collection.id, files);
-      const oldStorageKey = `collection_files_${collection.id}`;
-      localStorage.setItem(oldStorageKey, JSON.stringify(files));
-    } else if (collection?.id && files.length === 0 && prevFilesRef.current !== undefined) {
-      prevFilesRef.current = files;
-      const oldStorageKey = `collection_files_${collection.id}`;
-      localStorage.removeItem(oldStorageKey);
-    }
-  }, [files, collection, updateCache]);
-
-  useEffect(() => {
-    const handleFilesAdded = (event) => {
-      if (event.detail.collectionId === collection?.id && isMounted.current) {
-        console.log("📥 Files added event received:", event.detail);
-        
-        const newFiles = event.detail.files || [];
-        setFiles(prevFiles => {
-          const existingIds = new Set(prevFiles.map(f => f.id || f.eduFileId));
-          const existingTitles = new Set(prevFiles.map(f => f.title?.toLowerCase()));
-          
-          const duplicateFiles = newFiles.filter(f => {
-            const fileId = f.id || f.eduFileId;
-            const fileTitle = f.title?.toLowerCase();
-            return existingIds.has(fileId) || existingTitles.has(fileTitle);
-          });
-          
-          const uniqueNewFiles = newFiles.filter(f => {
-            const fileId = f.id || f.eduFileId;
-            const fileTitle = f.title?.toLowerCase();
-            return !existingIds.has(fileId) && !existingTitles.has(fileTitle);
-          });
-          
-          if (duplicateFiles.length > 0 && showMessage) {
-            const duplicateNames = duplicateFiles.map(f => f.title).join(', ');
-            showMessage(`⚠️ ${t("collectionFiles.fileAlreadyExists") || "File already exists in this collection"}: ${duplicateNames}`, "warning");
-          }
-          
-          const updatedFiles = [...prevFiles, ...uniqueNewFiles];
-          
-          updateCache(collection.id, updatedFiles);
-          
-          const oldStorageKey = `collection_files_${collection.id}`;
-          localStorage.setItem(oldStorageKey, JSON.stringify(updatedFiles));
-          
-          console.log(`✅ Added ${uniqueNewFiles.length} files, total: ${updatedFiles.length}`);
-          
-          if (showMessage && uniqueNewFiles.length > 0) {
-            showMessage(`✅ ${t("collectionFiles.addedToCollection") || "Added"} ${uniqueNewFiles.length} ${t("collectionFiles.file") || "file(s)"} ${t("collectionFiles.toCollection") || "to collection"}`, "success");
-          }
-          
-          return updatedFiles;
-        });
-        
-        if (onCollectionUpdate) onCollectionUpdate();
-      }
-    };
-    
-    window.addEventListener('filesAddedToCollection', handleFilesAdded);
-    return () => {
-      window.removeEventListener('filesAddedToCollection', handleFilesAdded);
-    };
-  }, [collection, onCollectionUpdate, showMessage, updateCache, t]);
-
-  const saveProgress = useCallback((collectionId, progress) => {
-    setProgressState(prevState => {
-      const newProgress = { ...prevState, [collectionId]: progress };
-      localStorage.setItem("collectionProgress", JSON.stringify(newProgress));
-      return newProgress;
-    });
-  }, []);
 
   const handleRemoveFile = async (fileId, e) => {
     e.stopPropagation();
-    if (!collection) return;
-    
-    try {
-      await axios.delete("/api/v1/collection/RemoveFile", {
-        data: {
-          collectionId: collection.id,
-          eduFileId: fileId
-        }
-      });
-      
-      setFiles(prev => {
-        const updatedFiles = prev.filter(f => (f.id || f.eduFileId) !== fileId);
-        updateCache(collection.id, updatedFiles);
-        
-        // Update old format
-        const oldStorageKey = `collection_files_${collection.id}`;
-        if (updatedFiles.length > 0) {
-          localStorage.setItem(oldStorageKey, JSON.stringify(updatedFiles));
-        } else {
-          localStorage.removeItem(oldStorageKey);
-        }
-        
-        return updatedFiles;
-      });
-      
-      // Update progress if current file is removed
-      if (currentFileIndex >= files.length - 1) {
-        const newIndex = Math.max(0, files.length - 2);
-        setCurrentFileIndex(newIndex);
-        if (isLearningMode) {
-          saveProgress(collection.id, {
-            currentIndex: newIndex,
-            isLearningMode: true
-          });
-        }
-      }
-      
-      if (showMessage) {
-        showMessage(t("collectionFiles.fileRemoved") || "File removed from collection", "success");
-      }
-      if (onCollectionUpdate) onCollectionUpdate();
-    } catch (err) {
-      console.log("Error removing file:", err);
-      if (showMessage) {
-        showMessage(t("collectionFiles.errorRemovingFile") || "Error removing file", "error");
-      }
-    }
-  };
-
-  const handleReorder = useCallback(async (reorderedFiles) => {
-    if (!collection) return;
-    
-    try {
-      const payload = {
-        collectionId: collection.id,
-        files: reorderedFiles.map((file, index) => ({
-          eduFileId: file.id || file.eduFileId,
-          order: index
-        }))
-      };
-      
-      console.log("Sending reorder payload:", payload);
-      await axios.put("/api/v1/collection/Reorder", payload);
-      
-      // Update local state and cache
-      setFiles(reorderedFiles);
-      updateCache(collection.id, reorderedFiles);
-      
-      // Update progress if in learning mode
-      if (isLearningMode) {
-        const currentFileId = files[currentFileIndex]?.id || files[currentFileIndex]?.eduFileId;
-        const newIndex = reorderedFiles.findIndex(f => 
-          (f.id || f.eduFileId) === currentFileId
-        );
-        if (newIndex !== -1 && newIndex !== currentFileIndex) {
-          setCurrentFileIndex(newIndex);
-          saveProgress(collection.id, {
-            currentIndex: newIndex,
-            isLearningMode: true
-          });
-        }
-      }
-      
-      if (showMessage) {
-        showMessage(t("collectionFiles.filesReordered") || "Files reordered successfully", "success");
-      }
-      
-    } catch (err) {
-      console.log("Error reordering files:", err);
-      if (showMessage) {
-        showMessage(t("collectionFiles.errorReordering") || "Error reordering files", "error");
-      }
-    }
-  }, [collection, files, currentFileIndex, isLearningMode, updateCache, saveProgress, showMessage, t]);
-
-  // Drag and Drop handlers
-  const handleDragStart = (e, file, index) => {
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', JSON.stringify({ file, index }));
-    setDraggedFile({ file, index });
-    e.target.classList.add('dragging');
-  };
-
-  const handleDragOver = (e, index) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    if (dragOverIndex !== index) {
-      setDragOverIndex(index);
-    }
-  };
-
-  const handleDrop = async (e, targetIndex) => {
-    e.preventDefault();
-    
-    if (!draggedFile) {
-      setDragOverIndex(null);
+    if (isFavoriteCollection) {
+      if (showMessage) showMessage(t("collection.cannotRemoveFromFavorite"), "warning");
       return;
     }
     
-    const sourceIndex = draggedFile.index;
+    if (!collection) return;
     
-    if (sourceIndex === targetIndex) {
-      setDraggedFile(null);
-      setDragOverIndex(null);
-      return;
+    if (window.confirm(t("collection.removeFileConfirm") || "Remove this file from collection?")) {
+      setIsReordering(true);
+      try {
+        await axios.delete("/api/v1/collection/RemoveFile", {
+          data: {
+            collectionId: collection.id,
+            eduFileId: fileId
+          }
+        });
+        
+        const newFiles = files.filter(f => (f.id || f.eduFileId) !== fileId);
+        setFiles(newFiles);
+        
+        if (showMessage) showMessage(t("collection.fileRemoved"), "success");
+        if (onCollectionUpdate) onCollectionUpdate();
+      } catch (err) {
+        console.log("Error removing file:", err);
+        if (showMessage) showMessage(t("collection.removeError"), "error");
+      } finally {
+        setIsReordering(false);
+      }
     }
-    
-    // Reorder files
-    const newFiles = [...files];
-    const [removed] = newFiles.splice(sourceIndex, 1);
-    newFiles.splice(targetIndex, 0, removed);
-    
-    // Call API to save new order
-    await handleReorder(newFiles);
-    
-    setDraggedFile(null);
-    setDragOverIndex(null);
   };
 
-  const handleDragEnd = (e) => {
-    e.target.classList.remove('dragging');
-    setDraggedFile(null);
-    setDragOverIndex(null);
-  };
-
-  const handleFileClick = (file, index) => {
+  const handleFileClick = (file) => {
     if (!file || !file.filePath) {
-      console.log("No file path for file:", file);
-      if (showMessage) {
-        showMessage(t("collectionFiles.filePathNotAvailable") || "File path not available", "error");
-      }
+      if (showMessage) showMessage(t("collection.filePathNotAvailable"), "error");
       return;
     }
     const fileUrl = `${serverUrl}${file.filePath}`;
     window.open(fileUrl, "_blank");
-    
-    if (isLearningMode) {
-      setCurrentFileIndex(index);
-      if (collection) {
-        saveProgress(collection.id, {
-          currentIndex: index,
-          isLearningMode: true
-        });
-      }
-    }
-  };
-
-  const handleStartLearning = () => {
-    if (!files || files.length === 0) {
-      if (showMessage) {
-        showMessage("No files to learn", "error");
-      }
-      return;
-    }
-    if (!collection) return;
-    
-    let startIndex = 0;
-    const progress = progressState[collection.id];
-    if (progress && progress.currentIndex !== undefined) {
-      startIndex = Math.min(progress.currentIndex, files.length - 1);
-    }
-    
-    setCurrentFileIndex(startIndex);
-    setIsLearningMode(true);
-    
-    saveProgress(collection.id, {
-      currentIndex: startIndex,
-      isLearningMode: true
-    });
-  };
-
-  const handleStopLearning = () => {
-    setIsLearningMode(false);
-    if (collection) {
-      saveProgress(collection.id, {
-        currentIndex: currentFileIndex,
-        isLearningMode: false
-      });
-    }
-  };
-
-  const handleNext = () => {
-    if (!files || files.length === 0) return;
-    if (!collection) return;
-    
-    if (currentFileIndex < files.length - 1) {
-      const newIndex = currentFileIndex + 1;
-      setCurrentFileIndex(newIndex);
-      
-      saveProgress(collection.id, {
-        currentIndex: newIndex,
-        isLearningMode: true
-      });
-    } else {
-      setIsLearningMode(false);
-      saveProgress(collection.id, {
-        currentIndex: files.length - 1,
-        isLearningMode: false,
-        completed: true
-      });
-      if (showMessage) {
-        showMessage(t("collectionFiles.collectionCompleted") || "🎉 Congratulations! You've completed this collection!", "success");
-      }
-    }
-  };
-
-  const getProgressPercentage = () => {
-    if (!files || files.length === 0) return 0;
-    return Math.round(((currentFileIndex + 1) / files.length) * 100);
   };
 
   const getFileTypeIcon = (fileType) => {
@@ -472,28 +338,25 @@ function CollectionFilesView({ collection, onBack, onCollectionUpdate, serverUrl
   };
 
   const getFileTypeText = (fileType) => {
-    const types = { 
-      0: t("collectionFiles.video") || "Video", 
-      1: t("collectionFiles.slides") || "Slides", 
-      2: t("collectionFiles.summary") || "Summary", 
-      3: t("collectionFiles.exam") || "Exam", 
-      4: t("collectionFiles.assignment") || "Assignment", 
-      5: t("collectionFiles.book") || "Book", 
-      6: t("collectionFiles.other") || "Other" 
+    const types = {
+      0: t("collection.video"),
+      1: t("collection.slides"),
+      2: t("collection.summary"),
+      3: t("collection.exam"),
+      4: t("collection.assignment"),
+      5: t("collection.book"),
+      6: t("collection.other")
     };
-    return types[fileType] || "File";
+    return types[fileType] || t("collection.other");
   };
 
-  // Check if file is a video (fileType 0)
-  const isVideo = (fileType) => {
-    return fileType === 0;
-  };
+  const isVideo = (fileType) => fileType === 0;
 
   if (loading) {
     return (
       <div className="collection-loading">
         <div className="loading-spinner"></div>
-        <p>{t("collectionFiles.loadingCollectionFiles") || "Loading collection files..."}</p>
+        <p>{t("collection.loadingCollectionFiles")}</p>
       </div>
     );
   }
@@ -502,138 +365,129 @@ function CollectionFilesView({ collection, onBack, onCollectionUpdate, serverUrl
     <div className="collection-files-view">
       <div className="collection-view-header">
         <button className="back-btn" onClick={onBack}>
-          <FaArrowLeft /> {t("collectionFiles.backToFavorites") || "Back to Favorites"}
+          <FaArrowLeft /> {t("collection.backToFavorites")}
         </button>
         <div className="collection-info-header">
-          <h1>{collection?.name || "Collection"}</h1>
-          <p>{collection?.description || t("collectionFiles.noDescription") || "No description"}</p>
-          <span className="files-count-badge">
-            {files.length} {files.length === 1 ? (t("collectionFiles.file") || "file") : (t("collectionFiles.files") || "files")} 
-            {collection.filesCount > 0 && ` (${t("collectionFiles.total") || "from"} ${collection.filesCount} ${t("collectionFiles.files") || "files"})`}
-          </span>
+          <h1>
+            {collection?.name || t("collection.collections")}
+            {isFavoriteCollection && <span className="favorite-badge"> ❤️ {t("collection.favoriteCollections")}</span>}
+          </h1>
+          <p>{collection?.description || t("collection.noDescription")}</p>
+          <div className="collection-stats">
+            <span className="files-count-badge">
+              {files.length} {files.length === 1 ? t("collection.file") : t("collection.files")}
+            </span>
+            {files.length > 0 && !isLearningMode && (
+              <button className="start-learning-btn" onClick={startLearningMode}>
+                <FaPlay /> {t("collection.startLearning")}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {files.length > 0 && (
-        <div className="learning-section-collection">
-          <div className="progress-bar-container">
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${getProgressPercentage()}%` }} />
+      {isLearningMode && (
+        <div className="learning-mode-bar">
+          <div className="learning-progress-container">
+            <div className="learning-progress-info">
+              <span className="learning-progress-text">
+                {t("collection.learningProgress")}: {completedCount}/{files.length} ({progressPercentage}%)
+              </span>
+              <span className="learning-remaining-text">
+                {remainingFiles} {t("collection.remaining")}
+              </span>
             </div>
-            <span className="progress-text">{getProgressPercentage()}% {t("collectionFiles.completedPercent") || "Completed"}</span>
+            <div className="learning-progress-bar">
+              <div 
+                className="learning-progress-fill" 
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
           </div>
           
           <div className="learning-controls">
-            {!isLearningMode ? (
-              <button className="start-learning-btn" onClick={handleStartLearning}>
-                <FaPlay /> {t("collectionFiles.startLearning") || "Start Learning Mode"}
+            <button className="learning-stop-btn" onClick={stopLearningMode}>
+              <FaStop /> {t("collection.stop")}
+            </button>
+            {!isCompleted ? (
+              <button className="learning-next-btn" onClick={nextFile}>
+                {t("collection.next")} <FaArrowRight />
               </button>
             ) : (
-              <>
-                <div className="current-file-info">
-                  <span className="current-label">{t("collectionFiles.currentlyLearning") || "Currently learning:"}</span>
-                  <span className="current-file-name">
-                    {files[currentFileIndex]?.title || "Loading..."}
-                  </span>
-                  <span className="current-progress">
-                    {currentFileIndex + 1} / {files.length}
-                  </span>
-                </div>
-                <div className="learning-buttons">
-                  <button className="stop-learning-btn" onClick={handleStopLearning}>
-                    <FaStop /> {t("collectionFiles.stopLearning") || "Stop Learning"}
-                  </button>
-                  <button 
-                    className="next-btn" 
-                    onClick={handleNext}
-                    disabled={currentFileIndex >= files.length - 1}
-                  >
-                    {currentFileIndex >= files.length - 1 ? 
-                      (t("collectionFiles.completed") || "✅ Completed") : 
-                      <><FaStepForward /> {t("collectionFiles.next") || "Next"}</>}
-                  </button>
-                </div>
-              </>
+              <button className="learning-done-btn" onClick={completeLearning}>
+                <FaCheck /> {t("collection.done")}
+              </button>
             )}
           </div>
         </div>
       )}
 
       <div className="files-list-collection">
-        <h3>{t("collectionFiles.filesInCollection") || "Files in this collection"}</h3>
-        <p className="drag-hint">💡 {t("collectionFiles.dragHint") || "Drag the ⋮⋮ icon to reorder files"}</p>
+        <h3>{isFavoriteCollection ? t("collection.filesInCollection") : t("collection.dragHint")}</h3>
+        
+        {isReordering && (
+          <div className="reordering-overlay">
+            <div className="loading-spinner-small"></div>
+            <p>{t("collection.updatingOrder")}</p>
+          </div>
+        )}
+        
         {files.length === 0 ? (
           <div className="empty-files-message">
-            <p>{t("collectionFiles.noFilesVisible") || "📁 No files visible in this collection"}</p>
-            <p className="hint">
-              {t("collectionFiles.apiFilesHint", { count: collection.filesCount }) || 
-                `The collection has ${collection.filesCount} files, but they cannot be displayed.`}
-            </p>
-            <p className="hint" style={{fontWeight: "bold", marginTop: "1rem"}}>
-              {t("collectionFiles.solutionHint") || "⚠️ Solution: Add a new file to this collection, then it will appear here."}
-            </p>
+            <p>📁 {t("collection.noFilesFound")}</p>
           </div>
         ) : (
-          <div className="files-grid-collection">
-            {files.map((file, index) => (
-              <div
-                key={file.id || file.eduFileId || index}
-                className={`collection-file-card ${isLearningMode && index === currentFileIndex ? "active-file-card" : ""} ${dragOverIndex === index ? "drag-over" : ""}`}
-                draggable={true}
-                onDragStart={(e) => handleDragStart(e, file, index)}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDrop={(e) => handleDrop(e, index)}
-                onDragEnd={handleDragEnd}
-              >
-                <div className="drag-handle" title={t("collectionFiles.dragToReorder") || "Drag to reorder"}>
-                  ⋮⋮
-                </div>
-                <div className="file-icon-large" onClick={() => handleFileClick(file, index)}>
-                  {getFileTypeIcon(file.fileType)}
-                </div>
-                <div className="file-details-collection" onClick={() => handleFileClick(file, index)}>
-                  <h4>{file.title || file.name || "Untitled"}</h4>
-                  <p>{file.description || t("collectionFiles.noDescription") || "No description"}</p>
-                  <div className="file-meta">
-                    <span className="file-type-badge">{getFileTypeText(file.fileType)}</span>
-                    {file.courseName && <span className="course-name">{file.courseName}</span>}
+          <div className={`files-grid-collection ${isFavoriteCollection ? "readonly-grid" : "reorderable-grid"}`}>
+            {files.map((file, index) => {
+              const isCompletedFile = index < completedCount;
+              const isCurrentFile = index === currentFileIndex && isLearningMode;
+              
+              return (
+                <div
+                  key={file.id || file.eduFileId || index}
+                  className={`collection-file-card 
+                    ${isDragging && draggedIndex === index ? "dragging" : ""}
+                    ${isCompletedFile ? "completed-file" : ""}
+                    ${isCurrentFile ? "current-file" : ""}`}
+                  draggable={!isFavoriteCollection}
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                >
+                  {!isFavoriteCollection && <div className="drag-handle">⋮⋮</div>}
+                  <div className="file-icon-large" onClick={() => handleFileClick(file)}>
+                    {getFileTypeIcon(file.fileType)}
                   </div>
-                </div>
-                <div className="file-actions">
-                  {/* Download Button - يستخدم نفس API مثل FavoriteFileCard */}
-                  <button
-                    className="download-file-btn-collection"
-                    onClick={(e) => handleDownload(file, e)}
-                    title={t("collectionFiles.download") || "Download"}
-                  >
-                    <FaDownload />
-                  </button>
-                  {/* Watch Video Button - فقط للملفات من نوع فيديو */}
-                  {isVideo(file.fileType) && (
-                    <button
-                      className="watch-video-btn-collection"
-                      onClick={(e) => handleWatchVideo(file, e)}
-                      title={t("collectionFiles.watchVideo") || "Watch Video"}
-                    >
-                      <FaVideo />
+                  <div className="file-details-collection" onClick={() => handleFileClick(file)}>
+                    <h4>
+                      {isCompletedFile && <FaCheck className="completed-check" />}
+                      {index + 1}. {file.title}
+                    </h4>
+                    <p>{file.description || t("collection.noDescription")}</p>
+                    <div className="file-meta">
+                      <span className="file-type-badge">{getFileTypeText(file.fileType)}</span>
+                      {file.courseName && <span className="course-name">{file.courseName}</span>}
+                    </div>
+                  </div>
+                  <div className="file-actions">
+                    <button className="download-file-btn-collection" onClick={(e) => handleDownload(file, e)} title={t("collection.download")}>
+                      <FaDownload />
                     </button>
-                  )}
-                  {/* Remove Button */}
-                  <button
-                    className="remove-file-btn-collection"
-                    onClick={(e) => handleRemoveFile(file.id || file.eduFileId, e)}
-                    title={t("collectionFiles.removeFromCollection") || "Remove from collection"}
-                  >
-                    ✕
-                  </button>
-                </div>
-                {isLearningMode && index === currentFileIndex && (
-                  <div className="current-indicator-badge">
-                    {t("collectionFiles.currentlyLearningBadge") || "▶ Currently Learning"}
+                    {isVideo(file.fileType) && (
+                      <button className="watch-video-btn-collection" onClick={(e) => handleWatchVideo(file, e)} title={t("collection.watchVideo")}>
+                        <FaVideo />
+                      </button>
+                    )}
+                    {!isFavoriteCollection && (
+                      <button className="remove-file-btn-collection" onClick={(e) => handleRemoveFile(file.id || file.eduFileId, e)} title={t("collection.removeFromCollection")}>
+                        ✕
+                      </button>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

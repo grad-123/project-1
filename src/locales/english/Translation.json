@@ -30,7 +30,6 @@
     "admin": "Admin",
     "logout": "Logout"
   },
-
   "home": {
     "badge": "✨ Empowering Academic Excellence with AI",
     "master": "Master Your",
@@ -69,10 +68,10 @@
     "totalDownloads": "Total download"
   },
   "browse": {
-    "searchPlaceholder": "Tape to search...",
+    "searchPlaceholder": "Tap to search...",
     "categories": "Browse Categories",
     "description": "Explore different fields of study and discover the topics that match your interests",
-    "searchButton": "search",
+    "searchButton": "Search",
     "noFiles": "No files found",
     "tryAnotherSearch": "Try another keyword or change filters",
     "allCategories": "All Categories",
@@ -91,16 +90,14 @@
       "exam": "Exam",
       "assignment": "Assignment",
       "book": "Book",
-      "other": "Other",
-      "slides": "Slides"
+      "slides": "Slides",
+      "other": "Other"
     },
-
     "order": {
       "mostDownloaded": "Most Downloaded",
       "newest": "Newest"
     }
   },
-
   "upload": {
     "title": "Share Your Knowledge",
     "subtitle": "Upload your academic materials to help thousands of fellow students.",
@@ -120,14 +117,14 @@
       "materialType": "Select Material Type",
       "description": "Tell us what this material covers...",
       "submitBtn": "Upload Material",
-      "materialTitleRequired": "Enter the subject title",
+      "materialTitleRequired": "Enter the material title",
       "courseRequired": "Enter the course name",
       "categoryRequired": "Select a category",
       "materialTypeRequired": "Please select a material type",
       "descriptionRequired": "Please write a short description",
       "fileRequired": "Choose a file to upload",
-       "coursePlaceholder": "Type course name...",
-       "newCourseInfo":"This course does not exist – a request to add it will be sent",
+      "coursePlaceholder": "Type course name...",
+      "newCourseInfo": "This course does not exist – a request to add it will be sent",
       "categories": {
         "selectCategory": "Select Category",
         "computer_science": "Computer Science",
@@ -137,15 +134,15 @@
         "engineering": "Engineering",
         "medicine": "Medicine"
       },
+      "courses": {
+        "selectCourse": "Select Course"
+      },
       "materialTypes": {
         "selectMaterialType": "Select Material Type",
         "lecture_pdf": "Lecture PDF",
         "handwritten_notes": "Handwritten Notes",
         "ai_summary": "AI Summary",
         "research_paper": "Research Paper"
-      },
-      "courses": {
-        "selectCourse": "Select Course"
       }
     },
     "infoCards": {
@@ -154,16 +151,20 @@
       "guidelineList": [
         "Must be original or public domain academic content.",
         "Clear handwriting or readable digital text is preferred.",
-        "No copyrighted textbooks or exam solutions.."
+        "No copyrighted textbooks or exam solutions."
       ],
       "contributeList": [
-        "Build Authority  Showcase your expertise.",
-        "Help Community  Help other students succeed."
+        "Build Authority - Showcase your expertise.",
+        "Help Community - Help other students succeed."
       ]
     },
     "alerts": {
+      "courseNotExistTitle": "Course does not exist",
+      "courseNotExistText": "Do you want to send a request to add it?",
+      "yes": "Yes",
+      "cancel": "Cancel",
       "successTitle": "Upload Successful! 🎉",
-      "successText": "Your file has been uploaded.",
+      "successText": "",
       "failTitle": "Upload Failed ❌",
       "failText": "Something went wrong. Please try again.",
       "ok": "OK"
@@ -194,10 +195,11 @@
     "login": "Login"
   },
   "register": {
+    "passwordconfirm": "Confirm Password *",
     "title": "Create Account",
     "subtitle": "Create your account to get started",
-    "fullName": "NickName *",
-    "fullNamePlaceholder": "Enter your NickName",
+    "fullName": "Nickname *",
+    "fullNamePlaceholder": "Enter your nickname",
     "email": "Email *",
     "password": "Password *",
     "createAccount": "Create Account",
@@ -205,20 +207,17 @@
     "usernameHint": "Username can contain English letters, numbers and @ + _ . only",
     "emailHint": "Enter a valid email like example@gmail.com",
     "passwordHint": "Password must be at least 8 characters and contain uppercase, lowercase letters and a special character",
-    "passwordconfirm": "Confirm Password *",
+    "checkEmailTitle": "Check your email",
+    "checkEmailMessage": "We've sent a verification link to {{email}}. Please check your email and click the link to verify your account.",
     "processing": "Creating account..."
   },
   "alerts": {
-  "courseNotExistTitle": "Course does not exist",
-  "courseNotExistText": "Do you want to send a request to add it?",
-  "yes": "Yes",
-  "cancel": "Cancel",
-  "successTitle": "File uploaded successfully! 🎉",
-  "successText": "",
-  "failTitle": "File upload failed ❌",
-  "failText": "Something went wrong. Please try again.",
-  "ok": "OK"
-},
+    "successTitle": "Success! 🎉",
+    "successText": "Operation completed successfully.",
+    "failTitle": "Failed ❌",
+    "failText": "Something went wrong. Please try again.",
+    "ok": "OK"
+  },
   "validation": {
     "usernameRequired": "Username is required",
     "usernamePattern": "Username can contain letters, numbers and @ + _ . only",
@@ -227,7 +226,6 @@
     "passwordRequired": "Password is required",
     "passwordMin": "Password must be at least 8 characters",
     "passwordPattern": "Password must contain uppercase, lowercase letters and special character",
-    "passwordConfirmRequired": "Password Confirm is required",
     "passwordMatch": "Passwords do not match"
   },
   "image": {
@@ -293,14 +291,14 @@
     "success": "Password updated successfully",
     "failed": "Reset password failed",
     "passwords_not_match": "Passwords do not match",
-    "passwordRequired": "password Required",
+    "passwordRequired": "Password is required",
     "passwordMin": "Password must be at least 8 characters",
     "passwordPattern": "Password must contain uppercase, lowercase letters and special character",
     "message": "Password must be at least 8 characters and contain uppercase, lowercase letters and a special character"
   },
   "admin": {
     "title": "Admin Dashboard",
-    "manageFiles": "Manage Upload File",
+    "manageFiles": "Manage Uploaded Files",
     "panel": "Admin Panel",
     "tabs": {
       "pending": "Pending",
@@ -310,7 +308,7 @@
     "table": {
       "fileName": "File Name",
       "uploadedBy": "Uploaded By",
-      "category": "Categories",
+      "category": "Category",
       "course": "Course",
       "date": "Date",
       "actions": "Actions",
@@ -321,7 +319,7 @@
       "reject": "Reject",
       "add": "Add",
       "edit": "Edit",
-      "disabled": "disabled",
+      "disabled": "Disable",
       "save": "Save"
     },
     "dashboard": {
@@ -378,167 +376,91 @@
     }
   },
   "course": {
-    "course": "Subjects",
+    "course": "Courses",
     "description": "Explore available courses and start learning today"
   },
   "files": {
-    "title": "Resources",
-    "description": "Access useful learning materials including summaries, lectures, and resources for this course",
-    "download": "Download",
-    "noFiles": "No files found",
-    
-    "loginMessage": "Please login to add to favorites",
+    "title": "Files",
+    "description": "All course files",
     "all": "All",
-    "lectures": "Lecture",
+    "lectures": "Lectures",
     "slides": "Slides",
-    "summaries": "Summary",
-    "exams": "Exam",
-    "assignments": "Assignment",
-    "books": "Book",
+    "summaries": "Summaries",
+    "exams": "Exams",
+    "assignments": "Assignments",
+    "books": "Books",
     "other": "Other",
-    "downloadError": "Failed to download the file, please try again"
+    "noFiles": "No files found",
+    "noCollections": "No collections found",
+    "collections": "Collections",
+    "files": "Files",
+    "viewFiles": "View Files",
+    "backToCollections": "Back to Collections",
+    "noDescription": "No description",
+    "unknownCourse": "Unknown Course",
+    "unknown": "Unknown",
+    "loadingCollections": "Loading collections...",
+    "loadingFiles": "Loading files...",
+    "noFilesInCollection": "No files found in this collection",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "loginMessage": "Please login first",
+    "collectionAddedToFavorites": "✨ Collection added to favorites!",
+    "collectionRemovedFromFavorites": "💔 Collection removed from favorites",
+    "addedToFavorites": "✨ Added to favorites",
+    "removedFromFavorites": "💔 Removed from favorites",
+    "downloadStarted": "⬇️ Download started!",
+    "downloadError": "❌ Download failed",
+    "error": "❌ Error occurred",
+    "invalidCollection": "❌ Invalid collection",
+    "collectionNotFound": "❌ Collection not found or has been deleted",
+    "errorLoadingFiles": "❌ Error loading collection files",
+    "noAccess": "🔒 You don't have access to this collection",
+      "removedFromMyCollections": "and removed from {{count}} of your collections"
   },
   "found": {
     "page": "Page Not Found",
     "sorry": "Sorry, the page you are looking for doesn't exist.",
-    "go": " Go Home"
-  },
-  "favorites": {
-    "title": {
-      "first": "Saved",
-      "second": "Resources"
-    },
-    "subtitle": "Manage your personalized collection of AI summaries, course notes, and research materials for quick academic reference."
+    "go": "Go Home"
   },
   "aiHome": {
-  "title": "Your Intelligent Learning Assistant",
-  "description": "Ask questions about your study materials, get instant answers, and generate comprehensive summaries — all in one place.",
-  "whatYouCanDo": "WHAT YOU CAN DO",
-  "capabilities": "AI CAPABILITIES",
-
-  "cards": {
-    "instant": "Instant Answers",
-    "instantDesc": "Get concise answers from your study files in seconds",
-    "summary": "Smart Summaries",
-    "summaryDesc": "AI-generated summaries saved for future reference",
-    "context": "Context-Aware",
-    "contextDesc": "Answers are based on your actual file content",
-    "types": "All File Types",
-    "typesDesc": "Works with lectures, exams, books & assignments"
-  },
+    "title": "Your Intelligent Learning Assistant",
+    "description": "Ask questions about your study materials, get instant answers, and generate comprehensive summaries — all in one place.",
+    "whatYouCanDo": "WHAT YOU CAN DO",
+    "capabilities": "AI CAPABILITIES",
+    "cards": {
+      "instant": "Instant Answers",
+      "instantDesc": "Get concise answers from your study files in seconds",
+      "summary": "Smart Summaries",
+      "summaryDesc": "AI-generated summaries saved for future reference",
+      "context": "Context-Aware",
+      "contextDesc": "Answers are based on your actual file content",
+      "types": "All File Types",
+      "typesDesc": "Works with lectures, exams, books & assignments"
+    },
     "cap": {
-    "deep": "Deep File Understanding",
-    "deepDesc": "Upload any study file and AI reads through it completely, understanding context, terminology, and structure before answering",
-    "qa": "Accurate Q&A",
-    "qaDesc": "Ask specific questions about your material and receive grounded, precise answers-never hallucinated ,always sourced from your file",
-    "summary": "One-Click Summaries",
-    "summaryDesc": "Generate a structured summary of any file instantly.Summaries are saved so you never have to regenerate for the same file"
-  } 
-},
-"sidebar":{
-  "AI Assistant":"AI Assistant",
-  "title":"Study Files"
-},"favorites": {
-  "title": {
-    "first": "Saved",
-    "second": "Resources"
+      "deep": "Deep File Understanding",
+      "deepDesc": "Upload any study file and AI reads through it completely, understanding context, terminology, and structure before answering",
+      "qa": "Accurate Q&A",
+      "qaDesc": "Ask specific questions about your material and receive grounded, precise answers - never hallucinated, always sourced from your file",
+      "summary": "One-Click Summaries",
+      "summaryDesc": "Generate a structured summary of any file instantly. Summaries are saved so you never have to regenerate for the same file"
+    }
   },
-  "subtitle": "Manage your personalized collection of AI summaries, course notes, and research materials for quick academic reference.",
-  "filesSaved": "files saved",
-  "clear": "Clear",
-  "addToCollection": "Add to Collection",
-  "cancel": "Cancel",
-  "selectMultiple": "Select Multiple"
-},"collection": {
-  "myCollections": "My Collections",
-  "createNew": "+ Create New",
-  "noCollections": "No collections yet",
-  "files": "files",
-  "editCollection": "Edit Collection",
-  "collectionName": "Collection name",
-  "description": "Description",
-  "cancel": "Cancel",
-  "save": "Save",
-  "deleteConfirm": "Are you sure you want to delete this collection?",
-  "noDescription": "No description"
-},"collectionFiles": {
-  "backToFavorites": "العودة إلى المفضلة",
-  "noDescription": "لا يوجد وصف",
-  "file": "ملف",
-  "files": "ملفات",
-  "total": "من أصل",
-  "loading": "جاري تحميل ملفات المجموعة...",
-  "filesInCollection": "الملفات في هذه المجموعة",
-  "noFilesVisible": "📁 لا توجد ملفات ظاهرة في هذه المجموعة",
-  "apiFilesHint": "المجموعة تحتوي على {{count}} ملف، لكن لا يمكن عرضها لأن الـ API لا يعيد تفاصيل الملفات.",
-  "solutionHint": "⚠️ الحل: أضف ملفاً جديداً إلى هذه المجموعة، ثم سيظهر هنا.",
-  "existingFilesNote": "ملاحظة: لا يمكن عرض الملفات المضافة قبل اليوم لأن الـ API لا يعيدها.",
-  "filePathNotAvailable": "مسار الملف غير متاح",
-  "errorRemovingFile": "خطأ في إزالة الملف",
-  "fileRemoved": "تمت إزالة الملف من المجموعة",
-  "collectionCompleted": "🎉 تهانينا! لقد أكملت هذه المجموعة!",
-  "completed": "✅ مكتمل",
-  "next": "التالي",
-  "stopLearning": "إيقاف التعلم",
-  "startLearning": "بدء وضع التعلم",
-  "currentlyLearning": "جارٍ التعلم الآن:",
-  "completedPercent": "مكتمل",
-  "loadingCollectionFiles": "جاري تحميل ملفات المجموعة...",
-  "removeFromCollection": "إزالة من المجموعة",
-  "currentlyLearningBadge": "▶ جارٍ التعلم الآن",
-  "video": "فيديو",
-  "slides": "شرائح",
-  "summary": "ملخص",
-  "exam": "امتحان",
-  "assignment": "واجب",
-  "book": "كتاب",
-  "other": "أخرى"
-},"addToCollection": {
-  "title": "Add to Collection",
-  "noCollections": "No collections yet. Create one!",
-  "noDescription": "No description",
-  "files": "files",
-  "createNew": "+ Create New Collection",
-  "collectionName": "Collection name",
-  "descriptionOptional": "Description (optional)",
-  "cancel": "Cancel",
-  "create": "Create",
-  "creating": "Creating..."
-},"favorites": {
-  "title": {
-    "first": "Saved",
-    "second": "Resources"
+  "sidebar": {
+    "title": "Study Files",
+    "AI Assistant": "AI Assistant"
   },
-  "subtitle": "Manage your personalized collection of AI summaries, course notes, and research materials for quick academic reference.",
-  "filesSaved": "files saved",
-  "clear": "Clear",
-  "addToCollection": "Add to Collection",
-  "cancel": "Cancel",
-  "selectMultiple": "Select Multiple",
-  "selected": "selected",
-  "loading": "Loading your favorites...",
-  "noFilesFound": "📁 No favorite files found",
-  "tryChangingSearch": "Try changing your search",
-  "addFilesFromBrowse": "Add some files to favorites from the browse page!",
-  "removedFromFavorites": "Removed from favorites",
-  "errorRemovingFromFavorites": "Error removing from favorites",
-  "noFilesSelected": "No files selected",
-  "addedToCollection": "✅ Added {{count}} file(s) to \"{{name}}\"",
-  "failedToAdd": "⚠️ {{count}} file(s) failed to add",
-  "errorAddingToCollection": "❌ Error adding to collection",
-  "fileAlreadyInCollection": "File already exists in this collection",
-    "filesAlreadyInCollection": "files already exist in this collection"
-},
-"fileTypes": {
-  "all": "All",
-  "videos": "Videos",
-  "slides": "Slides",
-  "summaries": "Summaries",
-  "exams": "Exams",
-  "assignments": "Assignments",
-  "books": "Books",
-  "other": "Other"
-},  
+  "fileTypes": {
+    "all": "All",
+    "videos": "Videos",
+    "slides": "Slides",
+    "summaries": "Summaries",
+    "exams": "Exams",
+    "assignments": "Assignments",
+    "books": "Books",
+    "other": "Other"
+  },
   "createCollection": {
     "title": "Create New Collection",
     "collectionName": "Collection name",
@@ -547,13 +469,104 @@
     "create": "Create",
     "creating": "Creating..."
   },
-  
+  "collection": {
+    "collections": "Collections",
+    "myCollections": "My Collections",
+    "favoriteCollections": "Favorite Collections",
+    "noCollections": "No collections yet",
+    "noFavoriteCollections": "No favorite collections yet. Go to a course and favorite a collection!",
+    "noDescription": "No description",
+    "files": "files",
+    "rename": "Rename",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this collection?",
+    "deleted": "Collection deleted successfully",
+    "deleteError": "Error deleting collection",
+    "removeFromFavoritesConfirm": "Remove this collection from favorites?",
+    "removedFromFavorites": "Collection removed from favorites",
+    "removeError": "Error removing from favorites",
+    "cannotRemoveFromFavorite": "Cannot remove file from favorite collection",
+    "copiedSuccessfully": "Collection copied successfully!",
+    "copiedAndRemoved": "✨ Collection copied to My Collections and removed from favorites!",
+    "copiedButNotRemoved": "✅ Collection copied but could not remove from favorites",
+    "copyError": "❌ Error copying collection",
+    "copyToMyCollections": "Copy to my collections",
+    "removeFromFavorites": "Remove from favorites",
+    "editCollection": "Edit Collection",
+    "collectionName": "Collection name",
+    "description": "Description",
+    "cancel": "Cancel",
+    "save": "Save",
+    "updated": "Collection updated successfully",
+    "updateError": "Error updating collection",
+    "createNew": "+ Create New",
+    "file": "file",
+    "fileRemoved": "File removed from collection",
+    "orderUpdated": "Order updated successfully!",
+    "orderUpdateError": "Failed to update order",
+    "noFilesToLearn": "No files to learn from!",
+    "congratulations": "🎉 Congratulations! You've completed all files!",
+    "exitLearningMode": "Exit",
+    "backToFavorites": "Back to Favorites",
+    "noFilesFound": "📁 No files found in this collection",
+    "errorLoadingFiles": "Error loading files",
+    "fileIdNotAvailable": "File ID not available",
+    "filePathNotAvailable": "File path not available",
+    "downloadStarted": "Download started!",
+    "downloadError": "Error downloading file",
+    "watchingVideo": "Opening video...",
+    "filesDragToReorder": "Drag the ⋮⋮ icon to reorder files",
+    "nowLearning": "Now learning",
+    "stop": "Stop",
+    "next": "Next",
+    "startLearning": "Start Learning Mode",
+    "download": "Download",
+    "watchVideo": "Watch Video",
+    "removeFromCollection": "Remove from collection",
+    "video": "Video",
+    "slides": "Slides",
+    "summary": "Summary",
+    "exam": "Exam",
+    "assignment": "Assignment",
+    "book": "Book",
+    "other": "Other",
+    "collectionCompleted": "🎉 Congratulations! You've completed this collection!",
+    "completed": "✅ Completed",
+    "currentlyLearning": "Currently learning:",
+    "completedPercent": "Completed",
+    "loadingCollectionFiles": "Loading collection files...",
+    "currentlyLearningBadge": "▶ Currently Learning",
+    "addedToCollection": "Added",
+    "toCollection": "to collection",
+    "filesReordered": "Files reordered successfully",
+    "errorReordering": "Error reordering files",
+    "dragHint": "Drag the ⋮⋮ icon to reorder files",
+    "dragToReorder": "Drag to reorder",
+    "copy": "Copy",
+      "updatingOrder": "Updating order...",
+      "learningProgress": "Learning Progress",
+  "remaining": "remaining",
+  "done": "Done",
+    "copiedSuccessfullyToMyCollections": "✨ Collection copied to My Collections successfully!"
+  },
+  "addToCollection": {
+    "title": "Add to Collection",
+    "noCollections": "No collections yet. Create one!",
+    "noDescription": "No description",
+    "files": "files",
+    "createNew": "+ Create New Collection",
+    "collectionName": "Collection name",
+    "descriptionOptional": "Description (optional)",
+    "cancel": "Cancel",
+    "create": "Create",
+    "creating": "Creating..."
+  },
   "collectionFiles": {
     "backToFavorites": "Back to Favorites",
     "noDescription": "No description",
     "file": "file",
     "files": "files",
-    "total": "from",
+    "total": "of",
     "loading": "Loading collection files...",
     "filesInCollection": "Files in this collection",
     "noFilesVisible": "📁 No files visible in this collection",
@@ -580,14 +593,45 @@
     "assignment": "Assignment",
     "book": "Book",
     "other": "Other",
-     "download": "Download",
+    "download": "Download",
     "watchVideo": "Watch Video",
     "downloadStarted": "Download started!",
     "downloadError": "Error downloading file",
     "watchingVideo": "Opening video...",
     "fileAlreadyExists": "File already exists in this collection",
     "addedToCollection": "Added",
-    "toCollection": "to collection"
+    "toCollection": "to collection",
+    "filesReordered": "Files reordered successfully",
+    "errorReordering": "Error reordering files",
+    "dragHint": "Drag the ⋮⋮ icon to reorder files",
+    "dragToReorder": "Drag to reorder"
+  },
+  "favorites": {
+    "title": {
+      "first": "Saved",
+      "second": "Resources"
+    },
+    "subtitle": "Manage your personalized collection of AI summaries, course notes, and research materials for quick academic reference.",
+    "filesSaved": "files saved",
+    "selected": "selected",
+    "clear": "Clear",
+    "addToCollection": "Add to Collection",
+    "cancel": "Cancel",
+    "selectMultiple": "Select Multiple",
+    "loading": "Loading your favorites...",
+    "noFilesFound": "📁 No favorite files found",
+    "tryChangingSearch": "Try changing your search",
+    "addFilesFromBrowse": "Add some files to favorites from the browse page!",
+    "removedFromFavorites": "Removed from favorites",
+    "errorRemovingFromFavorites": "Error removing from favorites",
+    "noFilesSelected": "No files selected",
+    "addedToCollection": "✅ Added {{count}} file(s) to \"{{name}}\"",
+    "failedToAdd": "⚠️ {{count}} file(s) failed to add",
+    "errorAddingToCollection": "❌ Error adding to collection",
+    "fileAlreadyInCollection": "File already exists in this collection",
+    "filesAlreadyInCollection": "files already exist in this collection",
+      "removedFromCollections": "and removed from {{count}} collections",
+       "removedFromMyCollections": "and removed from {{count}} of your collections"
+ 
   }
-
 }

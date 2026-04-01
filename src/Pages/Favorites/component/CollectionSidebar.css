@@ -1,32 +1,45 @@
+/* ========== Collection Sidebar Styles - Like AI Sidebar ========== */
+
 .collection-sidebar {
   width: 320px;
-  background: var(--bg-card);
+  min-width: 320px;
+  max-width: 320px;
   border-right: 1px solid var(--card-border);
+  background-color: var(--bg-secondary);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  transition: all 0.3s ease;
   position: relative;
+  z-index: 1;
 }
 
+/* ========== Sidebar Header ========== */
 .sidebar-header {
   padding: 1.5rem;
   border-bottom: 1px solid var(--card-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  flex-shrink: 0;
 }
 
 .sidebar-header h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-main);
-  position: relative;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebar-header h3::before {
   content: "📚 ";
   font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .create-collection-btn {
@@ -38,47 +51,100 @@
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .create-collection-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   opacity: 0.9;
+  transform: translateY(-1px);
 }
 
+/* ========== Sidebar Tabs ========== */
+.sidebar-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1rem 1rem 1rem;
+  border-bottom: 1px solid var(--card-border);
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.sidebar-tab {
+  flex: 1;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-tab:hover {
+  background: var(--bg-card);
+}
+
+.sidebar-tab.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ========== Collections List ========== */
 .collections-list {
   flex: 1;
   overflow-y: auto;
   padding: 0.75rem;
+  min-height: 0;
+}
+
+.collections-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.collections-list::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+}
+
+.collections-list::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
 }
 
 .collection-item {
-  padding: 1rem 1.2rem;
-  margin-bottom: 0.75rem;
-  border-radius: 16px;
+  padding: 0.8rem;
+  margin-bottom: 0.65rem;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  position: relative;
+  align-items: center;
+  gap: 0.5rem;
   background: var(--bg-card);
   border: 1px solid var(--card-border);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .collection-item:hover {
   background: var(--bg-secondary);
   border-color: var(--primary);
   transform: translateX(4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+html[dir="rtl"] .collection-item:hover {
+  transform: translateX(-4px);
 }
 
 .collection-item.active {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 80%);
+  background: var(--primary);
   border-color: var(--primary);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
 .collection-item.active .collection-info h4 {
@@ -90,56 +156,75 @@
 }
 
 .collection-item.active .collection-meta {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.2);
   color: white;
 }
 
 .collection-info {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .collection-info h4 {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
   color: var(--text-main);
-  transition: color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .collection-info p {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .collection-meta {
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   color: var(--primary);
   display: inline-block;
   background: var(--bg-secondary);
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  transition: all 0.2s;
-  border: 1px solid var(--card-border);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  white-space: nowrap;
 }
 
-.collection-meta::before {
-  content: "📁 ";
-  font-size: 0.7rem;
+.course-name-badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  background: var(--bg-secondary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  margin-top: 0.3rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .collection-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.3rem;
   opacity: 0;
   transition: opacity 0.2s ease;
+  flex-shrink: 0;
 }
 
 .collection-item:hover .collection-actions {
   opacity: 1;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .collection-actions {
+    opacity: 1;
+  }
 }
 
 .rename-btn,
@@ -147,15 +232,16 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 0.9rem;
-  padding: 0.3rem;
-  border-radius: 8px;
+  font-size: 0.8rem;
+  padding: 0.2rem;
+  border-radius: 6px;
   transition: all 0.2s;
   width: 28px;
   height: 28px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .rename-btn {
@@ -165,7 +251,6 @@
 .rename-btn:hover {
   background: var(--bg-secondary);
   color: var(--primary);
-  transform: scale(1.05);
 }
 
 .delete-btn {
@@ -175,378 +260,93 @@
 .delete-btn:hover {
   background: var(--bg-secondary);
   color: #f44336;
-  transform: scale(1.05);
 }
 
-.collection-item.active .collection-info h4::before {
-  content: "▶ ";
-  font-size: 0.8rem;
-  display: inline-block;
-  animation: pulse 0.5s ease;
-}
-
-@keyframes pulse {
-  0% {
-    transform: translateX(0);
-    opacity: 0;
-  }
-  50% {
-    transform: translateX(3px);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Scrollbar */
-.collections-list::-webkit-scrollbar,
-.files-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.collections-list::-webkit-scrollbar-track,
-.files-list::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-  border-radius: 10px;
-}
-
-.collections-list::-webkit-scrollbar-thumb,
-.files-list::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: 10px;
-}
-
-.collections-list::-webkit-scrollbar-thumb:hover,
-.files-list::-webkit-scrollbar-thumb:hover {
-  opacity: 0.8;
-}
-
-.collection-files-panel {
-  border-top: 1px solid var(--card-border);
-  max-height: 60%;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-header {
-  padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
-  border-bottom: 1px solid var(--card-border);
-}
-
-.panel-header h4 {
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-  color: var(--text-main);
-}
-
-.panel-header p {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Learning Section */
-.learning-section {
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
-  border-bottom: 1px solid var(--card-border);
-}
-
-.progress-bar-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 8px;
-  background: var(--card-border);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
-  border-radius: 10px;
-  transition: width 0.3s ease;
-  position: relative;
-}
-
-.progress-fill::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.progress-text {
-  font-size: 0.75rem;
-  color: #4caf50;
-  min-width: 35px;
-  font-weight: 600;
-}
-
-.learning-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.start-learning-btn {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 80%);
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  width: 100%;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.start-learning-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  opacity: 0.9;
-}
-
-.current-file {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  font-size: 0.8rem;
-  padding: 0.5rem;
-  background: var(--bg-secondary);
-  border-radius: 12px;
-  border-left: 3px solid var(--primary);
-}
-
-.current-label {
-  color: var(--primary);
-  font-weight: 500;
-}
-
-.current-file-name {
-  font-weight: 600;
-  color: var(--text-main);
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.current-progress {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 80%);
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  color: white;
-  font-weight: 500;
-}
-
-.learning-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.stop-learning-btn {
-  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  flex: 1;
-  transition: all 0.3s ease;
-}
-
-.stop-learning-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
-  opacity: 0.9;
-}
-
-.next-btn {
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  flex: 1;
-  transition: all 0.3s ease;
-}
-
-.next-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-  opacity: 0.9;
-}
-
-.next-btn:disabled {
-  background: var(--card-border);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  opacity: 0.6;
-}
-
-/* Files List */
-.files-list {
-  padding: 0.5rem;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.collection-file-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  background: var(--bg-secondary);
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  border: 1px solid transparent;
-}
-
-.collection-file-item:hover {
-  background: var(--bg-card);
-  transform: translateX(4px);
-  border-color: var(--primary);
-}
-
-.collection-file-item.active-file {
-  background: var(--bg-secondary);
-  border-left: 3px solid #4caf50;
-  border-color: #4caf50;
-}
-
-.file-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.file-icon {
-  font-size: 1.25rem;
-  flex-shrink: 0;
-}
-
-.file-details {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  flex: 1;
-}
-
-.file-title {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-main);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.file-type {
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-}
-
-.current-indicator {
-  font-size: 0.8rem;
-  color: #4caf50;
-  margin-right: 0.5rem;
-  flex-shrink: 0;
-  animation: bounce 0.5s ease;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(3px);
-  }
-}
-
-.remove-file-btn {
+.copy-collection-btn {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-secondary);
-  font-size: 1rem;
-  padding: 0.25rem;
-  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 0.2rem;
+  border-radius: 6px;
   transition: all 0.2s;
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  display: flex;
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.remove-file-btn:hover {
+.copy-collection-btn:hover:not(:disabled) {
   background: var(--bg-secondary);
-  color: #f44336;
-  transform: scale(1.05);
+  color: var(--primary);
 }
 
-/* Edit Modal */
+.copy-collection-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.remove-favorite-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.2rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+  color: #ef4444;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.remove-favorite-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* ========== Favorite Collection Item ========== */
+.favorite-collection-item {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, var(--bg-card) 100%);
+  border-left: 3px solid #ef4444;
+}
+
+/* ========== Empty State ========== */
+.empty-collections {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+/* ========== Edit Modal ========== */
 .edit-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--overlay-color);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .edit-modal {
   background: var(--bg-card);
-  padding: 2rem;
-  border-radius: 24px;
-  width: 400px;
+  padding: 1.5rem;
+  border-radius: 20px;
+  width: 380px;
   max-width: 90%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  animation: modalFadeIn 0.3s ease;
+  animation: modalFadeIn 0.2s ease;
   border: 1px solid var(--card-border);
 }
 
@@ -563,22 +363,21 @@
 
 .edit-modal h3 {
   margin-bottom: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--text-main);
 }
 
 .edit-modal input,
 .edit-modal textarea {
   width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
+  padding: 0.7rem;
+  margin-bottom: 0.8rem;
   border: 1px solid var(--card-border);
-  border-radius: 12px;
-  font-size: 0.9rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
   background: var(--input-bg);
   color: var(--text-main);
   box-sizing: border-box;
-  transition: border-color 0.2s;
 }
 
 .edit-modal input:focus,
@@ -588,22 +387,24 @@
 }
 
 .edit-modal textarea {
-  min-height: 80px;
+  min-height: 70px;
   resize: vertical;
+  font-family: inherit;
 }
 
 .modal-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 0.8rem;
   justify-content: flex-end;
 }
 
 .modal-buttons button {
-  padding: 0.5rem 1rem;
+  padding: 0.45rem 1rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
+  font-size: 0.85rem;
 }
 
 .modal-buttons button:first-child {
@@ -614,66 +415,187 @@
 
 .modal-buttons button:first-child:hover {
   background: var(--card-border);
-  color: var(--text-main);
 }
 
 .modal-buttons button:last-child {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 80%);
+  background: var(--primary);
   color: white;
 }
 
 .modal-buttons button:last-child:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   opacity: 0.9;
 }
 
-/* Drag and Drop Styles */
-.collection-file-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  background: var(--bg-secondary);
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  cursor: grab;
-  border: 1px solid transparent;
-  position: relative;
+/* ========== Responsive Design - Like AI Sidebar ========== */
+@media (max-width: 1024px) {
+  .collection-sidebar {
+    padding: 0;
+  }
 }
 
-.collection-file-item:active {
-  cursor: grabbing;
+@media (max-width: 1024px) {
+  .favorites-page {
+    flex-direction: column;
+  }
+
+  .collection-sidebar {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--card-border);
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* ✅ إصلاح عرض النصوص في التابليت */
+  .collection-info h4,
+  .collection-info p,
+  .collection-meta,
+  .course-name-badge {
+    white-space: normal !important;
+    word-break: break-word;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  
+  .collection-item {
+    flex-wrap: wrap;
+  }
+  
+  .collection-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .collection-actions {
+    opacity: 1;
+    flex-shrink: 0;
+  }
 }
 
-.collection-file-item.drag-over {
-  background: var(--bg-card);
-  border: 2px dashed var(--primary);
-  transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+/* للشاشات الصغيرة جداً */
+@media (max-width: 600px) {
+  .sidebar-header {
+    padding: 0.75rem;
+  }
+
+  .sidebar-header h3 {
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .create-collection-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .sidebar-tabs {
+    padding: 0 0.75rem 0.75rem 0.75rem;
+  }
+
+  .sidebar-tab {
+    padding: 0.4rem;
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+
+  .collections-list {
+    padding: 0.5rem;
+  }
+
+  .collection-item {
+    padding: 0.6rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .collection-info {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .collection-info h4 {
+    font-size: 0.8rem;
+    white-space: normal !important;
+    word-break: break-word;
+    margin-bottom: 0.2rem;
+  }
+
+  .collection-info p {
+    font-size: 0.65rem;
+    white-space: normal !important;
+    word-break: break-word;
+    margin-bottom: 0.3rem;
+  }
+  
+  .collection-meta {
+    display: inline-block;
+    margin-top: 0.2rem;
+  }
+  
+  .course-name-badge {
+    display: inline-block;
+    margin-top: 0.2rem;
+    max-width: 100%;
+    white-space: normal !important;
+    word-break: break-word;
+  }
+
+  .rename-btn,
+  .delete-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .copy-collection-btn,
+  .remove-favorite-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+  
+  .collection-actions {
+    opacity: 1;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 0.25rem;
+  }
 }
 
-.drag-handle {
-  cursor: grab;
-  color: var(--text-secondary);
-  font-size: 1.2rem;
-  padding: 0 0.5rem;
-  user-select: none;
-  transition: color 0.2s;
-  flex-shrink: 0;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
-}
-
-.collection-file-item:hover .drag-handle {
-  color: var(--primary);
-}
-
-.collection-file-item.dragging {
-  opacity: 0.5;
-  background: var(--bg-card);
-  cursor: grabbing;
+/* للشاشات الصغيرة جداً */
+@media (max-width: 480px) {
+  .collection-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .collection-info {
+    width: 100%;
+  }
+  
+  .collection-info h4,
+  .collection-info p,
+  .course-name-badge {
+    max-width: 100%;
+    white-space: normal !important;
+    word-break: break-word;
+  }
+  
+  .collection-actions {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .rename-btn,
+  .delete-btn,
+  .copy-collection-btn,
+  .remove-favorite-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
 }
