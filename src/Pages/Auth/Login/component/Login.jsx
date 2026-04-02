@@ -7,6 +7,7 @@ import React, { useState, useEffect } from "react";
 import axios from "../../../../api/axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [fieldError, setFieldError] = useState({
@@ -23,10 +24,25 @@ function Login() {
 
   const [loginError, setLoginError] = useState("");
   const [emailNotVerified, setEmailNotVerified] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   useEffect(() => {
     document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
   }, [i18n.language]);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+      setTheme(currentTheme);
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"]
+    });
+    
+    return () => observer.disconnect();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,28 +96,53 @@ function Login() {
 
       const data = response.data;
 
+      console.log("📦 Full login response:", JSON.stringify(data, null, 2));
+
       if (!data || !data.succeeded) {
         setLoginError(data?.message || t("login.failed"));
+        setLoading(false);
         return;
       }
 
       localStorage.setItem("token", data.data.accessToken);
 
-      const decoded = jwtDecode(data.data.accessToken);
-      if (data.data.refreshToken?.tokenString) {
-        localStorage.setItem(
-          "refreshToken",
-          data.data.refreshToken.tokenString,
-        );
+      try {
+        const decoded = jwtDecode(data.data.accessToken);
+        localStorage.setItem("tokenExpiry", decoded.exp * 1000);
+        console.log("✅ Token expiry stored:", new Date(decoded.exp * 1000));
+      } catch (err) {
+        console.error("Error decoding token:", err);
       }
-      const role =
-        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+      let refreshToken = null;
+
+      if (data.data.refreshToken?.tokenString) {
+        refreshToken = data.data.refreshToken.tokenString;
+      } else if (data.data.refreshToken?.token) {
+        refreshToken = data.data.refreshToken.token;
+      } else if (typeof data.data.refreshToken === "string") {
+        refreshToken = data.data.refreshToken;
+      } else if (data.data.refreshTokenString) {
+        refreshToken = data.data.refreshTokenString;
+      }
+
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+        console.log("✅ Refresh token stored successfully");
+      } else {
+        console.error("❌ No refresh token found in response:", data.data);
+      }
+
+      const decoded = jwtDecode(data.data.accessToken);
+      const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
       const isAdmin = Array.isArray(role)
         ? role.includes("Admin")
         : role === "Admin";
 
       localStorage.setItem("role", JSON.stringify(role));
+
+      localStorage.removeItem("refreshAttempts");
 
       if (isAdmin) {
         navigate("/admin");
@@ -136,21 +177,38 @@ function Login() {
         idToken: idToken,
       });
       const data = response.data;
+      
+      console.log("📦 Google login response:", JSON.stringify(data, null, 2));
+      
       if (!data.succeeded) {
-        setLoginError(data.message);
+        setLoginError(data.message || t("login.googleLoginFailed"));
         return;
       }
 
       localStorage.setItem("token", data.data.accessToken);
 
+      try {
+        const decoded = jwtDecode(data.data.accessToken);
+        localStorage.setItem("tokenExpiry", decoded.exp * 1000);
+      } catch (err) {
+        console.error("Error decoding token:", err);
+      }
+
+      let refreshToken = null;
       if (data.data.refreshToken?.tokenString) {
-        localStorage.setItem("refreshToken", data.data.refreshToken.tokenString);
+        refreshToken = data.data.refreshToken.tokenString;
+      } else if (data.data.refreshToken?.token) {
+        refreshToken = data.data.refreshToken.token;
+      } else if (typeof data.data.refreshToken === "string") {
+        refreshToken = data.data.refreshToken;
+      }
+
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
       }
 
       const decoded = jwtDecode(data.data.accessToken);
-
-      const role =
-        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
       const isAdmin = Array.isArray(role)
         ? role.includes("Admin")
@@ -165,7 +223,7 @@ function Login() {
       }
     } catch (error) {
       console.error("Google Login Error:", error);
-      setLoginError("Google login failed");
+      setLoginError(t("login.googleLoginFailed"));
     }
   };
 
@@ -224,13 +282,22 @@ function Login() {
         </button>
       </form>
 
-      <div className="google-btn">
-        <GoogleLogin
-          onSuccess={handleGoogleLogin}
-          onError={() => {
-            setLoginError("Google Login Failed");
-          }}
-        />
+      {/* زر Google دائري - بدون Client ID */}
+      <div className="google-circle-wrapper">
+        <div className="google-circle-container">
+          <GoogleLogin
+            onSuccess={handleGoogleLogin}
+            onError={() => {
+              setLoginError(t("login.googleLoginFailed"));
+            }}
+            theme="outline"
+            size="large"
+            shape="circle"
+            width="48"
+            locale={i18n.language === "ar" ? "ar" : "en"}
+          />
+        </div>
+        <span className="google-circle-text">{t("login.orContinueWith")}</span>
       </div>
 
       <Link to="/auth/forgot" className="forgot">

@@ -186,7 +186,9 @@
     "invalidCredentials": "Invalid email or password",
     "verifyFirst": "Please verify your email first",
     "loading": "Loading...",
-    "failed": "Login failed"
+    "failed": "Login failed",
+    "googleLoginFailed": "Google login failed. Please try again",
+        "orContinueWith": "or continue with Google"
   },
   "auth": {
     "noAccount": "Don't have an account?",

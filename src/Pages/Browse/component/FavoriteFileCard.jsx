@@ -24,6 +24,7 @@ export default function FavoriteFileCard({
 }) {
   const { t } = useTranslation();
 
+  // دالة التحميل - تعمل مع وبدون تسجيل دخول
   const handleDownload = async () => {
     try {
       const response = await axios.get(
@@ -34,17 +35,23 @@ export default function FavoriteFileCard({
       );
 
       const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
-
+      const fileName = file.filePath?.split("/").pop() || file.title || "download";
+      
       const link = document.createElement("a");
       link.href = fileUrl;
-      link.download = file.filePath.split("/").pop();
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
       window.URL.revokeObjectURL(fileUrl);
+      
+      if (setMessage) setMessage(t("browse.downloadStarted") || "Download started!");
+      setTimeout(() => setMessage && setMessage(""), 2000);
     } catch (err) {
       console.log("Download error:", err);
+      if (setMessage) setMessage(t("browse.downloadError") || "Download failed");
+      setTimeout(() => setMessage && setMessage(""), 3000);
     }
   };
 
@@ -77,9 +84,11 @@ export default function FavoriteFileCard({
         <div className="file-details">
           <h3
             className="file-title clickable"
-            onClick={() =>
-              window.open(`${serverUrl}${file.filePath}`, "_blank")
-            }
+            onClick={() => {
+              // فتح الملف في تبويب جديد - يعمل مع وبدون تسجيل دخول
+              const directUrl = `${serverUrl}${file.filePath}`;
+              window.open(directUrl, "_blank");
+            }}
           >
             {file.title}
           </h3>
@@ -103,9 +112,9 @@ export default function FavoriteFileCard({
         {file.fileType === 0 && (
           <button
             className="download-btn"
-            onClick={() =>
-              window.open(`${serverUrl}${file.filePath}`, "_blank")
-            }
+            onClick={() => {
+              window.open(`${serverUrl}${file.filePath}`, "_blank");
+            }}
           >
             {t("browse.watchVideo")}
           </button>

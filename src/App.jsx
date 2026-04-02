@@ -1,8 +1,7 @@
 import "./Theme.css";
 import React from "react";
 import Profile from "./Pages/profile/component/Profile";
-import Chat from "./Pages/AI/components/chat/Chat";
-import HomeAI from "./Pages/AI/components/HomeAI/HomeAI";
+import AI from "./Pages/AI/component/AI";
 import AuthPage from "./Pages/Auth/AuthPage/component/AuthPage";
 import Admin from "./Pages/Admin/component/Admin";
 import {
@@ -23,7 +22,6 @@ import Login from "./Pages/Auth/Login/component/Login";
 import ForgotPassword from "./Pages/Auth/ForgotPassword/component/ForgotPassword";
 import ResetPassword from "./Pages/Auth/ResetPassword/component/ResetPassword";
 import VerifyEmail from "./Pages/Auth/VerifyEmail/component/VerifyEmail";
-import AI from "./Pages/AI/component/AI";
 import NotFound from "./component/NotFound/NotFound";
 import ProtectedRoutes from "./component/ProtectedRoutes";
 import Check from "./Pages/Auth/Check/component/Check";
@@ -31,6 +29,10 @@ import axios from "axios";
 import ProtectedAdmin from "./component/ProtectedAdmin";
 import PublicProfile from "./Pages/PublicProfile/component/PublicProfile";
 import ConfirmEmailChange from "./Pages/Auth/CheckEmail/component/ConfirmEmailChange";
+
+// ✅ إعدادات axios الافتراضية
+axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -65,30 +67,17 @@ const router = createBrowserRouter([
         ),
       },
       {
-  path: "PublicProfile/:userId",
-  element: <PublicProfile />,
-},
+        path: "PublicProfile/:userId",
+        element: <PublicProfile />,
+      },
       {
         path: "favorites",
-        element: (
-          //<ProtectedRoutes>
-            <Favorites />
-          //</ProtectedRoutes>
-        ),
+        element: <Favorites />,
       },
       {
         path: "ai",
-        element: (
-          //<ProtectedRoutes>
-          <AI />
-          //</ProtectedRoutes>
-        ),
-        children: [
-          { index: true, element: <HomeAI /> },
-          { path: "file/:id", element: <Chat /> },
-        ],
+        element: <AI />,
       },
-
       {
         path: "auth",
         element: <AuthPage />,
@@ -101,16 +90,14 @@ const router = createBrowserRouter([
           { path: "check", element: <Check /> },
           { path: "checkemail", element: <CheckEmail /> },
           { path: "verify", element: <VerifyEmail /> },
-           { path: "confirm-email-change", element: <ConfirmEmailChange /> },
+          { path: "confirm-email-change", element: <ConfirmEmailChange /> },
         ],
       },
-
       { path: "*", element: <NotFound /> },
     ],
   },
 ]);
 
-axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 function App() {
   return <RouterProvider router={router} />;
 }
