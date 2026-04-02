@@ -29,6 +29,8 @@ import ProtectedRoutes from "./component/ProtectedRoutes";
 import Check from "./Pages/Auth/Check/component/Check";
 import axios from "axios";
 import ProtectedAdmin from "./component/ProtectedAdmin";
+import PublicProfile from "./Pages/PublicProfile/component/PublicProfile";
+import ConfirmEmailChange from "./Pages/Auth/CheckEmail/component/ConfirmEmailChange";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -63,6 +65,10 @@ const router = createBrowserRouter([
         ),
       },
       {
+  path: "PublicProfile/:userId",
+  element: <PublicProfile />,
+},
+      {
         path: "favorites",
         element: (
           //<ProtectedRoutes>
@@ -95,6 +101,7 @@ const router = createBrowserRouter([
           { path: "check", element: <Check /> },
           { path: "checkemail", element: <CheckEmail /> },
           { path: "verify", element: <VerifyEmail /> },
+           { path: "confirm-email-change", element: <ConfirmEmailChange /> },
         ],
       },
 

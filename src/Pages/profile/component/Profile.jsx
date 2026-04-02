@@ -3,13 +3,15 @@ import axios from "../../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 function Profile() {
+  const BASE_URL = "https://corny-unevacuated-willy.ngrok-free.dev";
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [activeTab, setActiveTab] = useState("files");
   const [filter, setFilter] = useState("all");
 const [collections, setCollections] = useState([]);
 const [passwordError, setPasswordError] = useState("");
-const [confirmError, setConfirmError] = useState("");
+const [newEmail, setNewEmail] = useState("");
+const [emailSent, setEmailSent] = useState(false);
 const [collectionFiles, setCollectionFiles] = useState({}); 
 const [newCollectionModal, setNewCollectionModal] = useState(false);
 const [newCollectionData, setNewCollectionData] = useState({
@@ -19,11 +21,30 @@ const [categories, setCategories] = useState([]);
 const [coursesList, setCoursesList] = useState([]);       // قائمة كل الكورسات المتاحة
 const [filteredCourses, setFilteredCourses] = useState([]); // الكورسات المقترحة حسب الكتابة
 const [courses, setCourses] = useState([]);
+const [selectedCollectionCourse, setSelectedCollectionCourse] = useState("");
   const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    password: ""
-  });
+  name: "",
+  email: "",
+  totalFiles: 0,
+  totalDownloads: 0,
+  collectionsCount: 0,
+  currentPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+  photo: null,
+});
+  const [addFilesModalOpen, setAddFilesModalOpen] = useState(false);
+const [selectedCollectionId, setSelectedCollectionId] = useState(null);
+const [selectedFiles, setSelectedFiles] = useState([]);
+const [viewFilesModalOpen, setViewFilesModalOpen] = useState(false);
+const [viewFilesList, setViewFilesList] = useState([]);
+const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
+const [editCollectionModal, setEditCollectionModal] = useState(false);
+const [editCollectionData, setEditCollectionData] = useState({
+  id: null,
+  name: "",
+  description: ""
+});
   const fetchCategories = async () => {
   try {
     const res = await axios.get("/api/v1/Category/GetList"); 
@@ -38,13 +59,6 @@ const [courses, setCourses] = useState([]);
 useEffect(() => {
   fetchCategories();
 }, []);
-const normalizeCourseName = (name) => {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ")        // حذف المسافات الزايدة
-    .replace(/s$/, "");          // حذف s من النهاية (Structures → Structure)
-};
   // 📥 Fetch Files
   const fetchMyFiles = async () => {
     try {
@@ -71,23 +85,35 @@ const fetchCollectionFiles = async (id) => {
 };
   // 📥 Fetch Profile
   const fetchProfile = async () => {
-    try {
-      const res = await axios.get("Api/Profile/GetMyProfile");
-      if (res.data.succeeded) {
-  const data = res.data.data;
+  try {
+    const res = await axios.get("Api/Profile/GetMyProfile");
+    if (res.data.succeeded) {
+      const data = res.data.data;
+      setUserData({
+        name: data.fullName || "",
+        email: data.email || "",
+        totalFiles: data.totalFiles || 0,
+        totalDownloads: data.totalDownloads || 0,
+        collectionsCount: data.collectionsCount || 0,
+        // ✅ أضف هاي عشان ما تصير undefined
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+        photo: null,
+      });
 
-  setUserData({
-    name: data.fullName,
-    email: data.email,
-  });
-
-  setFiles(data.files || []);
-  setCollections(data.collections || []);
-      }
-    } catch (err) {
-      console.error(err);
+      setFiles(data.files || []);
+      const collectionsWithOwner = (data.collections || []).map(c => ({
+        ...c,
+        isOwner: true
+      }));
+      setCollections(collectionsWithOwner);
+     setProfilePhotoUrl(data.profilePicture ? `${BASE_URL}${data.profilePicture}` : null);
     }
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
 
  useEffect(() => {
   fetchProfile();
@@ -100,7 +126,29 @@ const fetchCollectionFiles = async (id) => {
   if (filter === "pending") return file.status === 0;
   if (filter === "rejected") return file.status === 2;
 });
-
+const approvedFiles = files.filter(
+  f =>
+    f.status === 1 &&
+    f.courseName.toLowerCase() === selectedCollectionCourse.toLowerCase()
+);
+const fileIcons = {
+  0: "🎥", // Lecture
+  1: "📚", // Slides
+  2: "📌", // Summary
+  3: "📝", // Exam
+  4: "📄", // Assignment
+  5: "📖", // Book
+  6: "📁"  // Other
+};
+const fileTypeNames = {
+  0: "Lecture",
+  1: "Slides",
+  2: "Summary",
+  3: "Exam",
+  4: "Assignment",
+  5: "Book",
+  6: "Other"
+};
   // 🚀 Publish
   const publishFile = async (id) => {
   try {
@@ -133,7 +181,11 @@ const unpublishFile = async (id) => {
     try {
       const res = await axios.get("api/v1/Collection/GetProfileCollections"); // endpoint للـ collections
       if (res.data.succeeded) {
-        setCollections(res.data.data);
+       const collectionsWithOwner = res.data.data.map(c => ({
+        ...c,
+        isOwner: true
+      }));
+       setCollections(collectionsWithOwner);
       }
     } catch (err) {
       console.error(err);
@@ -142,7 +194,7 @@ const unpublishFile = async (id) => {
 // Publish مجموعة
 const publishCollection = async (collectionId) => {
   try {
-    await axios.put(`/Api/Collection/Publish/${collectionId}`); // endpoint publish
+    await axios.put(`/api/v1/Collection/Publish/${collectionId}`); // endpoint publish
     fetchCollections(); // حدث البيانات بعد التغيير
   } catch (err) {
     console.error("Publish error:", err);
@@ -152,44 +204,113 @@ const publishCollection = async (collectionId) => {
 // Unpublish مجموعة
 const unpublishCollection = async (collectionId) => {
   try {
-    await axios.put(`/Api/Collection/Unpublish/${collectionId}`); // endpoint unpublish
+    await axios.put(`/api/v1/Collection/Unpublish/${collectionId}`); // endpoint unpublish
     fetchCollections();
   } catch (err) {
     console.error("Unpublish error:", err);
   }
 };
-const addFilesToCollection = (collectionId) => {
-  navigate(`/add-files/${collectionId}`); 
-  // أو افتحي Modal لإضافة الملفات مباشرة
+const addFilesToCollection = async (collectionId) => {
+  setSelectedCollectionId(collectionId);
+
+  try {
+    const res = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
+    if (res.data.succeeded) {
+      const data = res.data.data;
+
+      // ✅ 1. خزن الملفات الموجودة
+      const existingIds = (data.files || []).map(f => f.eduFileId);
+      setSelectedFiles(existingIds);
+
+      // ✅ 2. أهم سطر (خزن اسم الكورس)
+      setSelectedCollectionCourse(data.courseName);
+
+      // ✅ 3. خزن الملفات
+      setCollectionFiles(prev => ({
+        ...prev,
+        [collectionId]: data.files || []
+      }));
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  setAddFilesModalOpen(true);
 };
 const deleteCollection = async (collectionId) => {
   if (window.confirm("Are you sure you want to delete this collection?")) {
     try {
-      await axios.delete(`/Api/Collection/Delete/${collectionId}`);
+      await axios.delete(`/api/v1/Collection/Delete/${collectionId}`);
       fetchCollections(); // تحديث البيانات بعد الحذف
     } catch (err) {
       console.error("Delete error:", err);
     }
   }
 };  
+const toggleFileSelection = (fileId) => {
+    setSelectedFiles(prev =>
+      prev.includes(fileId)
+        ? prev.filter(id => id !== fileId)
+        : [...prev, fileId]
+    );
+  };
+const handleAddFilesToCollection = async () => {
+  try {
+    const existingFiles = collectionFiles[selectedCollectionId] || [];
+    const existingIds = existingFiles.map(f => f.eduFileId); // ✅ eduFileId مش id
+
+    const filesToAdd = selectedFiles.filter(id => !existingIds.includes(id));
+    const filesToRemove = existingIds.filter(id => !selectedFiles.includes(id));
+
+    for (let fileId of filesToAdd) {
+      await axios.post("api/v1/Collection/AddFile", {
+        collectionId: selectedCollectionId,
+        eduFileId: fileId
+      });
+    }
+
+    for (let fileId of filesToRemove) {
+  await axios.delete("api/v1/Collection/RemoveFile", {
+    headers: {
+      "Content-Type": "application/json"
+    },
+    data: {
+      collectionId: selectedCollectionId,
+      eduFileId: fileId
+    }
+  });
+}
+
+    alert("Collection updated ✅");
+    setAddFilesModalOpen(false);
+    setSelectedFiles([]);
+    fetchCollections();
+
+  } catch (err) {
+    console.error(err);
+    alert("Error updating collection");
+  }
+};
 const handleCreateCollection = async () => {
-  const normalizedInput = normalizeCourseName(newCollectionData.courseName);
-  const match = coursesList.find(course =>
-    normalizeCourseName(course.name) === normalizedInput
-  );
+ const match = coursesList.find(course =>
+  course.name.toLowerCase() === newCollectionData.courseName.toLowerCase()
+);
+
   if (!match) {
     alert("❌ You must select an existing course");
     return;
   }
+
   try {
     await axios.post("api/v1/Collection/CreateProfile", {
       name: newCollectionData.name,
       description: newCollectionData.description,
-      categoryId: newCollectionData.categoryId,
-      courseName: match.name, // نضمن الصح
+      courseId: match.id,  // ← هنا نرسل ID بدل الاسم
     });
+
     setNewCollectionModal(false);
-    fetchCollections();
+
+    await fetchProfile(); 
   } catch (err) {
     console.error(err);
   }
@@ -198,54 +319,59 @@ const handleCreateCollection = async () => {
 const handleUpdateProfile = async () => {
   try {
     const formData = new FormData();
-    formData.append("name", userData.name);
-    formData.append("email", userData.email);
+    formData.append("fullName", userData.name);
+
     if (userData.photo) {
-      formData.append("photo", userData.photo);
+      formData.append("profilePicture", userData.photo);
     }
 
-    // مثال لإرسال البيانات للباك إند
-   await axios.put("/Api/Profile/UpdateProfile", {
-  fullName: userData.name,
-  email: userData.email,
-});
+    if (newEmail && newEmail !== userData.email) {
+      formData.append("email", newEmail);
+    }
 
-    alert("Profile updated successfully!");
+    const res = await axios.put("/Api/Profile/UpdateProfile", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+
+    if (res.data.succeeded) {
+      await fetchProfile(); // ✅ تحديث الصورة فوراً
+      if (newEmail && newEmail !== userData.email) {
+        setEmailSent(true);
+        setNewEmail("");
+      } else {
+        alert("Profile updated successfully!");
+      }
+    }
   } catch (error) {
     console.error(error);
     alert("Error updating profile.");
   }
 };
-
 // تحديث كلمة المرور
 const handleUpdatePassword = async () => {
-  // Regex تحقق الباسورد: 8 أحرف، حرف كبير، حرف صغير، رقم، ورمز خاص
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}$/;
 
   if (!passwordRegex.test(userData.newPassword)) {
     setPasswordError(
       "Password must be at least 8 characters and include uppercase, lowercase, number, and special character"
     );
-    setConfirmError("");
     return;
-  }
-   else {
+  } else {
     setPasswordError("");
   }
 
   if (userData.newPassword !== userData.confirmPassword) {
     setPasswordError("Passwords do not match!");
     return;
-  }
-else {
-    setConfirmError("");
+  } else {
+    setPasswordError("");
   }
 
   try {
-    // مثال إرسال البيانات للباك إند
-    const response = await axios.put("Api/Profile/ChangePassword", {
+    await axios.put("Api/Profile/ChangePassword", {
       currentPassword: userData.currentPassword,
       newPassword: userData.newPassword,
+      confirmPassword: userData.confirmPassword, // ✅ أضيفي هاد
     });
 
     alert("Password updated successfully!");
@@ -257,15 +383,34 @@ else {
     });
   } catch (error) {
     console.error(error);
-    alert("Error updating password.");
+    // ✅ أظهري الخطأ من الباك إند
+    const msg = error.response?.data?.message || "Error updating password.";
+    alert(msg);
+  }
+};
+const handleUpdateCollection = async () => {
+  try {
+    await axios.put("api/v1/Collection/Update", {
+      id: editCollectionData.id,
+      name: editCollectionData.name,
+      description: editCollectionData.description
+    });
+    setEditCollectionModal(false);
+    fetchCollections();
+  } catch (err) {
+    console.error(err);
+    alert("Error updating collection.");
   }
 };
 // حذف ملف
 const deleteFile = async (fileId) => {
   if (window.confirm("Are you sure you want to delete this file?")) {
     try {
-      await axios.delete(`/Api/EduFile/Delete/${fileId}`);
-      fetchMyFiles(); // حدث البيانات بعد الحذف
+      await axios.delete(`/Api/EduFile/StudentDelete/${fileId}`);
+
+      // ❗ مهم: بدل ما تعملي fetch، احذفيه من الواجهة مباشرة
+      setFiles(prevFiles => prevFiles.filter(f => f.id !== fileId));
+
     } catch (err) {
       console.error("Delete error:", err);
       alert("Error deleting file.");
@@ -275,83 +420,132 @@ const deleteFile = async (fileId) => {
 const [editFileModalOpen, setEditFileModalOpen] = useState(false);
 const [editFileData, setEditFileData] = useState({
   id: null,
-  title: "",
-  categoryId: null,
-  courseInput: "",
-  fileType: null
+  title: "",        // ✅ مش undefined
+  categoryId: "",   // ✅ غيّر null لـ ""
+  courseInput: "",  // ✅
+  fileType: "",     // ✅ غيّر null لـ ""
 });
 const [showSuggestions, setShowSuggestions] = useState(false);
 const [showCollectionSuggestions, setShowCollectionSuggestions] = useState(false);
 const [isNewCourse, setIsNewCourse] = useState(false);
 
 const openEditFile = (file) => {
+  const matchedCategory = categories.find(cat => cat.name === file.categoryName);
+  
+  if (matchedCategory) {
+    fetchCourses(matchedCategory.id); // ✅ هون بس بتنادي
+  }
+
   setEditFileData({
     id: file.id,
-    title: file.title,
-    categoryId: file.categoryId || null,
-    courseInput: file.courseName,
-    fileType: file.fileType
+    title: file.title || "",
+    description: file.description || "",
+    categoryId: matchedCategory ? matchedCategory.id : "",
+    courseInput: file.courseName || "",
+    fileType: file.fileType ?? "",
   });
   setEditFileModalOpen(true);
 };
 const handleUpdateFile = async () => {
+  // جيبي الـ courseId من الـ coursesList
+  const matchedCourse = coursesList.find(c => 
+  c.name.toLowerCase() === editFileData.courseInput.toLowerCase()
+);
+
+  if (!matchedCourse) {
+    alert("Please select a valid course from the list");
+    return;
+  }
+
   try {
     const payload = {
       id: editFileData.id,
       title: editFileData.title,
-      categoryId: editFileData.categoryId,
-      courseName: editFileData.courseInput,
-      fileType: editFileData.fileType
+      description: editFileData.description || "",  // ✅ أضيفي هاد
+      courseId: matchedCourse.id,                   // ✅ courseId مش courseName
+      fileType: Number(editFileData.fileType)
     };
 
-    await axios.put("/Api/EduFile/UpdateMyFile", payload);
+    console.log("Payload:", payload);
 
+    await axios.put("/Api/EduFile/UpdateMyFile", payload);
     alert("File updated successfully!");
     setEditFileModalOpen(false);
-    fetchMyFiles(); // لتحديث الجدول
+    fetchMyFiles();
   } catch (err) {
-    console.error(err);
-    alert("Error updating file.");
+    console.log("Error response:", err.response?.data);
+    alert(err.response?.data?.message || "Error updating file.");
   }
 };
 const fetchCourses = async (categoryId) => {
-  if (!categoryId) return; // لو ما في كاتيجوري، ما تعمل request
+  if (!categoryId) return;
   try {
     const res = await axios.get(`/Api/Course/GetList/${categoryId}`);
+    console.log("Courses fetched:", res.data.data); // ✅ شوفي شو بيجي
     setCourses(res.data.data);
+    setCoursesList(res.data.data);
   } catch (error) {
     console.log(error);
   }
 };
-
-useEffect(() => {
-  fetchCourses();
-}, []);
+const openViewFiles = async (collectionId) => {
+  try {
+    const res = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
+    if (res.data.succeeded) {
+      setViewFilesList(res.data.data.files || []);
+      setViewFilesModalOpen(true);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
   return (
     <div className="profile-container">
 
       {/* 🔵 HEADER */}
-      <div className="profile-header">
-        <h2>{userData.name || "Student Name"}</h2>
-        <p>{userData.email}</p>
+     <div className="pp-header">
+  <div className="pp-header-bg"></div>
 
-        <div className="stats">
-          <div>
-            <h3>{files.length}</h3>
-            <p>Files Uploaded</p>
-          </div>
+  <div className="pp-header-content">
+    <div className="pp-avatar-wrap">
+      {profilePhotoUrl ? (
+        <img src={profilePhotoUrl} alt={userData.name} className="pp-avatar-img" />
+      ) : (
+        <div className="pp-avatar-placeholder">
+          <span>{userData.name?.charAt(0) || "?"}</span>
+        </div>
+      )}
+    </div>
 
-          <div>
-            <h3>{files.filter(f => f.isPublished).length}</h3>
-            <p>Published</p>
-          </div>
+    <div className="pp-header-info">
+      <span className="pp-badge">✦ ACADEMIC DASHBOARD</span>
+      <h1 className="pp-name">{userData.name}</h1>
+      <p className="pp-email">{userData.email}</p>
 
-          <div>
-            <h3>{files.filter(f => f.status === 1).length}</h3>
-            <p>Approved</p>
-          </div>
+      <div className="pp-stats">
+        <div className="pp-stat">
+          <span className="pp-stat-num">{userData.totalFiles ?? 0}</span>
+          <span className="pp-stat-label">Files Uploaded</span>
+        </div>
+        <div className="pp-stat-divider"></div>
+        <div className="pp-stat">
+          <span className="pp-stat-num">{userData.totalDownloads ?? 0}</span>
+          <span className="pp-stat-label">Downloads</span>
+        </div>
+        <div className="pp-stat-divider"></div>
+        <div className="pp-stat">
+          <span className="pp-stat-num">{userData.collectionsCount ?? 0}</span>
+          <span className="pp-stat-label">Collections</span>
+        </div>
+        <div className="pp-stat-divider"></div>
+        <div className="pp-stat">
+          <span className="pp-stat-num">{files.filter(f => f.status === 1).length}</span>
+          <span className="pp-stat-label">Approved</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
       {/* 🔘 TABS */}
      <div className="tabs">
@@ -426,15 +620,17 @@ useEffect(() => {
               </span>
             </td>
         <td>{new Date(file.uploadedAt).toLocaleDateString("en-GB")}</td>
-            <td>
-              {!file.isPublished ? (
-                <button onClick={() => publishFile(file.id)}>Publish</button>
-              ) : (
-                <button onClick={() => unpublishFile(file.id)}>Unpublish</button>
-              )}
-              <button onClick={() => deleteFile(file.id)}>🗑️</button>
-              <button onClick={() => openEditFile(file)}>✏️ Edit</button>
-            </td>
+           <td>
+  {file.status === 1 && (
+    !file.isPublished ? (
+      <button onClick={() => publishFile(file.id)}>Publish</button>
+    ) : (
+      <button onClick={() => unpublishFile(file.id)}>Unpublish</button>
+    )
+  )}
+  <button onClick={() => deleteFile(file.id)}>🗑️</button>
+  <button onClick={() => openEditFile(file)}>✏️ Edit</button>
+</td>
           </tr>
         ))}
       </tbody>
@@ -481,19 +677,19 @@ useEffect(() => {
         <input
           type="text"
           value={editFileData.courseInput}
-         onChange={(e) => {
+   onChange={(e) => {
   const value = e.target.value;
   setEditFileData({ ...editFileData, courseInput: value });
   setShowSuggestions(true);
 
-  // فلترة الكورسات
+  // ✅ بدون normalizeCourseName - فلترة بسيطة
   const filtered = coursesList.filter(c =>
-    normalizeCourseName(c.name).includes(normalizeCourseName(value))
+    c.name.toLowerCase().includes(value.toLowerCase())
   );
   setFilteredCourses(filtered);
 
   const match = coursesList.some(
-   (c) => normalizeCourseName(c.name) === normalizeCourseName(value)
+    (c) => c.name.toLowerCase() === value.toLowerCase()
   );
   setIsNewCourse(!match);
 }}
@@ -579,17 +775,26 @@ useEffect(() => {
             </span>
           </div>
 
-          <div className="collection-meta">
-            <span>📁 {collection.filesCount} files</span>
-            <span>📅 {new Date(collection.createdAt).toLocaleDateString("en-CA")}</span>
-            <span>📂 {collection.courseName}</span>
-          </div>
-
+          <div className="collections-meta">
+  <span>📁 {collection.filesCount} files</span>
+  <span>📅 {new Date(collection.createdAt).toLocaleDateString("en-CA")}</span>
+  <span>📂 {collection.courseName}</span>
+</div>
           <div className="collection-actions">
             <button className="add-files-btn" 
-              onClick={() => addFilesToCollection(collection.id)}>
-              + Add Files
+            onClick={() => addFilesToCollection(collection.id)}>+ Add Files
             </button>
+              <button className="edit-btn"
+    onClick={() => {
+      setEditCollectionData({
+        id: collection.id,
+        name: collection.name,
+        description: collection.description
+      });
+      setEditCollectionModal(true);
+    }}>
+    ✏️ Edit
+  </button>
             {!collection.isPublished ? (
               <button className="publish-btn" 
                 onClick={() => publishCollection(collection.id)}>
@@ -601,6 +806,11 @@ useEffect(() => {
                 Published ✓
               </button>
             )}
+            <button className="view-files-btn"
+    onClick={() => openViewFiles(collection.id)}>
+    👁️ View Files
+  </button>
+
             <button className="trash-btn" 
               onClick={() => deleteCollection(collection.id)}>🗑️</button>
           </div>
@@ -638,10 +848,14 @@ useEffect(() => {
           <div className="form-row">
             <div className="form-group">
               <label>Category</label>
-              <select
-                value={newCollectionData.categoryId}
-                onChange={(e) => setNewCollectionData({...newCollectionData, categoryId: e.target.value})}
-              >
+             <select
+  value={newCollectionData.categoryId}
+  onChange={(e) => {
+    const catId = e.target.value;
+    setNewCollectionData({ ...newCollectionData, categoryId: catId });
+    fetchCourses(catId); // تحديث قائمة الكورسات
+  }}
+>
                 <option value="">Select Category</option>
                 {categories.map(cat => (
                   <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -662,8 +876,8 @@ useEffect(() => {
 
   // فلترة الكورسات
   const filtered = coursesList.filter(c =>
-    normalizeCourseName(c.name).includes(normalizeCourseName(value))
-  );
+  c.name.toLowerCase().includes(value.toLowerCase())
+);
   setFilteredCourses(filtered);  // خزّن الكورسات المقترحة
 }}
   onFocus={() => setShowCollectionSuggestions(true)}
@@ -703,27 +917,164 @@ useEffect(() => {
     )}
   </div>
 )}
+{addFilesModalOpen && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>Add Files to Collection</h3>
+      <p>Select approved files</p>
 
+      <div className="files-list">
+        {approvedFiles.length === 0 ? (
+          <p>No approved files</p>
+        ) : (
+          approvedFiles.map(file => (
+            <div className="file-item-card">
+  <input
+    type="checkbox"
+    checked={selectedFiles.includes(file.id)}
+    onChange={() => toggleFileSelection(file.id)}
+  />
+
+  <div className="file-info">
+    <div className="file-icon">
+   {fileIcons[file.fileType] || "📁"}
+    </div>
+
+    <div>
+      <div className="file-title">{file.title}</div>
+      <div className="file-meta">
+       {file.courseName}
+      </div>
+    </div>
+  </div>
+  <span className={`file-type-badge type-${file.fileType}`}>
+    {fileTypeNames[file.fileType]}
+  </span>
+</div>
+          ))
+        )}
+      </div>
+
+      <div className="btns-row">
+        <button onClick={() => setAddFilesModalOpen(false)}>
+          Cancel
+        </button>
+        <button onClick={handleAddFilesToCollection}>
+          Add Selected
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+{viewFilesModalOpen && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>Collection Files</h3>
+      <p>Files in this collection</p>
+
+      <div className="files-list">
+        {viewFilesList.length === 0 ? (
+          <p>No files in this collection</p>
+        ) : (
+          viewFilesList.map(file => (
+            <div
+              key={file.eduFileId}
+              className="file-item-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => window.open(`${BASE_URL}${file.filePath}`, "_blank")}
+            >
+              <div className="file-info">
+                <div className="file-icon">
+                  {fileIcons[Number(file.fileType)] || "📁"}
+                </div>
+                <div>
+                  <div className="file-title">{file.title}</div>
+                  <div className="file-meta">{file.courseName}</div>
+                </div>
+              </div>
+
+              <span className={`file-type-badge type-${Number(file.fileType)}`}>
+                {fileTypeNames[Number(file.fileType)]}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="btns-row">
+        <button onClick={() => setViewFilesModalOpen(false)}>Close</button>
+      </div>
+    </div>
+  </div>
+)}
+{editCollectionModal && (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>Edit Collection</h3>
+
+      <div className="form-group">
+        <label>Collection Name</label>
+        <input
+          type="text"
+          value={editCollectionData.name}
+          onChange={(e) => setEditCollectionData({
+            ...editCollectionData, name: e.target.value
+          })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Description</label>
+        <input
+          type="text"
+          value={editCollectionData.description}
+          onChange={(e) => setEditCollectionData({
+            ...editCollectionData, description: e.target.value
+          })}
+        />
+      </div>
+
+      <div className="btns-row">
+        <button onClick={() => setEditCollectionModal(false)}>Cancel</button>
+        <button onClick={handleUpdateCollection}>Save Changes</button>
+      </div>
+    </div>
+  </div>
+)}
       {/* ================= SETTINGS ================= */}
      {activeTab === "settings" && (
   <div className="settings-container">
 
     {/* ===== Edit Profile Section ===== */}
-    <div className="card">
-      <h3>Edit Profile</h3>
-      <p className="sub-text">Update your personal information</p>
+   <div className="card">
+  <h3>Edit Profile</h3>
+  <p className="sub-text">Update your personal information</p>
 
-      {/* تغيير الصورة */}
-      <div className="form-group">
-        <label>Profile Photo</label>
+  {/* تغيير الصورة */}
+  <div className="photo-upload-section">
+    <div className="photo-preview">
+      {profilePhotoUrl ? (
+        <img src={profilePhotoUrl} alt="profile" className="profile-photo-preview" />
+      ) : (
+        <div className="profile-photo-placeholder">
+          <span>{userData.name?.charAt(0) || "?"}</span>
+        </div>
+      )}
+    </div>
+
+    <div className="photo-upload-info">
+      <label className="change-photo-btn">
+        📷 Change Photo
         <input
           type="file"
           accept="image/*"
-          onChange={(e) =>
-            setUserData({ ...userData, photo: e.target.files[0] })
-          }
+          hidden
+          onChange={(e) => setUserData({ ...userData, photo: e.target.files[0] })}
         />
-      </div>
+      </label>
+      <small>JPG, PNG or WebP · Max 5MB</small>
+    </div>
+  </div>
 
       <div className="form-group">
         <label>Full Name</label>
@@ -736,17 +1087,33 @@ useEffect(() => {
         />
       </div>
 
-      <div className="form-group">
-        <label>Email Address</label>
-        <input
-          type="email"
-          value={userData.email}
-          onChange={(e) =>
-            setUserData({ ...userData, email: e.target.value })
-          }
-        />
-      </div>
+{/* Current Email - Read Only */}
+<div className="form-group">
+  <label>Email Address</label>
+  <input
+    type="email"
+    value={newEmail}
+    onChange={(e) => {
+      setNewEmail(e.target.value);
+      setEmailSent(false);
+    }}
+    placeholder={userData.email}
+  />
 
+  {/* ✅ يظهر لما المستخدم يكتب إيميل جديد */}
+  {newEmail && !emailSent && (
+    <small className="email-hint">
+      ⚠️ A confirmation link will be sent to your current email
+    </small>
+  )}
+
+  {/* ✅ يظهر بعد ما يتبعت الطلب */}
+  {emailSent && (
+    <small className="email-hint" style={{ color: "green" }}>
+      ✅ Confirmation link sent! Check your current email to confirm the change.
+    </small>
+  )}
+</div>
       <div className="btns-row">
         <button className="cancel-btns">Cancel</button>
         <button className="save-btns" onClick={handleUpdateProfile}>
