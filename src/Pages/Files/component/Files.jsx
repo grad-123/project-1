@@ -276,68 +276,58 @@ function Files() {
     }
   };
 
-  // جلب ملفات مجموعة محددة
-  const openCollection = async (collection) => {
-    if (!collection || !collection.id) {
-      console.error("Invalid collection:", collection);
-      setMessage(t("files.invalidCollection"));
-      setTimeout(() => setMessage(""), 3000);
-      return;
-    }
+const openCollection = async (collection) => {
+  if (!collection || !collection.id) {
+    console.error("Invalid collection:", collection);
+    setMessage(t("files.invalidCollection"));
+    setTimeout(() => setMessage(""), 3000);
+    return;
+  }
 
-    setSelectedCollection(collection);
-    setLoadingCollectionFiles(true);
-    setActiveType("all");
+  setSelectedCollection(collection);
+  setLoadingCollectionFiles(true);
+  setActiveType("all");
 
-    try {
-      console.log("Fetching collection with ID:", collection.id);
-      const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
-      console.log("Collection files response:", res.data);
-      
-      if (res.data && res.data.succeeded && res.data.data) {
-        if (res.data.data.files && Array.isArray(res.data.data.files)) {
-          const formattedFiles = res.data.data.files.map((file) => ({
-            ...file,
-            id: file.eduFileId,
-            eduFileId: file.eduFileId,
-            fileType: Number(file.fileType),
-            title: file.title,
-            filePath: file.filePath,
-            courseName: file.courseName,
-            categoryName: file.categoryName,
-            downloadCount: file.downloadCount || 0,
-          }));
-          setCollectionFiles(formattedFiles);
-          console.log("Loaded files:", formattedFiles.length);
-        } else {
-          console.log("No files found in collection");
-          setCollectionFiles([]);
-        }
+  try {
+    console.log("Fetching collection with ID:", collection.id);
+    const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+    console.log("Collection files response:", res.data);
+    
+    if (res.data && res.data.succeeded && res.data.data) {
+      if (res.data.data.files && Array.isArray(res.data.data.files)) {
+        const formattedFiles = res.data.data.files.map((file) => ({
+          ...file,
+          id: file.eduFileId,
+          eduFileId: file.eduFileId,
+          fileType: Number(file.fileType),
+          title: file.title,
+          filePath: file.filePath,
+          courseName: file.courseName,
+          categoryName: file.categoryName,
+          downloadCount: file.downloadCount || 0,
+        }));
+        setCollectionFiles(formattedFiles);
+        console.log("Loaded files:", formattedFiles.length);
       } else {
+        console.log("No files found in collection");
         setCollectionFiles([]);
       }
-    } catch (err) {
-      console.error("Error fetching collection files:", err);
-      
-      if (err.response && err.response.status === 404) {
-        setMessage(t("files.collectionNotFound"));
-        setCollections(prevCollections => 
-          prevCollections.filter(col => col.id !== collection.id)
-        );
-        setSelectedCollection(null);
-      } else if (err.response && err.response.status === 403) {
-        setMessage(t("files.noAccess"));
-      } else {
-        setMessage(t("files.errorLoadingFiles"));
-      }
-      
-      setTimeout(() => setMessage(""), 3000);
+    } else {
       setCollectionFiles([]);
-      
-    } finally {
-      setLoadingCollectionFiles(false);
     }
-  };
+  } catch (err) {
+    console.error("Error fetching collection files:", err);
+    
+    if (err.response && err.response.status === 404) {
+      setMessage(""); 
+      setCollectionFiles([]);
+      setLoadingCollectionFiles(false);
+      // لا نحذف المجموعة من القائمة
+    }
+  } finally {
+    setLoadingCollectionFiles(false);
+  }
+};
 
   // الرجوع إلى قائمة المجموعات
   const backToCollections = () => {
