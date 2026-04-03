@@ -21,10 +21,10 @@ export default function FavoriteFileCard({
   setMessage,
   showAddButton = true,
   onAddToCollection = null,
+  hideFileType = false,
 }) {
   const { t } = useTranslation();
 
-  // دالة التحميل - تعمل مع وبدون تسجيل دخول
   const handleDownload = async () => {
     try {
       const response = await axios.get(
@@ -85,14 +85,16 @@ export default function FavoriteFileCard({
           <h3
             className="file-title clickable"
             onClick={() => {
-              // فتح الملف في تبويب جديد - يعمل مع وبدون تسجيل دخول
               const directUrl = `${serverUrl}${file.filePath}`;
               window.open(directUrl, "_blank");
             }}
           >
             {file.title}
           </h3>
-          <span className="file-type">{fileTypeText[file.fileType]}</span>
+          {/* إظهار نوع الملف فقط إذا لم يكن مخفياً */}
+          {!hideFileType && (
+            <span className="file-type">{fileTypeText[file.fileType]}</span>
+          )}
           <p className="file-description">{file.description}</p>
           <div className="file-meta">
             <span>📚 {file.courseName}</span>

@@ -10,12 +10,27 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* تأكد من أن الجسم ليس عنده padding-top يمنع الـ sticky */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* لإصلاح مشكلة الـ sticky مع الـ RTL */
+html[dir="rtl"] .navbar {
+  right: 0;
+  left: auto;
 }
 
 .logo {
   font-weight: bold;
   font-size: 20px;
   color: var(--primary);
+  white-space: nowrap;
 }
 
 .nav-link {
@@ -56,10 +71,16 @@
   filter: grayscale(100%);
   transition: 0.2s;
   color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
 }
 
 .icon-btn:hover {
   filter: grayscale(0%);
+  background-color: var(--bg-secondary);
 }
 
 .signin-btn {
@@ -70,67 +91,107 @@
   text-decoration: none;
   font-weight: bold;
   transition: 0.2s;
-   border: none;
-  outline: none; 
+  border: none;
+  outline: none;
   cursor: pointer;
 }
 
 .signin-btn:hover {
   background: var(--primary-dark);
-  color: var(--primary);
+  color: white;
 }
 
-@media (max-width: 600px) {
+/* ========== Responsive Styles ========== */
+@media (max-width: 992px) {
   .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    padding: 12px 20px;
   }
+  
+  .nav-link {
+    gap: 15px;
+  }
+  
+  .nav-link a {
+    font-size: 14px;
+  }
+}
 
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+    padding: 10px 15px;
+  }
+  
   .logo {
     font-size: 18px;
   }
-
+  
   .nav-link {
-    display: grid;
+    order: 3;
     width: 100%;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
-  }
-
-  .nav-link a {
-    font-size: 14px;
-    padding: 8px 10px;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    border-radius: 8px;
-    background: var(--bg-card);
-    color: var(--text-main);
-    text-align: center;
-    transition: 0.2s;
-  }
-
-  .nav-link a:hover {
-    background-color: var(--primary);
-    color: var(--text-light);
-  }
-
-  .nav-right {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
+    gap: 10px;
+    margin-top: 10px;
     flex-wrap: wrap;
   }
-
-  .icon-btn {
-    font-size: 20px;
-    padding: 6px;
+  
+  .nav-link li {
+    margin: 0;
   }
-
-  .signin-btn {
+  
+  .nav-link a {
+    font-size: 13px;
     padding: 6px 12px;
-    font-size: 14px;
+    border-radius: 20px;
+    background: var(--bg-card);
   }
+  
+  .nav-right {
+    gap: 8px;
+  }
+  
+  .icon-btn {
+    padding: 6px;
+    font-size: 18px;
+  }
+  
+  .signin-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 8px 12px;
+  }
+  
+  .logo {
+    font-size: 16px;
+  }
+  
+  .nav-link a {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+  
+  .icon-btn {
+    padding: 5px;
+    font-size: 16px;
+  }
+  
+  .signin-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+/* ========== Dark Mode Support ========== */
+[data-theme="dark"] .navbar {
+  background-color: var(--navbar-bg);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .icon-btn:hover {
+  background-color: var(--bg-secondary);
 }

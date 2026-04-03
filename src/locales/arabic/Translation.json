@@ -68,10 +68,10 @@
     "totalDownloads": "إجمالي التحميلات"
   },
   "browse": {
-    "searchPlaceholder": "اضغط للبحث ...",
+    "searchPlaceholder": "اضغط للبحث...",
     "categories": "تصفح التصنيفات",
     "description": "استكشف مختلف مجالات الدراسة واختر المجال الذي يناسب اهتماماتك",
-    "searchButton": "ابحث",
+    "searchButton": "بحث",
     "noFiles": "لم يتم العثور على أي ملفات",
     "tryAnotherSearch": "جرب كلمة مفتاحية أخرى أو غيّر عوامل التصفية",
     "allCategories": "جميع الفئات",
@@ -86,18 +86,35 @@
     "watchVideo": "🎥 شاهد الفيديو",
     "types": {
       "lecture": "محاضرة",
+      "slides": "شرائح",
       "summary": "ملخص",
       "exam": "امتحان",
       "assignment": "واجب",
       "book": "كتاب",
-      "slides": "شرائح العرض",
       "other": "أخرى"
     },
+    "collections": "المجموعات",
+    "noDescription": "لا يوجد وصف",
+    "unknownCourse": "مقرر غير معروف",
+    "unknown": "غير معروف",
+    "files": "ملفات",
+    "viewFiles": "عرض الملفات",
+    "addToFavorites": "أضف إلى المفضلة",
+    "removeFromFavorites": "إزالة من المفضلة",
+    "collectionAddedToFavorites": "✨ تمت إضافة المجموعة إلى المفضلة!",
+    "collectionRemovedFromFavorites": "💔 تمت إزالة المجموعة من المفضلة",
+    "errorAddingCollection": "❌ خطأ في إضافة المجموعة إلى المفضلة",
+    "errorRemovingCollection": "❌ خطأ في إزالة المجموعة من المفضلة",
+    "backToResults": "العودة إلى نتائج البحث",
+    "noFilesInCollection": "لا توجد ملفات في هذه المجموعة",
+    "noResults": "لا توجد نتائج",
+    "all": "الكل",
     "order": {
       "mostDownloaded": "الأكثر تحميلاً",
       "newest": "الأحدث"
     }
   },
+
   "upload": {
     "title": "شارك معرفتك",
     "subtitle": "ارفع موادك الأكاديمية لمساعدة آلاف الطلاب الآخرين.",
@@ -633,7 +650,8 @@
     "fileAlreadyInCollection": "الملف موجود بالفعل في هذه المجموعة",
     "filesAlreadyInCollection": "ملفات موجودة بالفعل في هذه المجموعة",
       "removedFromCollections": "وتمت إزالته من {{count}} مجموعة",
-        "removedFromMyCollections": "وتمت إزالته من {{count}} مجموعة من مجموعاتك"
-
+      "removedFromMyCollections": "وتمت إزالته من {{count}} مجموعة من مجموعاتك",
+     "removedFromCollections": "and removed from {{count}} collections",
+    "removedFromMyCollections": "and removed from {{count}} of your collections"
   }
 }

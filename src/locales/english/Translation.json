@@ -67,6 +67,7 @@
     "categoriesCount": "Categories count",
     "totalDownloads": "Total download"
   },
+  
   "browse": {
     "searchPlaceholder": "Tap to search...",
     "categories": "Browse Categories",
@@ -86,18 +87,36 @@
     "watchVideo": "🎥 Watch video",
     "types": {
       "lecture": "Lecture",
+      "slides": "Slides",
       "summary": "Summary",
       "exam": "Exam",
       "assignment": "Assignment",
       "book": "Book",
-      "slides": "Slides",
       "other": "Other"
     },
+    "collections": "Collections",
+    "noDescription": "No description",
+    "unknownCourse": "Unknown Course",
+    "unknown": "Unknown",
+    "files": "files",
+    "viewFiles": "View Files",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "collectionAddedToFavorites": "✨ Collection added to favorites!",
+    "collectionRemovedFromFavorites": "💔 Collection removed from favorites",
+    "errorAddingCollection": "❌ Error adding collection to favorites",
+    "errorRemovingCollection": "❌ Error removing collection from favorites",
+    "backToResults": "Back to search results",
+    "noFilesInCollection": "No files found in this collection",
+    "noResults": "No results found",
+    "all": "All",
     "order": {
       "mostDownloaded": "Most Downloaded",
       "newest": "Newest"
     }
   },
+
+    
   "upload": {
     "title": "Share Your Knowledge",
     "subtitle": "Upload your academic materials to help thousands of fellow students.",

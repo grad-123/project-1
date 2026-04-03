@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./Browse.css";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -6,12 +6,14 @@ import { useTranslation } from "react-i18next";
 import axios from "../../../api/axiosInstance";
 import { FaSearch } from "react-icons/fa";
 import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
+
 function Browse() {
   const [message, setMessage] = useState("");
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [files, setFiles] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [categoryId, setCategoryId] = useState("");
@@ -22,8 +24,18 @@ function Browse() {
   const [courseId, setCourseId] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [favorites, setFavorites] = useState([]);
+  
+  // States for collections functionality
+  const [favoriteCollections, setFavoriteCollections] = useState([]);
+  const [togglingCollectionId, setTogglingCollectionId] = useState(null);
+  const [selectedCollection, setSelectedCollection] = useState(null);
+  const [collectionFiles, setCollectionFiles] = useState([]);
+  const [showCollectionFiles, setShowCollectionFiles] = useState(false);
+  const [collectionFileType, setCollectionFileType] = useState("all");
+  
   const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
 
+  // Fetch categories
   useEffect(() => {
     axios
       .get("/api/v1/Category/GetList")
@@ -37,6 +49,7 @@ function Browse() {
       });
   }, []);
 
+  // Fetch favorites (files)
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -48,6 +61,28 @@ function Browse() {
       })
       .catch((err) => console.log(err));
   }, []);
+
+  // Fetch favorite collections
+  const fetchFavoriteCollections = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const res = await axios.get("/Favorite/GetCollections");
+      if (res.data && res.data.succeeded && res.data.data) {
+        setFavoriteCollections(res.data.data.map(item => item.collectionId));
+      } else if (Array.isArray(res.data)) {
+        setFavoriteCollections(res.data.map(item => item.collectionId || item.id));
+      }
+    } catch (err) {
+      console.log("Error fetching favorite collections:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFavoriteCollections();
+  }, [fetchFavoriteCollections]);
+
+  // Add favorite (file)
   const addFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -58,6 +93,8 @@ function Browse() {
       console.log(err);
     }
   };
+
+  // Remove favorite (file)
   const removeFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -68,6 +105,8 @@ function Browse() {
       console.log(err);
     }
   };
+
+  // Toggle favorite (file)
   const toggleFavorite = (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -79,6 +118,87 @@ function Browse() {
     } else {
       addFavorite(fileId);
     }
+  };
+
+  // Add favorite collection
+  const addFavoriteCollection = async (collectionId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage(t("browse.loginFirst"));
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
+    setTogglingCollectionId(collectionId);
+    try {
+      await axios.post(`/Favorite/AddCollection/${collectionId}`);
+      setFavoriteCollections(prev => [...prev, collectionId]);
+      setMessage(t("browse.collectionAddedToFavorites"));
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err) {
+      console.log(err);
+      setMessage(t("browse.errorAddingCollection"));
+      setTimeout(() => setMessage(""), 3000);
+    } finally {
+      setTogglingCollectionId(null);
+    }
+  };
+
+  // Remove favorite collection
+  const removeFavoriteCollection = async (collectionId) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    setTogglingCollectionId(collectionId);
+    try {
+      await axios.delete(`/Favorite/RemoveCollection/${collectionId}`);
+      setFavoriteCollections(prev => prev.filter(id => id !== collectionId));
+      setMessage(t("browse.collectionRemovedFromFavorites"));
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err) {
+      console.log(err);
+      setMessage(t("browse.errorRemovingCollection"));
+      setTimeout(() => setMessage(""), 3000);
+    } finally {
+      setTogglingCollectionId(null);
+    }
+  };
+
+  // Open collection to view its files
+  const openCollection = async (collection) => {
+    setSelectedCollection(collection);
+    setShowCollectionFiles(true);
+    setCollectionFileType("all");
+    try {
+      const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+      if (res.data && res.data.succeeded && res.data.data) {
+        const files = (res.data.data.files || []).map(file => ({
+          ...file,
+          id: file.eduFileId,
+          eduFileId: file.eduFileId,
+          fileType: Number(file.fileType),
+          title: file.title,
+          filePath: file.filePath,
+          courseName: file.courseName,
+          categoryName: file.categoryName,
+          downloadCount: file.downloadCount || 0,
+          uploadedAt: file.uploadedAt,
+          uploadedByUserName: file.uploadedByUserName
+        }));
+        setCollectionFiles(files);
+      } else {
+        setCollectionFiles([]);
+      }
+    } catch (err) {
+      console.error("Error fetching collection files:", err);
+      setCollectionFiles([]);
+    }
+  };
+
+  // Back to search results
+  const backToResults = () => {
+    setSelectedCollection(null);
+    setShowCollectionFiles(false);
+    setCollectionFiles([]);
+    setCollectionFileType("all");
   };
 
   useEffect(() => {
@@ -105,6 +225,7 @@ function Browse() {
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
   const searchFiles = async () => {
     try {
       const res = await axios.get("/Api/EduFile/Search", {
@@ -118,17 +239,30 @@ function Browse() {
         },
       });
 
-      setFiles(res.data.data || []);
+      const filesData = res.data.data?.files || [];
+      const collectionsData = res.data.data?.collections || [];
+      
+      setFiles(Array.isArray(filesData) ? filesData : []);
+      setCollections(Array.isArray(collectionsData) ? collectionsData : []);
+      
+      console.log("Files:", filesData);
+      console.log("Collections:", collectionsData);
+      
     } catch (err) {
       console.error("Search error:", err);
+      setFiles([]);
+      setCollections([]);
     }
   };
+
   const handleSearch = () => {
     if (!searchTerm && !categoryId && !courseId) {
       setMessage(t("browse.enterKeyword"));
       return;
     }
     setShowResults(true);
+    setShowCollectionFiles(false);
+    setSelectedCollection(null);
     searchFiles();
   };
 
@@ -151,6 +285,75 @@ function Browse() {
     }
   };
 
+  // Helper functions for file types
+  const getFileTypeIcon = (type) => {
+    const icons = { 0: "🎥", 1: "📄", 2: "📝", 3: "📝", 4: "📌", 5: "📚", 6: "📁" };
+    return icons[type] || "📄";
+  };
+
+  const getFileTypeName = (type) => {
+    const names = {
+      0: t("browse.types.lecture"),
+      1: t("browse.types.slides"),
+      2: t("browse.types.summary"),
+      3: t("browse.types.exam"),
+      4: t("browse.types.assignment"),
+      5: t("browse.types.book"),
+      6: t("browse.types.other")
+    };
+    return names[type] || t("browse.types.other");
+  };
+
+  // Collection Card Component
+  const CollectionCard = ({ collection }) => {
+    const isFav = favoriteCollections.includes(collection.id);
+    const isToggling = togglingCollectionId === collection.id;
+
+    return (
+      <div className="collection-card" onClick={() => openCollection(collection)}>
+        <div className="collection-icon">📦</div>
+        <div className="collection-info">
+          <h3 className="collection-title">{collection.name}</h3>
+          <p className="collection-description">
+            {collection.description || t("browse.noDescription")}
+          </p>
+          <div className="collection-meta">
+            <span>📚 {collection.courseName || t("browse.unknownCourse")}</span>
+            <span>📄 {collection.filesCount || 0} {t("browse.files")}</span>
+            <span>👤 {collection.uploaderName || t("browse.unknown")}</span>
+          </div>
+        </div>
+        <div className="collection-actions">
+          <button
+            className={`collection-favorite-btn ${isFav ? "active" : ""}`}
+            onClick={async (e) => {
+              e.stopPropagation();
+              if (isToggling) return;
+              if (isFav) {
+                await removeFavoriteCollection(collection.id);
+              } else {
+                await addFavoriteCollection(collection.id);
+              }
+            }}
+            disabled={isToggling}
+            title={isFav ? t("browse.removeFromFavorites") : t("browse.addToFavorites")}
+          >
+            {isToggling ? "⏳" : (isFav ? "❤️" : "♡")}
+          </button>
+          <button
+            className="view-collection-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              openCollection(collection);
+            }}
+          >
+            {t("browse.viewFiles")} 📂
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="loading">
@@ -159,11 +362,16 @@ function Browse() {
     );
   }
 
+  // Check if there are any files in results
+  const hasFiles = files.length > 0;
+  const hasCollections = collections.length > 0;
+
   return (
     <div className="browse-page">
       <h1 className="browse-title">{t("browse.categories")}</h1>
       <p className="browse-description">{t("browse.description")}</p>
       {message && <div className="message">{message}</div>}
+      
       <div className="search-wrapper">
         <div className="search-input-wrapper">
           <FaSearch className="search-icon" />
@@ -180,6 +388,7 @@ function Browse() {
           {t("browse.searchButton")}
         </button>
       </div>
+
       {!showResults && (
         <div className="categories-container">
           {categories.map((cat) => (
@@ -204,6 +413,7 @@ function Browse() {
       {showResults && (
         <>
           <div className="filters">
+            {/* فلتر الكاتاجوري - يظهر دائماً */}
             <select onChange={(e) => setCategoryId(Number(e.target.value))}>
               <option value="">{t("browse.allCategories")}</option>
               {categories.map((cat) => (
@@ -212,6 +422,8 @@ function Browse() {
                 </option>
               ))}
             </select>
+            
+            {/* فلتر الكورسات - يظهر دائماً */}
             <select
               value={courseId}
               onChange={(e) => setCourseId(Number(e.target.value))}
@@ -224,56 +436,138 @@ function Browse() {
                 </option>
               ))}
             </select>
-            <select
-              onChange={(e) =>
-                setFileType(e.target.value === "" ? "" : Number(e.target.value))
-              }
-            >
-              <option value="">{t("browse.allTypes")}</option>
-              <option value="0">{t("browse.types.lecture")}</option>
-              <option value="1">{t("browse.types.slides")}</option>
-              <option value="2">{t("browse.types.summary")}</option>
-              <option value="3">{t("browse.types.exam")}</option>
-              <option value="4">{t("browse.types.assignment")}</option>
-              <option value="5">{t("browse.types.book")}</option>
-              <option value="6">{t("browse.types.other")}</option>
-            </select>
+            
+            {/* فلتر أنواع الملفات - يظهر فقط إذا كان هناك ملفات */}
+            {hasFiles && (
+              <select
+                onChange={(e) =>
+                  setFileType(e.target.value === "" ? "" : Number(e.target.value))
+                }
+              >
+                <option value="">{t("browse.allTypes")}</option>
+                <option value="0">{t("browse.types.lecture")}</option>
+                <option value="1">{t("browse.types.slides")}</option>
+                <option value="2">{t("browse.types.summary")}</option>
+                <option value="3">{t("browse.types.exam")}</option>
+                <option value="4">{t("browse.types.assignment")}</option>
+                <option value="5">{t("browse.types.book")}</option>
+                <option value="6">{t("browse.types.other")}</option>
+              </select>
+            )}
+            
+            {/* فلتر الترتيب - يظهر دائماً */}
             <select
               onChange={(e) =>
                 setOrderBy(e.target.value === "" ? "" : Number(e.target.value))
               }
             >
-              {" "}
-              <option value="0">{t("browse.order.mostDownloaded")}</option>{" "}
-              <option value="1">{t("browse.order.newest")}</option>{" "}
-            </select>{" "}
-            <select
-              onChange={(e) => setIsDescending(e.target.value === "true")}
-            >
-              {" "}
-              <option value="true">{t("browse.descending")}</option>{" "}
-              <option value="false">{t("browse.ascending")}</option>{" "}
+              <option value="0">{t("browse.order.mostDownloaded")}</option>
+              <option value="1">{t("browse.order.newest")}</option>
+            </select>
+            
+            {/* فلتر ترتيب تنازلي/تصاعدي - يظهر دائماً */}
+            <select onChange={(e) => setIsDescending(e.target.value === "true")}>
+              <option value="true">{t("browse.descending")}</option>
+              <option value="false">{t("browse.ascending")}</option>
             </select>
           </div>
 
-          {files.length === 0 ? (
-            <div className="no-results">
-              <h3>{t("browse.noFiles")}</h3>
-              <p>{t("browse.tryAnotherSearch")}</p>
-            </div>
+          {showCollectionFiles && selectedCollection ? (
+            // Display collection files
+            <>
+              <div className="back-header">
+                <button className="back-btn" onClick={backToResults}>
+                  ← {t("browse.backToResults")}
+                </button>
+                <h3 className="collection-title-header">📦 {selectedCollection.name}</h3>
+                <p className="collection-desc-header">{selectedCollection.description}</p>
+              </div>
+
+              {/* File type filter tabs for collection */}
+              <div className="tabs">
+                <button 
+                  className={collectionFileType === "all" ? "active" : ""} 
+                  onClick={() => setCollectionFileType("all")}
+                >
+                  📂 {t("browse.all")} ({collectionFiles.length})
+                </button>
+                {[0, 1, 2, 3, 4, 5, 6].map(type => (
+                  <button 
+                    key={type} 
+                    className={collectionFileType === type ? "active" : ""} 
+                    onClick={() => setCollectionFileType(type)}
+                  >
+                    {getFileTypeIcon(type)} {getFileTypeName(type)} ({collectionFiles.filter(f => f.fileType === type).length})
+                  </button>
+                ))}
+              </div>
+
+              {collectionFiles.length === 0 ? (
+                <div className="no-results">
+                  <h3>{t("browse.noFilesInCollection")}</h3>
+                </div>
+              ) : (
+                <div className="files-container">
+                  {collectionFiles
+                    .filter(f => collectionFileType === "all" || f.fileType === collectionFileType)
+                    .map((file) => (
+                      <FavoriteFileCard
+                        key={file.id || file.eduFileId}
+                        file={file}
+                        isFavorite={favorites.includes(file.id || file.eduFileId)}
+                        toggleFavorite={toggleFavorite}
+                        handleDownload={handleDownload}
+                        serverUrl={serverUrl}
+                        setMessage={setMessage}
+                        hideFileType={true}
+                      />
+                    ))}
+                </div>
+              )}
+            </>
           ) : (
-            <div className="files-container">
-              {files.map((file) => (
-                <FavoriteFileCard
-                  key={file.id || file.eduFileId}
-                  file={file}
-                  isFavorite={favorites.includes(file.id || file.eduFileId)}
-                  toggleFavorite={toggleFavorite}
-                  handleDownload={handleDownload}
-                  serverUrl={serverUrl}
-                />
-              ))}
-            </div>
+            // Display normal search results (files + collections)
+            <>
+              {/* Display Files */}
+              {hasFiles && (
+                <div className="files-section">
+                  <h2>{t("browse.files")} ({files.length})</h2>
+                  <div className="files-container">
+                    {files.map((file) => (
+                      <FavoriteFileCard
+                        key={file.id || file.eduFileId}
+                        file={file}
+                        isFavorite={favorites.includes(file.id || file.eduFileId)}
+                        toggleFavorite={toggleFavorite}
+                        handleDownload={handleDownload}
+                        serverUrl={serverUrl}
+                        setMessage={setMessage}
+                        hideFileType={false}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Display Collections */}
+              {hasCollections && (
+                <div className="collections-section">
+                  <h2>{t("browse.collections")} ({collections.length})</h2>
+                  <div className="collections-grid">
+                    {collections.map((collection) => (
+                      <CollectionCard key={collection.id} collection={collection} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!hasFiles && !hasCollections && (
+                <div className="no-results">
+                  <h3>{t("browse.noResults")}</h3>
+                  <p>{t("browse.tryAnotherSearch")}</p>
+                </div>
+              )}
+            </>
           )}
         </>
       )}

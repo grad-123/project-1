@@ -1,12 +1,26 @@
+/* ========== RESET - منع السكرول ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
 body {
   background-color: var(--bg-main);
   color: var(--text-main);
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
   text-align: center;
+  overflow-x: hidden !important;
+  width: 100%;
 }
 
+/* ========== Browse Page ========== */
 .browse-page {
   padding: 20px;
   background-color: var(--bg-secondary);
@@ -14,29 +28,43 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .browse-title {
   font-size: 28px;
   margin-bottom: 20px;
   color: var(--primary);
+  word-break: break-word;
+  max-width: 100%;
 }
+
 .browse-description {
   font-size: 20px;
   color: var(--primary);
   margin-bottom: 20px;
+  word-break: break-word;
+  max-width: 100%;
 }
 
+/* ========== Categories ========== */
 .categories-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   width: 100%;
+  max-width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .category-link {
   width: 100%;
   text-decoration: none;
+  min-width: 0;
 }
 
 .category-card {
@@ -44,28 +72,26 @@ body {
   border-radius: 14px;
   cursor: pointer;
   background-color: #d0e7ff;
-  transition:
-    transform 0.25s,
-    box-shadow 0.25s,
-    background-color 0.25s;
-
+  transition: transform 0.25s, box-shadow 0.25s, background-color 0.25s;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
   height: 180px;
   width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .card-content {
   text-align: left;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .card-content h3 {
   font-size: 18px;
   color: #004a99;
   margin-bottom: 8px;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -75,7 +101,6 @@ body {
   font-size: 14px;
   color: #0066cc;
   line-height: 1.4;
-
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -86,6 +111,7 @@ body {
   align-self: flex-end;
   font-size: 22px;
   color: #004a99;
+  flex-shrink: 0;
 }
 
 .category-card:hover {
@@ -94,6 +120,7 @@ body {
   background-color: #c0e0ff;
 }
 
+/* ========== Search ========== */
 .search-wrapper {
   display: flex;
   justify-content: center;
@@ -102,11 +129,16 @@ body {
   width: 100%;
   max-width: 500px;
   margin: 15px 0 25px 0;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
+
 .search-input-wrapper {
   position: relative;
   flex: 1;
+  min-width: 0;
 }
+
 .search-input {
   width: 100%;
   padding: 10px 15px 10px 40px;
@@ -117,11 +149,14 @@ body {
   background-color: var(--bg-main);
   color: var(--text-main);
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
+
 .search-input:focus {
   border-color: var(--text-main);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
+
 .search-btn {
   padding: 10px 18px;
   border-radius: 8px;
@@ -131,12 +166,14 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .search-btn:hover {
   opacity: 0.9;
   transform: translateY(-2px);
 }
+
 .search-icon {
   position: absolute;
   left: 12px;
@@ -146,6 +183,7 @@ body {
   font-size: 18px;
   pointer-events: none;
 }
+
 .loading {
   display: flex;
   justify-content: center;
@@ -163,13 +201,8 @@ body {
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 html[dir="ltr"] .search-input {
@@ -179,19 +212,27 @@ html[dir="ltr"] .search-input {
 html[dir="rtl"] .search-input {
   padding: 10px 50px 10px 15px;
 }
+
 html[dir="rtl"] .search-icon {
   right: 12px;
+  left: auto;
 }
 
 html[dir="ltr"] .search-icon {
   left: 12px;
+  right: auto;
 }
+
+/* ========== Filters ========== */
 .filters {
   display: flex;
   gap: 15px;
   margin-bottom: 30px;
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
 .filters select {
@@ -210,241 +251,686 @@ html[dir="ltr"] .search-icon {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-.files-title {
-  font-size: 28px;
-  margin-bottom: 20px;
-  color: var(--primary);
-  text-align: center;
-}
-
-.files-description {
-  font-size: 20px;
-  color: var(--primary);
-  text-align: center;
-  margin-bottom: 30px;
-}
-
+/* ========== File Card - الحل الكامل ========== */
 .files-container {
-  width: 80%;
-  margin: auto;
-  margin-top: 40px;
-  color: var(--text-main);
+  width: 100%;
+  max-width: 100%;
+  margin: 20px auto;
+  padding: 0 15px;
+  box-sizing: border-box;
 }
 
 .file-card {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border: 1px solid var(--input-border);
-  border-radius: 12px;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  gap: 15px;
   background: var(--bg-card);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
   position: relative;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
+
+.file-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary);
+}
+
+/* زر المفضلة */
 .file-favorite {
   position: absolute;
-  top: 10px;      
-  right: 10px;    
-  font-size: 20px;
-  cursor: pointer; 
-  user-select: none; 
-   border: 1px solid black;   
-  background-color: var(--bg-main); 
-  border-radius: 50%;            
-  padding: 5px;           
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;  
-    color: gray;
+  background: var(--bg-main);
+  border: 1px solid var(--card-border);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  z-index: 2;
 }
 
 .file-favorite:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .file-favorite.active {
-  color: red; 
-  border-color: red; 
-}
-.file-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  color: #ff4757;
+  border-color: #ff4757;
+  background: rgba(255, 71, 87, 0.1);
 }
 
+/* معلومات الملف */
 .file-info {
   display: flex;
-  gap: 15px;
+  gap: 16px;
+  flex: 2;
+  min-width: 200px;
 }
 
 .file-icon {
-  font-size: 30px;
-  align-self: center;
+  font-size: 48px;
+  min-width: 60px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .file-details {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
 .file-title {
-  margin: 0;
   font-size: 18px;
   font-weight: 600;
+  margin: 0 0 6px 0;
+  color: var(--text-main);
+  cursor: pointer;
+  word-break: break-word;
 }
 
-.file-title a {
-  text-decoration: none;
-  color: var(--text-main);
+.file-title:hover {
+  color: var(--primary);
 }
 
 .file-type {
-  color: var(--primary);
-  font-weight: bold;
+  display: inline-block;
+  background-color: #e6f0ff !important;
+  color: #004a99 !important;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 .file-description {
   color: var(--text-secondary);
-  margin: 8px 0;
-  line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  word-break: break-word;
 }
 
 .file-meta {
   display: flex;
-  gap: 15px;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.file-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
   color: var(--text-secondary);
-  font-size: 14px;
 }
 
 .file-footer {
   display: flex;
-  gap: 15px;
-  margin-top: 8px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.file-footer span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
   color: var(--text-secondary);
-  font-size: 14px;
+}
+
+/* أزرار الإجراءات - الحل لمشكلة الخروج */
+.file-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .download-btn {
   background: var(--primary);
-  color: var(--text-light);
-  padding: 10px 18px;
-  border-radius: 8px;
+  color: white;
   border: none;
-  cursor: pointer;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
   font-weight: 500;
-  transition: all 0.3s ease;
-  margin: 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .download-btn:hover {
-  opacity: 0.6;
-}
-.no-results{
-  margin-top:40px;
-  text-align:center;
-  color:var(--text-secondary);
-}
-.collection-btn {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #6f42c1;
-  color: white;
-  transition: 0.3s;
-}
-
-.collection-btn:hover {
-  opacity: 0.85;
+  background: var(--primary-dark, #2563eb);
+  transform: translateY(-1px);
 }
 
 .add-to-collection-btn-card {
   background: #4caf50;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .add-to-collection-btn-card:hover {
   background: #45a049;
+  transform: translateY(-1px);
 }
 
-.file-actions {
+.no-results {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+/* ========== Collections ========== */
+.collections-grid {
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.collection-card {
+  display: flex;
   align-items: center;
+  gap: 16px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--card-border);
+  width: 100%;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.collection-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary);
+}
+
+.collection-icon {
+  font-size: 48px;
+  min-width: 60px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.collection-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.collection-title {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.collection-description {
+  margin: 0 0 12px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.collection-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.collection-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.collection-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.collection-favorite-btn {
+  background: var(--bg-main);
+  border: 1px solid var(--card-border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 20px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.collection-favorite-btn:hover:not(:disabled) {
+  transform: scale(1.1);
+  border-color: #ff4757;
+}
+
+.collection-favorite-btn.active {
+  color: #ff4757;
+  border-color: #ff4757;
+  background: rgba(255, 71, 87, 0.1);
+}
+
+.collection-favorite-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.view-collection-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.view-collection-btn:hover {
+  background: var(--primary-dark, #2563eb);
+  transform: translateY(-1px);
+}
+
+/* ========== Back Header ========== */
+.back-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--card-border);
+  width: 100%;
+  padding: 0 10px 16px 10px;
+  box-sizing: border-box;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  color: var(--primary-dark, #2563eb);
+  transform: translateX(-4px);
+}
+
+.collection-title-header {
+  margin: 8px 0 4px 0;
+  font-size: 1.5rem;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.collection-desc-header {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  word-break: break-word;
+}
+
+/* ========== Tabs ========== */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.tabs button {
+  padding: 6px 14px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-main);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.tabs button:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.tabs button.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.files-section h2,
+.collections-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+  color: var(--text-main);
+  padding: 0 10px;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 1024px) {
+  .categories-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
 }
 
 @media (max-width: 768px) {
+  .browse-page {
+    padding: 15px;
+  }
+  
   .categories-container {
     grid-template-columns: repeat(2, 1fr);
   }
-}
-
-@media (max-width: 480px) {
-  .categories-container {
-    grid-template-columns: 1fr;
+  
+  .files-container {
+    padding: 0 10px;
   }
-}
-@media (max-width: 480px) {
-  .filters select {
-    width: 100%;
-  }
-}
-@media (max-width: 480px) {
-  .search-wrapper {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-btn {
-    width: 100%;
-  }
-}
-@media (max-width: 480px) {
+  
   .file-card {
+    flex-direction: column;
+    padding: 16px;
+  }
+  
+  .file-info {
+    width: 100%;
+  }
+  
+  .file-icon {
+    font-size: 40px;
+    min-width: 50px;
+  }
+  
+  .file-actions {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+  
+  .download-btn,
+  .add-to-collection-btn-card {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+  
+  .file-favorite {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .collection-card {
     flex-direction: column;
     align-items: flex-start;
   }
-
-  .file-actions {
+  
+  .collection-actions {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 10px;
+    justify-content: flex-start;
+    margin-top: 12px;
+  }
+  
+  .collection-icon {
+    font-size: 40px;
+    min-width: 50px;
   }
 }
+
 @media (max-width: 480px) {
+  .browse-page {
+    padding: 10px;
+  }
+  
   .browse-title {
     font-size: 22px;
   }
-
-  .file-title {
+  
+  .browse-description {
     font-size: 16px;
   }
-
+  
+  .categories-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .category-card {
+    height: auto;
+    min-height: 100px;
+    padding: 12px;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .card-content {
+    flex: 1;
+  }
+  
+  .card-content h3 {
+    font-size: 15px;
+    white-space: normal;
+    word-break: break-word;
+  }
+  
+  .card-content p {
+    font-size: 12px;
+  }
+  
+  .card-arrow {
+    font-size: 18px;
+  }
+  
+  .search-wrapper {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 5px;
+  }
+  
+  .search-btn {
+    width: 100%;
+  }
+  
+  .filters {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 5px;
+  }
+  
+  .filters select {
+    width: 100%;
+  }
+  
+  .files-container {
+    padding: 0 8px;
+  }
+  
+  .file-card {
+    padding: 12px;
+  }
+  
+  .file-icon {
+    font-size: 32px;
+    min-width: 45px;
+  }
+  
+  .file-title {
+    font-size: 15px;
+  }
+  
   .file-description {
-    font-size: 13px;
+    font-size: 12px;
+  }
+  
+  .file-meta span,
+  .file-footer span {
+    font-size: 10px;
+  }
+  
+  .file-actions {
+    flex-wrap: wrap;
+  }
+  
+  .download-btn,
+  .add-to-collection-btn-card {
+    padding: 6px 12px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  
+  .collection-card {
+    padding: 12px;
+  }
+  
+  .collection-icon {
+    font-size: 32px;
+    min-width: 45px;
+  }
+  
+  .collection-title {
+    font-size: 15px;
+  }
+  
+  .collection-description {
+    font-size: 12px;
+  }
+  
+  .collection-meta {
+    gap: 8px;
+    font-size: 10px;
+  }
+  
+  .collection-favorite-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .view-collection-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  
+  .tabs {
+    padding: 0 5px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  
+  .tabs button {
+    padding: 4px 10px;
+    font-size: 11px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 }
 
-@media (max-width: 1024px) {
-  .categories-container {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
-    max-width: 700px;
-    margin: auto;
-  }
+/* ========== RTL Support ========== */
+html[dir="rtl"] .file-favorite {
+  right: auto;
+  left: 16px;
+}
 
-  .category-card {
-    width: 100%;
+html[dir="rtl"] .card-content {
+  text-align: right;
+}
+
+@media (max-width: 480px) {
+  html[dir="rtl"] .category-card {
+    flex-direction: row;
   }
+}
+
+/* ========== Dark Mode ========== */
+[data-theme="dark"] .collection-card,
+[data-theme="dark"] .file-card {
+  background: var(--bg-card);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .collection-favorite-btn,
+[data-theme="dark"] .file-favorite {
+  background: var(--bg-card);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .collection-favorite-btn.active {
+  background: rgba(255, 71, 87, 0.15);
+}
+
+[data-theme="dark"] .file-type {
+  background-color: #1e3a5f !important;
+  color: #7ab3c8 !important;
+}
+
+[data-theme="dark"] .file-title {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .file-description,
+[data-theme="dark"] .file-meta span,
+[data-theme="dark"] .file-footer span {
+  color: var(--text-secondary);
 }
