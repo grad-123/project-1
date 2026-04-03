@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 import "./PublicProfile.css";
+import { useTranslation } from "react-i18next";
 
 function PublicProfile() {
+  const { t } = useTranslation();
   const { userId } = useParams();
   const navigate = useNavigate();
 
@@ -145,8 +147,12 @@ const handleSaveCollection = async (collectionId) => {
   });
 
   const fileTypeLabel = (type) => {
-    const map = { 1: "Lecture", 2: "Assignment", 3: "Exam", 4: "Summary", 5: "Slides" };
-    return map[type] || "File";
+    const map = {  1: t("publicProfile.fileTypes.lecture"),
+    2: t("publicProfile.fileTypes.assignment"),
+    3: t("publicProfile.fileTypes.exam"),
+    4: t("publicProfile.fileTypes.summary"),
+    5: t("publicProfile.fileTypes.slides")};
+    return map[type] ||  t("publicProfile.fileTypes.default");
   };
 
   const fileTypeClass = (type) => {
@@ -166,7 +172,7 @@ const handleSaveCollection = async (collectionId) => {
     return (
       <div className="pp-loading">
         <div className="pp-spinner"></div>
-        <p>Loading profile...</p>
+    <p>{t("publicProfile.loading")}</p>
       </div>
     );
   }
@@ -174,8 +180,9 @@ const handleSaveCollection = async (collectionId) => {
   if (!profile) {
     return (
       <div className="pp-not-found">
-        <h2>Profile not found</h2>
-        <button onClick={() => navigate(-1)}>← Go back</button>
+      <h2>{t("publicProfile.notFound")}</h2>
+      <button onClick={() => navigate(-1)}>
+  {t("publicProfile.goBack")}</button>
       </div>
     );
   }
@@ -199,24 +206,25 @@ const handleSaveCollection = async (collectionId) => {
           </div>
 
           <div className="pp-header-info">
-            <span className="pp-badge">✦ STUDENT PROFILE</span>
+            <span className="pp-badge">{t("publicProfile.badge")}</span>
             <h1 className="pp-name">{profile.fullName}</h1>
             <p className="pp-email">{profile.email}</p>
 
             <div className="pp-stats">
               <div className="pp-stat">
                 <span className="pp-stat-num">{profile.totalFiles ?? 0}</span>
-                <span className="pp-stat-label">Files</span>
+             <span className="pp-stat-label">{t("publicProfile.files")}</span>
+
               </div>
               <div className="pp-stat-divider"></div>
               <div className="pp-stat">
                 <span className="pp-stat-num">{profile.totalDownloads ?? 0}</span>
-                <span className="pp-stat-label">Downloads</span>
+               <span className="pp-stat-label">{t("publicProfile.downloads")}</span>
               </div>
               <div className="pp-stat-divider"></div>
               <div className="pp-stat">
                 <span className="pp-stat-num">{profile.collectionsCount ?? 0}</span>
-                <span className="pp-stat-label">Collections</span>
+              <span className="pp-stat-label">{t("publicProfile.collections")}</span>
               </div>
             </div>
           </div>
@@ -229,13 +237,13 @@ const handleSaveCollection = async (collectionId) => {
           className={`pp-tab ${activeTab === "files" ? "pp-tab-active" : ""}`}
           onClick={() => setActiveTab("files")}
         >
-          📁 Files
+        {t("publicProfile.tabFiles")}
         </button>
         <button
           className={`pp-tab ${activeTab === "collections" ? "pp-tab-active" : ""}`}
           onClick={() => setActiveTab("collections")}
         >
-          📚 Collections
+          {t("publicProfile.tabCollections")}
         </button>
       </div>
 
@@ -244,14 +252,14 @@ const handleSaveCollection = async (collectionId) => {
         <div className="pp-section">
           <div className="pp-section-head">
             <div>
-              <h2>Files</h2>
-              <p>Published educational content by this student</p>
+              <h2>{t("publicProfile.filesTitle")}</h2>
+              <p>{t("publicProfile.filesSubtitle")}</p>
             </div>
             <div className="pp-search-wrap">
               <span className="pp-search-icon">🔍</span>
               <input
                 type="text"
-                placeholder="Search files..."
+               placeholder={t("publicProfile.searchPlaceholder")}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="pp-search"
@@ -260,32 +268,38 @@ const handleSaveCollection = async (collectionId) => {
           </div>
 
           {/* Filter pills */}
-          <div className="pp-filters">
-            {["all", "exams", "lectures", "summaries", "slides"].map(f => (
-              <button
-                key={f}
-                className={`pp-filter-pill ${fileFilter === f ? "pp-filter-active" : ""}`}
-                onClick={() => setFileFilter(f)}
-              >
-                {f.charAt(0).toUpperCase() + f.slice(1)}
-              </button>
-            ))}
-          </div>
+         <div className="pp-filters">
+  {[
+    { key: "all", label: t("publicProfile.filterAll") },
+    { key: "exams", label: t("publicProfile.filterExams") },
+    { key: "lectures", label: t("publicProfile.filterLectures") },
+    { key: "summaries", label: t("publicProfile.filterSummaries") },
+    { key: "slides", label: t("publicProfile.filterSlides") }
+  ].map(f => (
+    <button
+      key={f.key}
+      className={`pp-filter-pill ${fileFilter === f.key ? "pp-filter-active" : ""}`}
+      onClick={() => setFileFilter(f.key)}
+    >
+      {f.label}
+    </button>
+  ))}
+</div>
 
           {/* Files table */}
           {filteredFiles.length === 0 ? (
             <div className="pp-empty">
-              <p>No files found</p>
+             <p>{t("publicProfile.noFiles")}</p>
             </div>
           ) : (
             <table className="pp-table">
               <thead>
                 <tr>
-                  <th>RESOURCE</th>
-                  <th>COURSE</th>
-                  <th>TYPE</th>
-                  <th>DATE</th>
-                  <th>ACTION</th>
+                 <th>{t("publicProfile.colResource")}</th>
+<th>{t("publicProfile.colCourse")}</th>
+<th>{t("publicProfile.colType")}</th>
+<th>{t("publicProfile.colDate")}</th>
+<th>{t("publicProfile.colAction")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -315,7 +329,7 @@ const handleSaveCollection = async (collectionId) => {
                         onClick={() => handleSaveFile(file.id)}
                        disabled={savingId === file.id}
                       >
-                        {savedItems.has(file.id) ? "✓ Saved" : savingId === file.id ? "..." : "🔖 Save"}
+                       {savedItems.has(file.id) ? t("publicProfile.saved") : savingId === file.id ? t("publicProfile.saving") : t("publicProfile.save")}
                       </button>
                     </td>
                   </tr>
@@ -331,14 +345,14 @@ const handleSaveCollection = async (collectionId) => {
         <div className="pp-section">
           <div className="pp-section-head">
             <div>
-              <h2>Collections</h2>
-              <p>Study sets published by this student</p>
+            <h2>{t("publicProfile.collectionsTitle")}</h2>
+<p>{t("publicProfile.collectionsSubtitle")}</p>
             </div>
           </div>
 
           {publishedCollections.length === 0 ? (
             <div className="pp-empty">
-              <p>No collections published yet</p>
+            <p>{t("publicProfile.noCollections")}</p>
             </div>
           ) : (
             <div className="pp-collections-grid">
@@ -349,7 +363,7 @@ const handleSaveCollection = async (collectionId) => {
                       <h4>{col.name}</h4>
                       <p>{col.description}</p>
                     </div>
-                    <span className="pp-col-published-badge">Published</span>
+                    <span className="pp-col-published-badge">{t("publicProfile.published")}</span>
                   </div>
 
                   <div className="pp-col-meta">
@@ -365,7 +379,7 @@ const handleSaveCollection = async (collectionId) => {
   onClick={() => handleSaveCollection(col.id)}
   disabled={savingId === `col-${col.id}`}
 >
-  {savedItems.has(`col-${col.id}`) ? "✓ Saved" : "🔖 Save Collection"}
+ {savedItems.has(`col-${col.id}`) ? t("publicProfile.saved") : t("publicProfile.saveCollection")}
 </button>
                 </div>
               ))}

@@ -1,10 +1,7 @@
-/* =============================================
-   PUBLIC PROFILE - Matching existing design system
-   ============================================= */
 
 .pp-container {
   min-height: 100vh;
-  background: #f0f2f7;
+  background: var(--bg-secondary);
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
@@ -16,14 +13,14 @@
   justify-content: center;
   min-height: 60vh;
   gap: 16px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .pp-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #2563eb;
+  border: 3px solid var(--card-border);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -39,11 +36,12 @@
   justify-content: center;
   min-height: 60vh;
   gap: 16px;
+   color: var(--text-main);
 }
 
 .pp-not-found button {
   padding: 10px 20px;
-  background: #2563eb;
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 8px;
@@ -190,37 +188,37 @@
   display: flex;
   gap: 4px;
   padding: 16px 40px 0;
-  background: #f0f2f7;
+  background: var(--bg-secondary);
 }
 
 .pp-tab {
   padding: 10px 20px;
   border: none;
-  background: white;
+ background: var(--bg-card);
   border-radius: 10px 10px 0 0;
   font-size: 14px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
   border-bottom: 2px solid transparent;
 }
 
 .pp-tab:hover {
-  color: #2563eb;
-  background: #eff6ff;
+  color: var(--primary);
+  background: var(--badge-bg);
 }
 
 .pp-tab-active {
   color: #2563eb;
-  background: #2563eb !important;
+  background: var(--primary) !important;
   color: white !important;
   font-weight: 600;
 }
 
 /* ============ SECTION ============ */
 .pp-section {
-  background: white;
+ background: var(--bg-card);
   margin: 0 40px 32px;
   border-radius: 0 12px 12px 12px;
   padding: 28px 32px;
@@ -239,12 +237,12 @@
 .pp-section-head h2 {
   font-size: 18px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-main);
   margin: 0 0 4px;
 }
 
 .pp-section-head p {
-  color: #6b7280;
+ color: var(--text-secondary);
   font-size: 13px;
   margin: 0;
 }
@@ -265,16 +263,18 @@
 
 .pp-search {
   padding: 8px 12px 8px 32px;
-  border: 1.5px solid #e5e7eb;
+    border: 1.5px solid var(--card-border);
   border-radius: 8px;
   font-size: 13px;
   outline: none;
   width: 200px;
+   background: var(--input-bg);
+  color: var(--text-main);
   transition: border-color 0.2s;
 }
 
 .pp-search:focus {
-  border-color: #2563eb;
+   border-color: var(--primary);
 }
 
 /* ============ FILTER PILLS ============ */
@@ -288,24 +288,24 @@
 .pp-filter-pill {
   padding: 6px 16px;
   border-radius: 100px;
-  border: 1.5px solid #e5e7eb;
-  background: white;
+  border: 1.5px solid var(--card-border);
+  background: var(--bg-card);
   font-size: 13px;
-  color: #374151;
+  color: var(--text-main);
   cursor: pointer;
   transition: all 0.15s;
   font-weight: 500;
 }
 
 .pp-filter-pill:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 .pp-filter-active {
-  background: #2563eb !important;
+  background: var(--primary) !important;
   color: white !important;
-  border-color: #2563eb !important;
+  border-color: var(--primary) !important;
 }
 
 /* ============ TABLE ============ */
@@ -319,24 +319,24 @@
   text-align: left;
   font-size: 11px;
   font-weight: 600;
-  color: #9ca3af;
+ color: var(--text-secondary);
   letter-spacing: 0.06em;
   padding: 0 12px 12px;
-  border-bottom: 1.5px solid #f3f4f6;
+  border-bottom: 1.5px solid  var(--card-border);
 }
 
 .pp-table tbody tr {
-  border-bottom: 1px solid #f9fafb;
+  border-bottom: 1px solid var(--card-border);
   transition: background 0.15s;
 }
 
 .pp-table tbody tr:hover {
-  background: #fafafa;
+   background: var(--bg-secondary);
 }
 
 .pp-table tbody td {
   padding: 14px 12px;
-  color: #374151;
+ color: var(--text-main);
   vertical-align: middle;
 }
 
@@ -354,20 +354,20 @@
 .pp-file-title strong {
   display: block;
   font-size: 13.5px;
-  color: #111827;
+  color: var(--text-main);
   font-weight: 600;
 }
 
 .pp-file-title small {
-  color: #9ca3af;
+ color: var(--text-secondary);
   font-size: 12px;
 }
 
 /* Course badge */
 .pp-course-badge {
   display: inline-block;
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--badge-bg);
+  color: var(--badge-color);
   font-size: 12px;
   font-weight: 600;
   padding: 4px 10px;
@@ -382,16 +382,15 @@
   align-items: center;
   gap: 5px;
 }
-
-.type-lecture   { color: #2563eb; }
-.type-exam      { color: #16a34a; }
-.type-summary   { color: #9333ea; }
-.type-slides    { color: #ea580c; }
-.type-assignment{ color: #d97706; }
-.type-default   { color: #6b7280; }
+.type-lecture    { color: var(--primary); }
+.type-exam       { color: #16a34a; }
+.type-summary    { color: #9333ea; }
+.type-slides     { color: #ea580c; }
+.type-assignment { color: #d97706; }
+.type-default    { color: var(--text-secondary); }
 
 .pp-date {
-  color: #6b7280;
+    color: var(--text-secondary);
   font-size: 13px;
   white-space: nowrap;
 }
@@ -402,12 +401,12 @@
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  background: white;
-  border: 1.5px solid #e5e7eb;
+ background: var(--bg-card);
+  border: 1.5px solid var(--card-border);
   border-radius: 8px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #374151;
+   color: var(--text-main);
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
@@ -416,11 +415,11 @@
 .pp-save-btn:hover:not(:disabled) {
   border-color: #ef4444;
   color: #ef4444;
-  background: #fff5f5;
+ background: var(--bg-secondary);
 }
 
 .pp-save-btn.pp-saved {
-  background: #f0fdf4;
+   background: var(--bg-secondary);
   border-color: #86efac;
   color: #16a34a;
   cursor: default;
@@ -435,7 +434,7 @@
 .pp-empty {
   text-align: center;
   padding: 60px 20px;
-  color: #9ca3af;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -447,15 +446,15 @@
 }
 
 .pp-col-card {
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--card-border);
   border-radius: 12px;
   padding: 20px;
-  background: white;
+    background: var(--bg-card);
   transition: box-shadow 0.2s;
 }
 
 .pp-col-card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 16px var(--card-hover-shadow);
 }
 
 .pp-col-card-top {
@@ -469,13 +468,13 @@
 .pp-col-info h4 {
   font-size: 15px;
   font-weight: 700;
-  color: #111827;
+   color: var(--text-main);
   margin: 0 0 4px;
 }
 
 .pp-col-info p {
   font-size: 12.5px;
-  color: #6b7280;
+   color: var(--text-secondary);
   margin: 0;
 }
 
@@ -495,19 +494,19 @@
   flex-wrap: wrap;
   gap: 10px;
   font-size: 12px;
-  color: #6b7280;
+   color: var(--text-secondary);
   margin-bottom: 16px;
 }
 
 .pp-save-col-btn {
   width: 100%;
   padding: 9px;
-  background: white;
-  border: 1.5px solid #e5e7eb;
+  background: var(--bg-card);
+  border: 1.5px solid var(--card-border);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-main);
   cursor: pointer;
   transition: all 0.15s;
   display: flex;
@@ -519,11 +518,11 @@
 .pp-save-col-btn:hover:not(:disabled) {
   border-color: #ef4444;
   color: #ef4444;
-  background: #fff5f5;
+background: var(--bg-secondary);
 }
 
 .pp-save-col-btn.pp-saved {
-  background: #f0fdf4;
+ background: var(--bg-secondary);
   border-color: #86efac;
   color: #16a34a;
   cursor: default;
@@ -561,7 +560,7 @@
     flex-direction: column;
     gap: 6px;
     padding: 12px 0;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--card-border);
   }
   .pp-table tbody td {
     padding: 2px 0;
@@ -577,5 +576,61 @@
 
   .pp-collections-grid {
     grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+
+  .pp-header {
+    padding: 20px 16px;
+  }
+
+  .pp-name {
+    font-size: 22px;
+  }
+
+  .pp-avatar-img,
+  .pp-avatar-placeholder {
+    width: 64px;
+    height: 64px;
+  }
+
+  .pp-stats {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .pp-stat {
+    padding: 0;
+  }
+
+  .pp-stat-divider {
+    display: none;
+  }
+
+  .pp-tabs-bar {
+    padding: 10px 12px 0;
+    overflow-x: auto;
+  }
+
+  .pp-tab {
+    flex-shrink: 0;
+  }
+
+  .pp-section {
+    margin: 0 12px 20px;
+    padding: 16px 12px;
+  }
+
+  .pp-search {
+    width: 100%;
+  }
+
+  .pp-filters {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .pp-filter-pill {
+    flex-shrink: 0;
   }
 }

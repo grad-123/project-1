@@ -500,7 +500,7 @@ background: var(--color-unban);
 .unban-btn:hover {
   background: #218838;
 }
-.delete-btn{
+.delet-btn{
 background: var(--color-delete);
 color:white;
 border:none;
