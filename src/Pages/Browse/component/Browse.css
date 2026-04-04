@@ -1059,3 +1059,7 @@ html[dir="rtl"] .card-content {
   background: linear-gradient(135deg, #e84118 0%, #ff4757 100%);
   box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
 }
+
+.browse-page .files-container .file-favorite {
+    transform: translateY(-6px); /* ارفع القلب 4 بكسل للأعلى */
+}

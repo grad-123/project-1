@@ -63,6 +63,9 @@
 
 .collections-list {
   padding: 0.5rem;
+  overflow-y: visible;
+  flex: none;
+  max-height: none;
 }
 
 .collection-item {
@@ -280,15 +283,23 @@
 @media (min-width: 1025px) {
   .collection-sidebar {
     width: 320px;
-    height: 100vh;
+    min-height: 100vh;
+    height: auto;
     position: sticky;
     top: 0;
-    overflow-y: auto;
+    overflow-y: visible;
+    display: flex;
+    flex-direction: column;
   }
   
   .collections-list {
-    flex: 1;
-    overflow-y: auto;
+    overflow-y: visible;
+    flex: none;
+    max-height: none;
+  }
+  
+  .collection-sidebar * {
+    overflow-y: visible !important;
   }
 }
 
@@ -301,6 +312,7 @@
     position: relative;
     height: auto;
     overflow-y: visible;
+    max-height: none;
   }
   
   .collections-list {

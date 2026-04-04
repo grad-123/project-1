@@ -863,3 +863,28 @@ html[dir="rtl"] .file-footer .uploader-name-clickable {
     border-bottom: 1px solid var(--card-border);
   }
 }
+
+/* ========== إصلاح سكرول السايد بار في الديسكتوب ========== */
+@media (min-width: 1025px) {
+  .collection-sidebar {
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: visible !important;
+    max-height: none !important;
+  }
+  
+  .collection-sidebar .collections-list {
+    overflow-y: visible !important;
+    max-height: none !important;
+    flex: none;
+  }
+  
+  .collection-sidebar * {
+    overflow-y: visible !important;
+  }
+  
+  .favorites-page {
+    min-height: 100vh;
+    align-items: stretch;
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "../../api/axiosInstance";
 import "./Favorites.css";
 import FavoriteFileCard from "../Browse/component/FavoriteFileCard";
@@ -7,9 +7,11 @@ import CollectionSidebar from "./component/CollectionSidebar";
 import AddToCollectionModal from "./component/AddToCollectionModal";
 import CollectionFilesView from "./component/CollectionFilesView";
 import { FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function Favorites() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [filteredFiles, setFilteredFiles] = useState([]);
@@ -26,6 +28,9 @@ function Favorites() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [sidebarActiveTab, setSidebarActiveTab] = useState("my");
+  
+  // ✅ Ref للتمرير التلقائي عند اختيار مجموعة
+  const collectionFilesRef = useRef(null);
 
   const fileTypes = [
     { id: "all", name: t("fileTypes.all"), icon: "📂" },
@@ -38,49 +43,63 @@ function Favorites() {
     { id: 6, name: t("fileTypes.other"), icon: "📁" },
   ];
 
-const fetchFavorites = useCallback(async () => {
-  try {
-    const res = await axios.get("/Favorite/GetList");
-    if (res.data && res.data.data) {
-      let filesData = res.data.data.map((file) => ({
-        ...file,
-        eduFileId: file.eduFileId || file.id,
-        id: file.id || file.eduFileId,
-        fileType: file.fileType !== undefined ? Number(file.fileType) : file.type,
-        uploadedAt: file.uploadedAt || file.createdAt || file.upload_date,
-        downloadCount: file.downloadCount || file.download_count || 0,
-      }));
-
-      // ✅ جلب معلومات إضافية لكل ملف إذا كانت مفقودة
-      for (let i = 0; i < filesData.length; i++) {
-        const file = filesData[i];
-        if (!file.uploadedByUserName && file.id) {
-          try {
-            const fileDetails = await axios.get(`/Api/EduFile/GetById/${file.id}`);
-            if (fileDetails.data && fileDetails.data.data) {
-              filesData[i] = {
-                ...filesData[i],
-                uploadedByUserId: fileDetails.data.data.uploadedByUserId || fileDetails.data.data.uploaderId,
-                uploadedByUserName: fileDetails.data.data.uploadedByUserName || fileDetails.data.data.uploaderName,
-                courseName: fileDetails.data.data.courseName || filesData[i].courseName,
-                categoryName: fileDetails.data.data.categoryName || filesData[i].categoryName,
-              };
-            }
-          } catch (err) {
-            console.log(`Could not fetch details for file ${file.id}:`, err);
-          }
-        }
+  // ✅ دالة للتمرير التلقائي إلى عرض ملفات المجموعة
+  const scrollToCollectionFiles = () => {
+    setTimeout(() => {
+      if (collectionFilesRef.current) {
+        collectionFilesRef.current.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
       }
+    }, 150);
+  };
 
-      setFiles(filesData);
-      setFilteredFiles(filesData);
+  // ✅ دالة للتنقل إلى صفحة البروفايل عند النقر على اسم المستخدم (معدلة إلى PublicProfile)
+  const handleUserClick = (userId) => {
+    console.log("🔵 handleUserClick called with userId:", userId);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      return;
     }
-  } catch (err) {
-    console.log("Error fetching favorites:", err);
-  } finally {
-    setLoading(false);
-  }
-}, []);
+    if (userId && userId !== 0) {
+      navigate(`/PublicProfile/${userId}`);
+    } else {
+      console.log("⚠️ No valid userId provided");
+      showMessage("لا يمكن عرض الملف الشخصي", "warning");
+    }
+  };
+
+  // ✅ Fetch Favorites
+  const fetchFavorites = useCallback(async () => {
+    try {
+      const res = await axios.get("/Favorite/GetList");
+      if (res.data && res.data.data) {
+        let filesData = res.data.data.map((file) => ({
+          ...file,
+          eduFileId: file.eduFileId || file.id,
+          id: file.id || file.eduFileId,
+          fileType: file.fileType !== undefined ? Number(file.fileType) : file.type,
+          uploadedAt: file.uploadedAt || file.createdAt || file.upload_date,
+          downloadCount: file.downloadCount || file.download_count || 0,
+          uploadedByUserId: file.uploadedByUserId,
+          uploadedByUserName: file.uploadedByUserName,
+          courseName: file.courseName,
+          categoryName: file.categoryName,
+          photoUrl: file.photoUrl,
+        }));
+
+        setFiles(filesData);
+        setFilteredFiles(filesData);
+      }
+    } catch (err) {
+      console.log("Error fetching favorites:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     window.refreshFavorites = () => {
       fetchFavorites();
@@ -151,8 +170,8 @@ const fetchFavorites = useCallback(async () => {
               description: item.description || "",
               filesCount: 0,
               files: [],
-              uploaderId: item.uploaderId,
-              uploaderName: item.uploaderName,
+                uploaderId: item.uploaderId,
+                uploaderName: item.uploaderName,
               addedAt: item.addedAt,
               isFavorite: true,
               isInvalid: true,
@@ -442,6 +461,7 @@ const fetchFavorites = useCallback(async () => {
     setShowAddModal(true);
   };
 
+  // ✅ دالة اختيار المجموعة مع التمرير التلقائي للشاشات المتوسطة والصغيرة
   const handleSelectCollection = (collection) => {
     console.log("Collection selected:", collection);
     if (collection && collection.files) {
@@ -449,6 +469,12 @@ const fetchFavorites = useCallback(async () => {
     }
     const isFavorite = collection.isFavorite || sidebarActiveTab === "favorite";
     setSelectedCollection({ ...collection, isFavorite });
+    
+    // ✅ إضافة التمرير التلقائي للشاشات المتوسطة والصغيرة (≤ 1024px)
+    const isMobileOrTablet = window.innerWidth <= 1024;
+    if (isMobileOrTablet) {
+      scrollToCollectionFiles();
+    }
   };
 
   const handleBackToFavorites = () => {
@@ -493,17 +519,19 @@ const fetchFavorites = useCallback(async () => {
 
       <div className="favorites-main">
         {selectedCollection ? (
-          <CollectionFilesView
-            collection={selectedCollection}
-            onBack={handleBackToFavorites}
-            onCollectionUpdate={() => {
-              fetchCollections();
-              fetchFavoriteCollections();
-            }}
-            serverUrl={serverUrl}
-            showMessage={showMessage}
-            isFavoriteCollection={selectedCollection.isFavorite || false}
-          />
+          <div ref={collectionFilesRef}>
+            <CollectionFilesView
+              collection={selectedCollection}
+              onBack={handleBackToFavorites}
+              onCollectionUpdate={() => {
+                fetchCollections();
+                fetchFavoriteCollections();
+              }}
+              serverUrl={serverUrl}
+              showMessage={showMessage}
+              isFavoriteCollection={selectedCollection.isFavorite || false}
+            />
+          </div>
         ) : (
           <>
             <div className="favorites-header">
@@ -666,6 +694,7 @@ const fetchFavorites = useCallback(async () => {
                         setMessage={showMessage}
                         showAddButton={!isSelectMode}
                         onAddToCollection={() => handleSingleFileAdd(fileId)}
+                        onUserClick={handleUserClick}
                       />
                     </div>
                   );
