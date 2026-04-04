@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./Browse.css";
 import { useTranslation } from "react-i18next";
 import axios from "../../../api/axiosInstance";
@@ -22,8 +23,11 @@ export default function FavoriteFileCard({
   showAddButton = true,
   onAddToCollection = null,
   hideFileType = false,
+  downloadingId = null,
+  hideUploader = false,  // ✅ أضف هذا السطر
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const handleDownload = async () => {
     try {
@@ -52,6 +56,18 @@ export default function FavoriteFileCard({
       console.log("Download error:", err);
       if (setMessage) setMessage(t("browse.downloadError") || "Download failed");
       setTimeout(() => setMessage && setMessage(""), 3000);
+    }
+  };
+
+  const handleUploaderClick = (userId, userName, e) => {
+    e.stopPropagation();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      if (setMessage) setMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      return;
+    }
+    if (userId) {
+      navigate(`/PublicProfile/${userId}`);
     }
   };
 
@@ -91,7 +107,6 @@ export default function FavoriteFileCard({
           >
             {file.title}
           </h3>
-          {/* إظهار نوع الملف فقط إذا لم يكن مخفياً */}
           {!hideFileType && (
             <span className="file-type">{fileTypeText[file.fileType]}</span>
           )}
@@ -101,10 +116,19 @@ export default function FavoriteFileCard({
             <span>📁 {file.categoryName}</span>
           </div>
           <div className="file-footer">
-            <span>👤 {file.uploadedByUserName}</span>
+            {/* ✅ عرض اسم المستخدم فقط إذا hideUploader = false */}
+            {!hideUploader && file.uploadedByUserName && (
+              <span 
+                className="uploader-name-clickable"
+                onClick={(e) => handleUploaderClick(file.uploadedByUserId, file.uploadedByUserName, e)}
+                title={t("browse.clickToViewProfile") || "انقر لعرض الملف الشخصي"}
+              >
+                👤 {file.uploadedByUserName}
+              </span>
+            )}
             <span>⬇ {file.downloadCount}</span>
             <span>
-              📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}
+              📅 {file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString("en-GB") : ""}
             </span>
           </div>
         </div>

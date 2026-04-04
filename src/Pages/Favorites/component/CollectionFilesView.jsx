@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 import { useTranslation } from "react-i18next";
-import { FaArrowLeft, FaPlay, FaStop, FaDownload, FaVideo, FaArrowRight, FaCheck } from "react-icons/fa";
+import { FaArrowLeft, FaPlay, FaStop, FaDownload, FaVideo, FaArrowRight, FaCheck, FaUser } from "react-icons/fa";
 import "./CollectionFilesView.css";
 
 function CollectionFilesView({ 
@@ -13,6 +14,7 @@ function CollectionFilesView({
   isFavoriteCollection = false 
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLearningMode, setIsLearningMode] = useState(false);
@@ -25,129 +27,155 @@ function CollectionFilesView({
   const hasLoadedRef = useRef(false);
   const collectionIdRef = useRef(collection?.id);
 
-  // تحميل الملفات
-  // تحميل الملفات
-useEffect(() => {
-  const loadFiles = async () => {
-    if (!collection?.id) {
-      setLoading(false);
+  const handleUploaderClick = (userId, userName, e) => {
+    e.stopPropagation();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
       return;
     }
-    
-    if (collectionIdRef.current === collection.id && hasLoadedRef.current) {
-      return;
+    if (userId) {
+      navigate(`/PublicProfile/${userId}`);
     }
-    
-    collectionIdRef.current = collection.id;
-    setLoading(true);
-    
-    try {
-      // ✅ أولاً: إذا كانت الملفات موجودة بالفعل في الـ collection prop، استخدمها مباشرة
-      if (collection.files && Array.isArray(collection.files) && collection.files.length > 0) {
-        console.log("✅ Using files from collection prop:", collection.files.length);
-        const formattedFiles = collection.files.map((file, index) => ({
-          ...file,
-          id: file.eduFileId || file.id,
-          eduFileId: file.eduFileId || file.id,
-          fileType: Number(file.fileType),
-          title: file.title || file.name || "Untitled",
-          filePath: file.filePath,
-          courseName: file.courseName,
-          categoryName: file.categoryName,
-          downloadCount: file.downloadCount || 0,
-          order: file.order !== undefined ? file.order : index
-        }));
-        
-        formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
-        setFiles(formattedFiles);
-        
-        // استعادة التقدم المحفوظ
-        const savedProgress = localStorage.getItem(`learning_progress_${collection.id}`);
-        if (savedProgress) {
-          try {
-            const progress = JSON.parse(savedProgress);
-            setCompletedCount(progress.completedCount || 0);
-            setCurrentFileIndex(progress.currentFileIndex || 0);
-          } catch (e) {
-            console.log("Error parsing saved progress");
-          }
-        }
-        
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  useEffect(() => {
+    const loadFiles = async () => {
+      if (!collection?.id) {
         setLoading(false);
-        hasLoadedRef.current = true;
         return;
       }
       
-      // ✅ ثانياً: إذا لم تكن هناك ملفات، جرب جلبها من الـ API
-      console.log("🔄 Fetching files from API for collection:", collection.id);
-      const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+      if (collectionIdRef.current === collection.id && hasLoadedRef.current) {
+        return;
+      }
       
-      if (res.data && res.data.data && res.data.data.files) {
-        const formattedFiles = res.data.data.files.map((file, index) => ({
-          ...file,
-          id: file.eduFileId || file.id,
-          eduFileId: file.eduFileId || file.id,
-          fileType: Number(file.fileType),
-          title: file.title || file.name || "Untitled",
-          filePath: file.filePath,
-          courseName: file.courseName,
-          categoryName: file.categoryName,
-          downloadCount: file.downloadCount || 0,
-          order: file.order !== undefined ? file.order : index
-        }));
-        
-        formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
-        setFiles(formattedFiles);
-        
-        const savedProgress = localStorage.getItem(`learning_progress_${collection.id}`);
-        if (savedProgress) {
-          try {
-            const progress = JSON.parse(savedProgress);
-            setCompletedCount(progress.completedCount || 0);
-            setCurrentFileIndex(progress.currentFileIndex || 0);
-          } catch (e) {
-            console.log("Error parsing saved progress");
+      collectionIdRef.current = collection.id;
+      setLoading(true);
+      
+      try {
+        if (collection.files && Array.isArray(collection.files) && collection.files.length > 0) {
+          console.log("✅ Using files from collection prop:", collection.files.length);
+          const formattedFiles = collection.files.map((file, index) => ({
+            ...file,
+            id: file.eduFileId || file.id,
+            eduFileId: file.eduFileId || file.id,
+            fileType: Number(file.fileType),
+            title: file.title || file.name || "Untitled",
+            filePath: file.filePath,
+            courseName: file.courseName,
+            categoryName: file.categoryName,
+            downloadCount: file.downloadCount || 0,
+            order: file.order !== undefined ? file.order : index,
+            uploadedByUserId: collection.uploaderId,
+            uploadedByUserName: collection.uploaderName,
+            uploadedAt: collection.createdAt,
+          }));
+          
+          formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
+          setFiles(formattedFiles);
+          
+          const savedProgress = localStorage.getItem(`learning_progress_${collection.id}`);
+          if (savedProgress) {
+            try {
+              const progress = JSON.parse(savedProgress);
+              setCompletedCount(progress.completedCount || 0);
+              setCurrentFileIndex(progress.currentFileIndex || 0);
+            } catch (e) {
+              console.log("Error parsing saved progress");
+            }
           }
+          
+          setLoading(false);
+          hasLoadedRef.current = true;
+          return;
         }
-      } else {
-        setFiles([]);
-      }
-    } catch (err) {
-      console.error("Error loading files:", err);
-      // ✅ ثالثاً: إذا فشل الـ API، حاول استخدام الملفات من الـ collection prop حتى لو كانت فارغة
-      if (collection.files && Array.isArray(collection.files)) {
-        console.log("⚠️ API failed, using files from collection prop as fallback:", collection.files.length);
-        const formattedFiles = collection.files.map((file, index) => ({
-          ...file,
-          id: file.eduFileId || file.id,
-          eduFileId: file.eduFileId || file.id,
-          fileType: Number(file.fileType),
-          title: file.title || file.name || "Untitled",
-          filePath: file.filePath,
-          courseName: file.courseName,
-          categoryName: file.categoryName,
-          downloadCount: file.downloadCount || 0,
-          order: file.order !== undefined ? file.order : index
-        }));
         
-        formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
-        setFiles(formattedFiles);
-      } else {
-        setFiles([]);
+        console.log("🔄 Fetching files from API for collection:", collection.id);
+        const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+        
+        if (res.data && res.data.data && res.data.data.files) {
+          const collectionData = res.data.data;
+          const formattedFiles = collectionData.files.map((file, index) => ({
+            ...file,
+            id: file.eduFileId || file.id,
+            eduFileId: file.eduFileId || file.id,
+            fileType: Number(file.fileType),
+            title: file.title || file.name || "Untitled",
+            filePath: file.filePath,
+            courseName: file.courseName,
+            categoryName: file.categoryName,
+            downloadCount: file.downloadCount || 0,
+            order: file.order !== undefined ? file.order : index,
+            uploadedByUserId: collectionData.uploaderId,
+            uploadedByUserName: collectionData.uploaderName,
+            uploadedAt: collectionData.createdAt,
+          }));
+          
+          formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
+          setFiles(formattedFiles);
+          
+          const savedProgress = localStorage.getItem(`learning_progress_${collection.id}`);
+          if (savedProgress) {
+            try {
+              const progress = JSON.parse(savedProgress);
+              setCompletedCount(progress.completedCount || 0);
+              setCurrentFileIndex(progress.currentFileIndex || 0);
+            } catch (e) {
+              console.log("Error parsing saved progress");
+            }
+          }
+        } else {
+          setFiles([]);
+        }
+      } catch (err) {
+        console.error("Error loading files:", err);
+        if (collection.files && Array.isArray(collection.files)) {
+          console.log("⚠️ API failed, using files from collection prop as fallback:", collection.files.length);
+          const formattedFiles = collection.files.map((file, index) => ({
+            ...file,
+            id: file.eduFileId || file.id,
+            eduFileId: file.eduFileId || file.id,
+            fileType: Number(file.fileType),
+            title: file.title || file.name || "Untitled",
+            filePath: file.filePath,
+            courseName: file.courseName,
+            categoryName: file.categoryName,
+            downloadCount: file.downloadCount || 0,
+            order: file.order !== undefined ? file.order : index,
+            uploadedByUserId: collection.uploaderId,
+            uploadedByUserName: collection.uploaderName,
+            uploadedAt: collection.createdAt,
+          }));
+          
+          formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
+          setFiles(formattedFiles);
+        } else {
+          setFiles([]);
+        }
+        
+        if (showMessage) {
+          showMessage(t("collection.errorLoadingFiles") + ": " + (err.response?.data?.message || err.message), "error");
+        }
+      } finally {
+        setLoading(false);
+        hasLoadedRef.current = true;
       }
-      
-      if (showMessage) {
-        showMessage(t("collection.errorLoadingFiles") + ": " + (err.response?.data?.message || err.message), "error");
-      }
-    } finally {
-      setLoading(false);
-      hasLoadedRef.current = true;
-    }
-  };
-  
-  loadFiles();
-}, [collection?.id, showMessage, t]);
-  // حفظ حالة التقدم
+    };
+    
+    loadFiles();
+  }, [collection?.id, collection?.files, collection?.uploaderId, collection?.uploaderName, collection?.createdAt, showMessage, t]);
+
   const saveProgress = useCallback(() => {
     if (!collection?.id) return;
     const progress = {
@@ -210,7 +238,6 @@ useEffect(() => {
   const isCompleted = completedCount >= files.length && files.length > 0;
   const progressPercentage = getProgressPercentage();
 
-  // إعادة ترتيب الملفات - تبديل الملفين فقط
   const handleDragStart = (e, index) => {
     if (isFavoriteCollection) return;
     setIsDragging(true);
@@ -246,7 +273,6 @@ useEffect(() => {
     setIsReordering(true);
     
     const newFiles = [...files];
-    // تبديل الملفين فقط
     const temp = newFiles[dragIndex];
     newFiles[dragIndex] = newFiles[dropIndex];
     newFiles[dropIndex] = temp;
@@ -289,7 +315,10 @@ useEffect(() => {
             courseName: file.courseName,
             categoryName: file.categoryName,
             downloadCount: file.downloadCount || 0,
-            order: file.order !== undefined ? file.order : idx
+            order: file.order !== undefined ? file.order : idx,
+            uploadedByUserId: res.data.data.uploaderId,
+            uploadedByUserName: res.data.data.uploaderName,
+            uploadedAt: res.data.data.createdAt,
           }));
           formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
           setFiles(formattedFiles);
@@ -436,6 +465,20 @@ useEffect(() => {
             <span className="files-count-badge">
               {files.length} {files.length === 1 ? t("collection.file") : t("collection.files")}
             </span>
+            {collection?.uploaderName && (
+              <span 
+                className="uploader-name-clickable collection-uploader"
+                onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
+                title="انقر لعرض الملف الشخصي"
+              >
+                <FaUser /> {collection.uploaderName}
+              </span>
+            )}
+            {collection?.createdAt && (
+              <span className="collection-date">
+                📅 {formatDate(collection.createdAt)}
+              </span>
+            )}
             {files.length > 0 && !isLearningMode && (
               <button className="start-learning-btn" onClick={startLearningMode}>
                 <FaPlay /> {t("collection.startLearning")}
@@ -524,9 +567,24 @@ useEffect(() => {
                       {index + 1}. {file.title}
                     </h4>
                     <p>{file.description || t("collection.noDescription")}</p>
-                    <div className="file-meta">
+                    <div className="file-meta-collection">
                       <span className="file-type-badge">{getFileTypeText(file.fileType)}</span>
                       {file.courseName && <span className="course-name">{file.courseName}</span>}
+                      {file.uploadedByUserName && (
+                        <span 
+                          className="uploader-name-clickable file-uploader"
+                          onClick={(e) => handleUploaderClick(file.uploadedByUserId, file.uploadedByUserName, e)}
+                          title="انقر لعرض الملف الشخصي"
+                        >
+                          <FaUser /> {file.uploadedByUserName}
+                        </span>
+                      )}
+                      {file.uploadedAt && (
+                        <span className="file-date">
+                          📅 {formatDate(file.uploadedAt)}
+                        </span>
+                      )}
+                      <span className="download-count">⬇️ {file.downloadCount || 0}</span>
                     </div>
                   </div>
                   <div className="file-actions">

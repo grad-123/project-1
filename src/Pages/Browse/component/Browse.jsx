@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "./Browse.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import axios from "../../../api/axiosInstance";
@@ -25,7 +25,6 @@ function Browse() {
   const [showResults, setShowResults] = useState(false);
   const [favorites, setFavorites] = useState([]);
   
-  // States for collections functionality
   const [favoriteCollections, setFavoriteCollections] = useState([]);
   const [togglingCollectionId, setTogglingCollectionId] = useState(null);
   const [selectedCollection, setSelectedCollection] = useState(null);
@@ -33,9 +32,9 @@ function Browse() {
   const [showCollectionFiles, setShowCollectionFiles] = useState(false);
   const [collectionFileType, setCollectionFileType] = useState("all");
   
+  const navigate = useNavigate();
   const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
 
-  // Fetch categories
   useEffect(() => {
     axios
       .get("/api/v1/Category/GetList")
@@ -49,7 +48,6 @@ function Browse() {
       });
   }, []);
 
-  // Fetch favorites (files)
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -62,19 +60,24 @@ function Browse() {
       .catch((err) => console.log(err));
   }, []);
 
-  // Fetch favorite collections
   const fetchFavoriteCollections = useCallback(async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setFavoriteCollections([]);
+      return;
+    }
     try {
       const res = await axios.get("/Favorite/GetCollections");
       if (res.data && res.data.succeeded && res.data.data) {
         setFavoriteCollections(res.data.data.map(item => item.collectionId));
       } else if (Array.isArray(res.data)) {
         setFavoriteCollections(res.data.map(item => item.collectionId || item.id));
+      } else {
+        setFavoriteCollections([]);
       }
     } catch (err) {
       console.log("Error fetching favorite collections:", err);
+      setFavoriteCollections([]);
     }
   }, []);
 
@@ -82,7 +85,6 @@ function Browse() {
     fetchFavoriteCollections();
   }, [fetchFavoriteCollections]);
 
-  // Add favorite (file)
   const addFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -94,7 +96,6 @@ function Browse() {
     }
   };
 
-  // Remove favorite (file)
   const removeFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -106,7 +107,6 @@ function Browse() {
     }
   };
 
-  // Toggle favorite (file)
   const toggleFavorite = (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -120,7 +120,6 @@ function Browse() {
     }
   };
 
-  // Add favorite collection
   const addFavoriteCollection = async (collectionId) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -143,7 +142,6 @@ function Browse() {
     }
   };
 
-  // Remove favorite collection
   const removeFavoriteCollection = async (collectionId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -162,7 +160,6 @@ function Browse() {
     }
   };
 
-  // Open collection to view its files
   const openCollection = async (collection) => {
     setSelectedCollection(collection);
     setShowCollectionFiles(true);
@@ -181,7 +178,8 @@ function Browse() {
           categoryName: file.categoryName,
           downloadCount: file.downloadCount || 0,
           uploadedAt: file.uploadedAt,
-          uploadedByUserName: file.uploadedByUserName
+          uploadedByUserName: file.uploadedByUserName,
+          uploadedByUserId: file.uploadedByUserId
         }));
         setCollectionFiles(files);
       } else {
@@ -193,7 +191,6 @@ function Browse() {
     }
   };
 
-  // Back to search results
   const backToResults = () => {
     setSelectedCollection(null);
     setShowCollectionFiles(false);
@@ -285,7 +282,6 @@ function Browse() {
     }
   };
 
-  // Helper functions for file types
   const getFileTypeIcon = (type) => {
     const icons = { 0: "🎥", 1: "📄", 2: "📝", 3: "📝", 4: "📌", 5: "📚", 6: "📁" };
     return icons[type] || "📄";
@@ -304,7 +300,20 @@ function Browse() {
     return names[type] || t("browse.types.other");
   };
 
-  // Collection Card Component
+  // دالة للتعامل مع النقر على اسم المستخدم في المجموعة
+  const handleUploaderClick = (userId, userName, e) => {
+    e.stopPropagation();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage(t("browse.loginToViewProfile") || "Please login to view profile");
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
+    if (userId) {
+      navigate(`/PublicProfile/${userId}`);
+    }
+  };
+
   const CollectionCard = ({ collection }) => {
     const isFav = favoriteCollections.includes(collection.id);
     const isToggling = togglingCollectionId === collection.id;
@@ -320,7 +329,13 @@ function Browse() {
           <div className="collection-meta">
             <span>📚 {collection.courseName || t("browse.unknownCourse")}</span>
             <span>📄 {collection.filesCount || 0} {t("browse.files")}</span>
-            <span>👤 {collection.uploaderName || t("browse.unknown")}</span>
+            <span 
+              className="uploader-name-clickable"
+              onClick={(e) => handleUploaderClick(collection.uploadedByUserId, collection.uploaderName, e)}
+              title={t("browse.clickToViewProfile")}
+            >
+              👤 {collection.uploaderName || t("browse.unknown")}
+            </span>
           </div>
         </div>
         <div className="collection-actions">
@@ -362,7 +377,6 @@ function Browse() {
     );
   }
 
-  // Check if there are any files in results
   const hasFiles = files.length > 0;
   const hasCollections = collections.length > 0;
 
@@ -413,7 +427,6 @@ function Browse() {
       {showResults && (
         <>
           <div className="filters">
-            {/* فلتر الكاتاجوري - يظهر دائماً */}
             <select onChange={(e) => setCategoryId(Number(e.target.value))}>
               <option value="">{t("browse.allCategories")}</option>
               {categories.map((cat) => (
@@ -423,7 +436,6 @@ function Browse() {
               ))}
             </select>
             
-            {/* فلتر الكورسات - يظهر دائماً */}
             <select
               value={courseId}
               onChange={(e) => setCourseId(Number(e.target.value))}
@@ -437,7 +449,6 @@ function Browse() {
               ))}
             </select>
             
-            {/* فلتر أنواع الملفات - يظهر فقط إذا كان هناك ملفات */}
             {hasFiles && (
               <select
                 onChange={(e) =>
@@ -455,7 +466,6 @@ function Browse() {
               </select>
             )}
             
-            {/* فلتر الترتيب - يظهر دائماً */}
             <select
               onChange={(e) =>
                 setOrderBy(e.target.value === "" ? "" : Number(e.target.value))
@@ -465,7 +475,6 @@ function Browse() {
               <option value="1">{t("browse.order.newest")}</option>
             </select>
             
-            {/* فلتر ترتيب تنازلي/تصاعدي - يظهر دائماً */}
             <select onChange={(e) => setIsDescending(e.target.value === "true")}>
               <option value="true">{t("browse.descending")}</option>
               <option value="false">{t("browse.ascending")}</option>
@@ -473,7 +482,6 @@ function Browse() {
           </div>
 
           {showCollectionFiles && selectedCollection ? (
-            // Display collection files
             <>
               <div className="back-header">
                 <button className="back-btn" onClick={backToResults}>
@@ -483,7 +491,6 @@ function Browse() {
                 <p className="collection-desc-header">{selectedCollection.description}</p>
               </div>
 
-              {/* File type filter tabs for collection */}
               <div className="tabs">
                 <button 
                   className={collectionFileType === "all" ? "active" : ""} 
@@ -526,9 +533,7 @@ function Browse() {
               )}
             </>
           ) : (
-            // Display normal search results (files + collections)
             <>
-              {/* Display Files */}
               {hasFiles && (
                 <div className="files-section">
                   <h2>{t("browse.files")} ({files.length})</h2>
@@ -549,7 +554,6 @@ function Browse() {
                 </div>
               )}
 
-              {/* Display Collections */}
               {hasCollections && (
                 <div className="collections-section">
                   <h2>{t("browse.collections")} ({collections.length})</h2>

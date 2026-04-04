@@ -934,3 +934,22 @@ html[dir="rtl"] .card-content {
 [data-theme="dark"] .file-footer span {
   color: var(--text-secondary);
 }
+
+/* Style for clickable uploader name */
+.uploader-name-clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.uploader-name-clickable:hover {
+  color: #007bff;
+  text-decoration: underline;
+  transform: scale(1.02);
+}
+
+.uploader-name-clickable:active {
+  transform: scale(0.98);
+}

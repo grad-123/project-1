@@ -21,108 +21,108 @@ function PublicProfile() {
   const fetchPublicProfile = async () => {
     try {
       setLoading(true);
+      // ✅ userId هو رقم (29, 30, إلخ)
       const res = await axios.get(`/Api/Profile/GetPublicProfile/${userId}`);
       if (res.data.succeeded) {
         setProfile(res.data.data);
+      } else {
+        setProfile(null);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching profile:", err);
+      setProfile(null);
     } finally {
       setLoading(false);
     }
   };
-const fetchFavorites = async () => {
-  try {
-    const res = await axios.get("/Favorite/GetList");
-    const collectionsRes = await axios.get("/Favorite/GetCollections");
 
-    const fileIds = res.data.succeeded 
-      ? res.data.data.map(f => f.eduFileId) 
-      : [];
-      
-    const colIds = collectionsRes.data.succeeded 
-      ? collectionsRes.data.data.map(c => `col-${c.collectionId}`) 
-      : [];
+  const fetchFavorites = async () => {
+    try {
+      const res = await axios.get("/Favorite/GetList");
+      const collectionsRes = await axios.get("/Favorite/GetCollections");
 
-    setSavedItems(new Set([...fileIds, ...colIds]));
+      const fileIds = res.data.succeeded 
+        ? res.data.data.map(f => f.eduFileId) 
+        : [];
+        
+      const colIds = collectionsRes.data.succeeded 
+        ? collectionsRes.data.data.map(c => `col-${c.collectionId}`) 
+        : [];
 
-  } catch (err) {
-    console.error(err);
-  }
-};
+      setSavedItems(new Set([...fileIds, ...colIds]));
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchPublicProfile();
-     fetchFavorites();
+    fetchFavorites();
   }, [userId]);
 
   // ============================================================
   // Save File to favourites
   // ============================================================
-const handleSaveFile = async (fileId) => {
-  try {
-    if (savedItems.has(fileId)) {
-      // إذا موجود بالـ favorites → نحذفه
-      await axios.delete(`/Favorite/Delete/${fileId}`);
-      setSavedItems(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(fileId);
-        return newSet;
-      });
-    } else {
-      // إذا مش موجود → نحفظه
-      await axios.post(`/Favorite/Add/${fileId}`);
-      setSavedItems(prev => new Set([...prev, fileId]));
+  const handleSaveFile = async (fileId) => {
+    try {
+      if (savedItems.has(fileId)) {
+        await axios.delete(`/Favorite/Delete/${fileId}`);
+        setSavedItems(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(fileId);
+          return newSet;
+        });
+      } else {
+        await axios.post(`/Favorite/Add/${fileId}`);
+        setSavedItems(prev => new Set([...prev, fileId]));
+      }
+      await fetchFavorites();
+    } catch (err) {
+      console.error(err);
     }
-    // جلب القائمة الجديدة بعد التحديث
-    await fetchFavorites();
-  } catch (err) {
-    console.error(err);
-  }
-};
+  };
+
   // ============================================================
   // Save Collection to favourites
   // ============================================================
-const handleSaveCollection = async (collectionId) => {
-  const key = `col-${collectionId}`;
-  const isSaved = savedItems.has(key);
+  const handleSaveCollection = async (collectionId) => {
+    const key = `col-${collectionId}`;
+    const isSaved = savedItems.has(key);
 
-  // Toggle محليًا فورًا
-  setSavedItems(prev => {
-    const newSet = new Set(prev);
-    if (isSaved) newSet.delete(key);
-    else newSet.add(key);
-    return newSet;
-  });
+    setSavedItems(prev => {
+      const newSet = new Set(prev);
+      if (isSaved) newSet.delete(key);
+      else newSet.add(key);
+      return newSet;
+    });
 
-  setSavingId(key);
+    setSavingId(key);
 
-  try {
-    if (isSaved) {
-      // حذف → إضافة { data: {} } ل Axios DELETE
-      await axios.delete(`/Favorite/RemoveCollection/${collectionId}`, { data: {} });
-    } else {
-      // إضافة
-      await axios.post(`/Favorite/AddCollection/${collectionId}`, {});
+    try {
+      if (isSaved) {
+        await axios.delete(`/Favorite/RemoveCollection/${collectionId}`, { data: {} });
+      } else {
+        await axios.post(`/Favorite/AddCollection/${collectionId}`, {});
+      }
+    } catch (err) {
+      if (err.response?.data?.message?.includes("already in your favorites")) {
+        console.warn("Collection already saved, syncing state...");
+        await fetchFavorites();
+      } else {
+        console.error("Error saving collection:", err.response?.data || err);
+        setSavedItems(prev => {
+          const newSet = new Set(prev);
+          if (isSaved) newSet.add(key);
+          else newSet.delete(key);
+          return newSet;
+        });
+      }
+    } finally {
+      setSavingId(null);
     }
-  } catch (err) {
-    // إذا كان الخطأ بسبب التكرار → مزامنة
-    if (err.response?.data?.message?.includes("already in your favorites")) {
-      console.warn("Collection already saved, syncing state...");
-      await fetchFavorites();
-    } else {
-      console.error("Error saving collection:", err.response?.data || err);
-      // إعادة الحالة للوراء إذا فشل
-      setSavedItems(prev => {
-        const newSet = new Set(prev);
-        if (isSaved) newSet.add(key);
-        else newSet.delete(key);
-        return newSet;
-      });
-    }
-  } finally {
-    setSavingId(null);
-  }
-};
+  };
+
   // Derived data
   // ============================================================
   const publishedFiles = (profile?.files || []).filter(f => f.isPublished);
@@ -313,7 +313,7 @@ const handleSaveCollection = async (collectionId) => {
                       <button
                         className={`pp-save-btn ${savedItems.has(file.id) ? "pp-saved" : ""}`}
                         onClick={() => handleSaveFile(file.id)}
-                       disabled={savingId === file.id}
+                        disabled={savingId === file.id}
                       >
                         {savedItems.has(file.id) ? "✓ Saved" : savingId === file.id ? "..." : "🔖 Save"}
                       </button>
@@ -358,15 +358,15 @@ const handleSaveCollection = async (collectionId) => {
                     <span>📂 {col.courseName}</span>
                   </div>
 
-                 <button
-  className={`pp-save-col-btn ${
-    savedItems.has(`col-${col.id}`) ? "pp-saved" : "pp-not-saved"
-  }`}
-  onClick={() => handleSaveCollection(col.id)}
-  disabled={savingId === `col-${col.id}`}
->
-  {savedItems.has(`col-${col.id}`) ? "✓ Saved" : "🔖 Save Collection"}
-</button>
+                  <button
+                    className={`pp-save-col-btn ${
+                      savedItems.has(`col-${col.id}`) ? "pp-saved" : "pp-not-saved"
+                    }`}
+                    onClick={() => handleSaveCollection(col.id)}
+                    disabled={savingId === `col-${col.id}`}
+                  >
+                    {savedItems.has(`col-${col.id}`) ? "✓ Saved" : "🔖 Save Collection"}
+                  </button>
                 </div>
               ))}
             </div>

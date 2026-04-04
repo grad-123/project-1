@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 import { useTranslation } from "react-i18next";
 import "./Files.css";
@@ -13,6 +13,7 @@ function Files() {
   const [activeType, setActiveType] = useState("all");
   const { t } = useTranslation();
   const { courseId } = useParams();
+  const navigate = useNavigate();
   const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [collections, setCollections] = useState([]);
@@ -25,7 +26,6 @@ function Files() {
   const [loadingCollectionFiles, setLoadingCollectionFiles] = useState(false);
   const [togglingCollectionId, setTogglingCollectionId] = useState(null);
 
-  // الاستماع لأحداث إزالة وإضافة المفضلة من صفحة Favorites
   useEffect(() => {
     const handleFavoriteRemoved = (event) => {
       const { fileId } = event.detail;
@@ -46,7 +46,6 @@ function Files() {
     };
   }, []);
 
-  // جلب الملفات
   useEffect(() => {
     axios
       .get(`/Api/EduFile/GetByCourseId/${courseId}`)
@@ -55,50 +54,50 @@ function Files() {
           ...file,
           eduFileId: file.eduFileId || file.id,
           id: file.id || file.eduFileId,
-          fileType:
-            file.fileType !== undefined ? Number(file.fileType) : file.type,
+          fileType: file.fileType !== undefined ? Number(file.fileType) : file.type,
           uploadedAt: file.uploadedAt || file.createdAt || file.upload_date,
           downloadCount: file.downloadCount || file.download_count || 0,
+          uploadedByUserId: file.uploadedByUserId,
+          uploadedByUserName: file.uploadedByUserName
         }));
         setFiles(filesWithId);
       })
       .catch((err) => console.log(err));
   }, [courseId]);
 
-  // جلب المجموعات (Collections) في Browse - النسخة المعدلة (تعرض كل المجموعات)
   useEffect(() => {
-    setLoadingCollections(true);
-    axios
-      .get(`/api/v1/Collection/GetByCourseId/${courseId}`)
-      .then((res) => {
-        console.log("Collections response:", res.data);
-        let allCollections = [];
+    const fetchCollections = async () => {
+      setLoadingCollections(true);
+      try {
+        console.log("🔄 Fetching collections for course:", courseId);
+        const res = await axios.get(`/api/v1/Collection/GetByCourseId/${courseId}`);
+        console.log("📦 Collections response:", res.data);
         
+        let allCollections = [];
         if (res.data && res.data.succeeded && res.data.data) {
           allCollections = res.data.data.filter(col => col && col.id);
         } else if (res.data && Array.isArray(res.data)) {
-          allCollections = res.data.filter(col => col && col.id);
+          allCollections = res.data.data.filter(col => col && col.id);
         }
         
-        console.log(`✅ Showing ${allCollections.length} collections from all students`);
-        console.log("All collections:", allCollections.map(c => ({ 
-          id: c.id, 
-          name: c.name, 
-          uploaderName: c.uploaderName,
-          filesCount: c.filesCount 
-        })));
-        
+        console.log(`✅ Found ${allCollections.length} collections`);
         setCollections(allCollections);
+      } catch (err) {
+        console.error("❌ Error fetching collections:", err);
+        if (err.response?.status === 401) {
+          console.log("⚠️ User not logged in, collections may require authentication");
+          setCollections([]);
+        } else {
+          setCollections([]);
+        }
+      } finally {
         setLoadingCollections(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching collections:", err);
-        setCollections([]);
-        setLoadingCollections(false);
-      });
+      }
+    };
+    
+    fetchCollections();
   }, [courseId]);
 
-  // جلب المفضلات (الملفات)
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -112,7 +111,6 @@ function Files() {
       .catch((err) => console.log(err));
   }, []);
 
-  // جلب المجموعات المفضلة
   const fetchFavoriteCollections = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -127,18 +125,14 @@ function Files() {
             const checkRes = await axios.get(`/api/v1/Collection/GetById/${item.collectionId}`);
             if (checkRes.data && checkRes.data.succeeded && checkRes.data.data) {
               validFavorites.push(item.collectionId);
-              console.log(`✅ Favorite collection ${item.collectionId} (${item.name}) is valid`);
             } else {
-              console.log(`⚠️ Favorite collection ${item.collectionId} (${item.name}) is invalid, but KEEPING it`);
               validFavorites.push(item.collectionId);
             }
           } catch (err) {
-            console.log(`⚠️ Error fetching collection ${item.collectionId} (${item.name}): ${err.message} - KEEPING it`);
             validFavorites.push(item.collectionId);
           }
         }
         setFavoriteCollections(validFavorites);
-        console.log("Favorite collections (kept all):", validFavorites);
       } else if (Array.isArray(res.data)) {
         const favoriteIds = res.data.map((item) => item.collectionId || item.id);
         setFavoriteCollections(favoriteIds);
@@ -152,8 +146,10 @@ function Files() {
     fetchFavoriteCollections();
   }, [fetchFavoriteCollections]);
 
-  // دالة حذف ملف من مجموعات الطالب (My Collections)
   const removeFileFromMyCollections = async (fileId) => {
+    const token = localStorage.getItem("token");
+    if (!token) return 0;
+    
     try {
       const collectionsRes = await axios.get("/api/v1/Collection/GetLibraryCollections");
       const myCollections = collectionsRes.data?.data || [];
@@ -176,7 +172,6 @@ function Files() {
               }
             });
             removedCount++;
-            console.log(`File ${fileId} removed from My Collection ${collectionId}`);
           }
         } catch (err) {
           console.log(`Error checking/removing from My Collection ${collectionId}:`, err);
@@ -189,7 +184,6 @@ function Files() {
     }
   };
 
-  // إضافة مجموعة إلى المفضلة
   const addFavoriteCollection = async (collectionId) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -202,19 +196,8 @@ function Files() {
     try {
       await axios.post(`/Favorite/AddCollection/${collectionId}`);
       setFavoriteCollections((prev) => [...prev, collectionId]);
-      setMessage(
-        t("files.collectionAddedToFavorites") ||
-          "✨ Collection added to favorites!",
-      );
+      setMessage(t("files.collectionAddedToFavorites") || "✨ Collection added to favorites!");
       setTimeout(() => setMessage(""), 3000);
-
-      window.dispatchEvent(new CustomEvent('favoriteAdded', { 
-        detail: { collectionId } 
-      }));
-
-      if (window.refreshFavoriteCollections) {
-        window.refreshFavoriteCollections();
-      }
     } catch (err) {
       console.log("Error adding collection to favorites:", err);
       setMessage(t("files.error") || "❌ Error adding collection to favorites");
@@ -224,42 +207,25 @@ function Files() {
     }
   };
 
-  // إزالة مجموعة من المفضلة
   const removeFavoriteCollection = async (collectionId) => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      setMessage(t("files.loginMessage") || "Please login first");
-      setTimeout(() => setMessage(""), 3000);
-      return;
-    }
+    if (!token) return;
 
     setTogglingCollectionId(collectionId);
     try {
       await axios.delete(`/Favorite/RemoveCollection/${collectionId}`);
-      setFavoriteCollections((prev) =>
-        prev.filter((id) => id !== collectionId),
-      );
-      setMessage(
-        t("files.collectionRemovedFromFavorites") ||
-          "💔 Collection removed from favorites",
-      );
+      setFavoriteCollections((prev) => prev.filter((id) => id !== collectionId));
+      setMessage(t("files.collectionRemovedFromFavorites") || "💔 Collection removed from favorites");
       setTimeout(() => setMessage(""), 3000);
-
-      if (window.refreshFavoriteCollections) {
-        window.refreshFavoriteCollections();
-      }
     } catch (err) {
       console.log("Error removing collection from favorites:", err);
-      setMessage(
-        t("files.error") || "❌ Error removing collection from favorites",
-      );
+      setMessage(t("files.error") || "❌ Error removing collection from favorites");
       setTimeout(() => setMessage(""), 3000);
     } finally {
       setTogglingCollectionId(null);
     }
   };
 
-  // تبديل حالة المفضلة (مجموعة)
   const toggleFavoriteCollection = async (collectionId, e) => {
     e.stopPropagation();
     const token = localStorage.getItem("token");
@@ -276,67 +242,65 @@ function Files() {
     }
   };
 
-const openCollection = async (collection) => {
-  if (!collection || !collection.id) {
-    console.error("Invalid collection:", collection);
-    setMessage(t("files.invalidCollection"));
-    setTimeout(() => setMessage(""), 3000);
-    return;
-  }
+  const openCollection = async (collection) => {
+    if (!collection || !collection.id) {
+      console.error("Invalid collection:", collection);
+      setMessage(t("files.invalidCollection"));
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
 
-  setSelectedCollection(collection);
-  setLoadingCollectionFiles(true);
-  setActiveType("all");
+    setSelectedCollection(collection);
+    setLoadingCollectionFiles(true);
+    setActiveType("all");
 
-  try {
-    console.log("Fetching collection with ID:", collection.id);
-    const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
-    console.log("Collection files response:", res.data);
-    
-    if (res.data && res.data.succeeded && res.data.data) {
-      if (res.data.data.files && Array.isArray(res.data.data.files)) {
-        const formattedFiles = res.data.data.files.map((file) => ({
-          ...file,
-          id: file.eduFileId,
-          eduFileId: file.eduFileId,
-          fileType: Number(file.fileType),
-          title: file.title,
-          filePath: file.filePath,
-          courseName: file.courseName,
-          categoryName: file.categoryName,
-          downloadCount: file.downloadCount || 0,
-        }));
-        setCollectionFiles(formattedFiles);
-        console.log("Loaded files:", formattedFiles.length);
+    try {
+      console.log("Fetching collection with ID:", collection.id);
+      const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+      console.log("Collection files response:", res.data);
+      
+      if (res.data && res.data.succeeded && res.data.data) {
+        const collectionData = res.data.data;
+        
+        if (collectionData.files && Array.isArray(collectionData.files)) {
+          const formattedFiles = collectionData.files.map((file) => ({
+            ...file,
+            id: file.eduFileId,
+            eduFileId: file.eduFileId,
+            fileType: Number(file.fileType),
+            title: file.title,
+            filePath: file.filePath,
+            courseName: file.courseName,
+            categoryName: file.categoryName,
+            downloadCount: file.downloadCount || 0,
+            uploadedByUserId: collectionData.uploaderId,
+            uploadedByUserName: collectionData.uploaderName,
+            uploadedAt: collectionData.createdAt,
+          }));
+          
+          setCollectionFiles(formattedFiles);
+          console.log("Loaded files with uploader info:", formattedFiles);
+        } else {
+          console.log("No files found in collection");
+          setCollectionFiles([]);
+        }
       } else {
-        console.log("No files found in collection");
         setCollectionFiles([]);
       }
-    } else {
+    } catch (err) {
+      console.error("Error fetching collection files:", err);
       setCollectionFiles([]);
-    }
-  } catch (err) {
-    console.error("Error fetching collection files:", err);
-    
-    if (err.response && err.response.status === 404) {
-      setMessage(""); 
-      setCollectionFiles([]);
+    } finally {
       setLoadingCollectionFiles(false);
-      // لا نحذف المجموعة من القائمة
     }
-  } finally {
-    setLoadingCollectionFiles(false);
-  }
-};
+  };
 
-  // الرجوع إلى قائمة المجموعات
   const backToCollections = () => {
     setSelectedCollection(null);
     setCollectionFiles([]);
     setActiveType("all");
   };
 
-  // إضافة إلى المفضلة (ملف)
   const addFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -345,9 +309,6 @@ const openCollection = async (collection) => {
       setFavorites((prev) => [...prev, fileId]);
       setMessage(t("files.addedToFavorites") || "✨ Added to favorites");
       setTimeout(() => setMessage(""), 3000);
-      
-      window.dispatchEvent(new CustomEvent('favoriteAdded', { detail: { fileId } }));
-      
     } catch (err) {
       console.log(err);
       setMessage(t("files.error") || "❌ Error adding to favorites");
@@ -355,7 +316,6 @@ const openCollection = async (collection) => {
     }
   };
 
-  // إزالة من المفضلة (ملف)
   const removeFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -373,9 +333,6 @@ const openCollection = async (collection) => {
         setMessage(t("files.removedFromFavorites") || "💔 Removed from favorites");
       }
       setTimeout(() => setMessage(""), 3000);
-      
-      window.dispatchEvent(new CustomEvent('favoriteRemoved', { detail: { fileId } }));
-      
     } catch (err) {
       console.log(err);
       setMessage(t("files.error") || "❌ Error removing from favorites");
@@ -383,7 +340,6 @@ const openCollection = async (collection) => {
     }
   };
 
-  // تبديل حالة المفضلة (ملف)
   const toggleFavorite = (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -394,7 +350,6 @@ const openCollection = async (collection) => {
     favorites.includes(fileId) ? removeFavorite(fileId) : addFavorite(fileId);
   };
 
-  // تحميل الملف
   const handleDownload = async (fileId, filePath) => {
     setDownloadingId(fileId);
     try {
@@ -438,7 +393,19 @@ const openCollection = async (collection) => {
     }
   };
 
-  // أنواع الملفات للفلترة
+  const handleUploaderClick = (userId, userName, e) => {
+    e.stopPropagation();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage(t("files.loginToViewProfile") || "Please login to view profile");
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
+    if (userId) {
+      navigate(`/PublicProfile/${userId}`);
+    }
+  };
+
   const fileTypes = [
     { id: "all", name: t("files.all"), icon: "📂" },
     { id: 0, name: t("files.lectures"), icon: "🎥" },
@@ -450,7 +417,6 @@ const openCollection = async (collection) => {
     { id: 6, name: t("files.other"), icon: "📁" },
   ];
 
-  // فلترة الملفات حسب النوع
   const displayedFiles = [...files].filter(
     (f) => activeType === "all" || Number(f.fileType) === activeType,
   );
@@ -472,21 +438,20 @@ const openCollection = async (collection) => {
         <div className="collection-info">
           <h3 className="collection-title">{collection.name}</h3>
           <p className="collection-description">
-            {collection.description ||
-              t("files.noDescription") ||
-              "No description"}
+            {collection.description || t("files.noDescription") || "No description"}
           </p>
           <div className="collection-meta">
             <span>
-              📚{" "}
-              {collection.courseName ||
-                t("files.unknownCourse") ||
-                "Unknown Course"}
+              📚 {collection.courseName || t("files.unknownCourse") || "Unknown Course"}
             </span>
             <span>
               📄 {collection.filesCount || 0} {t("files.files") || "files"}
             </span>
-            <span>
+            <span 
+              className="uploader-name-clickable"
+              onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
+              title={t("files.clickToViewProfile")}
+            >
               👤 {collection.uploaderName || t("files.unknown") || "Unknown"}
             </span>
           </div>
@@ -500,23 +465,9 @@ const openCollection = async (collection) => {
               await toggleFavoriteCollection(collection.id, e);
             }}
             disabled={isToggling}
-            title={
-              isFav ? t("files.removeFromFavorites") : t("files.addToFavorites")
-            }
+            title={isFav ? t("files.removeFromFavorites") : t("files.addToFavorites")}
           >
-            {isToggling ? (
-              "⏳"
-            ) : isFav ? (
-              "❤️"
-            ) : (
-              <FaHeart
-                style={{
-                  color: "white",
-                  stroke: "black",
-                  strokeWidth: "40px",
-                }}
-              />
-            )}
+            {isToggling ? "⏳" : isFav ? "❤️" : <FaHeart style={{ color: "white", stroke: "black", strokeWidth: "40px" }} />}
           </button>
 
           <button
@@ -560,19 +511,13 @@ const openCollection = async (collection) => {
           <button className="back-btn" onClick={backToCollections}>
             ← {t("files.backToCollections") || "Back to Collections"}
           </button>
-          <h3 className="collection-title-header">
-            📦 {selectedCollection.name}
-          </h3>
-          <p className="collection-desc-header">
-            {selectedCollection.description}
-          </p>
+          <h3 className="collection-title-header">📦 {selectedCollection.name}</h3>
+          <p className="collection-desc-header">{selectedCollection.description}</p>
         </div>
       )}
 
       {message && (
-        <div
-          className={`message ${message.includes("⚠️") || message.includes("❌") || message.includes("💔") ? "warning" : message.includes("✨") || message.includes("⬇️") ? "success" : ""}`}
-        >
+        <div className={`message ${message.includes("⚠️") || message.includes("❌") || message.includes("💔") ? "warning" : message.includes("✨") || message.includes("⬇️") ? "success" : ""}`}>
           {message}
         </div>
       )}
@@ -604,7 +549,6 @@ const openCollection = async (collection) => {
                 file={file}
                 isFavorite={favorites.includes(file.id || file.eduFileId)}
                 toggleFavorite={toggleFavorite}
-                handleDownload={handleDownload}
                 serverUrl={serverUrl}
                 setMessage={setMessage}
                 downloadingId={downloadingId}
@@ -621,9 +565,7 @@ const openCollection = async (collection) => {
               {t("files.loadingCollections") || "Loading collections..."}
             </div>
           ) : collections.length === 0 ? (
-            <p className="no-items">
-              {t("files.noCollections") || "No collections found"}
-            </p>
+            <p className="no-items">{t("files.noCollections") || "No collections found"}</p>
           ) : (
             <div className="collections-grid">
               {collections.map((collection) => (
@@ -646,8 +588,7 @@ const openCollection = async (collection) => {
                 {type.icon} {type.name} (
                 {type.id === "all"
                   ? collectionFiles.length
-                  : collectionFiles.filter((f) => f.fileType === type.id)
-                      .length}
+                  : collectionFiles.filter((f) => f.fileType === type.id).length}
                 )
               </button>
             ))}
@@ -659,11 +600,7 @@ const openCollection = async (collection) => {
             </div>
           ) : displayedCollectionFiles.length === 0 ? (
             <div className="no-items">
-              <p>
-                📭{" "}
-                {t("files.noFilesInCollection") ||
-                  "No files found in this collection"}
-              </p>
+              <p>📭 {t("files.noFilesInCollection") || "No files found in this collection"}</p>
             </div>
           ) : (
             displayedCollectionFiles.map((file) => (
@@ -672,7 +609,6 @@ const openCollection = async (collection) => {
                 file={file}
                 isFavorite={favorites.includes(file.id || file.eduFileId)}
                 toggleFavorite={toggleFavorite}
-                handleDownload={handleDownload}
                 serverUrl={serverUrl}
                 setMessage={setMessage}
                 downloadingId={downloadingId}

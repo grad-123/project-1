@@ -26,7 +26,6 @@ function Favorites() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [sidebarActiveTab, setSidebarActiveTab] = useState("my");
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
   const fileTypes = [
     { id: "all", name: t("fileTypes.all"), icon: "📂" },
@@ -39,15 +38,6 @@ function Favorites() {
     { id: 6, name: t("fileTypes.other"), icon: "📁" },
   ];
 
-  // كشف حجم الشاشة
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 1024);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const fetchFavorites = useCallback(async () => {
     try {
       const res = await axios.get("/Favorite/GetList");
@@ -56,8 +46,7 @@ function Favorites() {
           ...file,
           eduFileId: file.eduFileId || file.id,
           id: file.id || file.eduFileId,
-          fileType:
-            file.fileType !== undefined ? Number(file.fileType) : file.type,
+          fileType: file.fileType !== undefined ? Number(file.fileType) : file.type,
           uploadedAt: file.uploadedAt || file.createdAt || file.upload_date,
           downloadCount: file.downloadCount || file.download_count || 0,
         }));
@@ -71,12 +60,10 @@ function Favorites() {
     }
   }, []);
 
-  // ✅ دالة لتحديث المفضلات من أي مكان
   useEffect(() => {
     window.refreshFavorites = () => {
       fetchFavorites();
     };
-    
     return () => {
       delete window.refreshFavorites;
     };
@@ -93,7 +80,6 @@ function Favorites() {
     }
   }, []);
 
-  // ✅ جلب المجموعات المفضلة مع حفظ الملفات
   const fetchFavoriteCollections = useCallback(async () => {
     try {
       const res = await axios.get("/Favorite/GetCollections");
@@ -101,23 +87,11 @@ function Favorites() {
 
       let validFavorites = [];
 
-      if (
-        res.data &&
-        res.data.succeeded &&
-        res.data.data &&
-        Array.isArray(res.data.data)
-      ) {
+      if (res.data && res.data.succeeded && res.data.data && Array.isArray(res.data.data)) {
         for (const item of res.data.data) {
           try {
-            const checkRes = await axios.get(
-              `/api/v1/Collection/GetById/${item.collectionId}`,
-            );
-            if (
-              checkRes.data &&
-              checkRes.data.succeeded &&
-              checkRes.data.data
-            ) {
-              // ✅ المجموعة صالحة - خذ الملفات من الـ API
+            const checkRes = await axios.get(`/api/v1/Collection/GetById/${item.collectionId}`);
+            if (checkRes.data && checkRes.data.succeeded && checkRes.data.data) {
               validFavorites.push({
                 id: item.collectionId,
                 collectionId: item.collectionId,
@@ -125,15 +99,14 @@ function Favorites() {
                 description: item.description || "",
                 filesCount: checkRes.data.data.files?.length || 0,
                 files: checkRes.data.data.files || [],
-                uploaderName: item.uploaderName,
+                uploaderId: checkRes.data.data.uploaderId,
+                uploaderName: checkRes.data.data.uploaderName,
+                courseName: checkRes.data.data.courseName,
                 addedAt: item.addedAt,
                 isFavorite: true,
               });
             } else {
-              // المجموعة غير صالحة، احتفظ بها بدون ملفات
-              console.log(
-                `⚠️ Collection ${item.collectionId} (${item.name}) is invalid`,
-              );
+              console.log(`⚠️ Collection ${item.collectionId} (${item.name}) is invalid`);
               validFavorites.push({
                 id: item.collectionId,
                 collectionId: item.collectionId,
@@ -141,6 +114,7 @@ function Favorites() {
                 description: item.description || "",
                 filesCount: 0,
                 files: [],
+                uploaderId: item.uploaderId,
                 uploaderName: item.uploaderName,
                 addedAt: item.addedAt,
                 isFavorite: true,
@@ -148,11 +122,7 @@ function Favorites() {
               });
             }
           } catch (err) {
-            // خطأ في جلب المجموعة، احتفظ بها بدون ملفات
-            console.log(
-              `⚠️ Error fetching collection ${item.collectionId}:`,
-              err.message,
-            );
+            console.log(`⚠️ Error fetching collection ${item.collectionId}:`, err.message);
             validFavorites.push({
               id: item.collectionId,
               collectionId: item.collectionId,
@@ -160,6 +130,7 @@ function Favorites() {
               description: item.description || "",
               filesCount: 0,
               files: [],
+              uploaderId: item.uploaderId,
               uploaderName: item.uploaderName,
               addedAt: item.addedAt,
               isFavorite: true,
@@ -181,7 +152,6 @@ function Favorites() {
     window.refreshFavoriteCollections = () => {
       fetchFavoriteCollections();
     };
-
     return () => {
       delete window.refreshFavoriteCollections;
     };
@@ -209,19 +179,13 @@ function Favorites() {
       result = result.filter(
         (file) =>
           file.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-          file.description
-            ?.toLowerCase()
-            .includes(debouncedSearch.toLowerCase()) ||
-          file.courseName
-            ?.toLowerCase()
-            .includes(debouncedSearch.toLowerCase()),
+          file.description?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          file.courseName?.toLowerCase().includes(debouncedSearch.toLowerCase()),
       );
     }
 
     if (activeTab !== "all") {
-      result = result.filter(
-        (file) => Number(file.fileType) === Number(activeTab),
-      );
+      result = result.filter((file) => Number(file.fileType) === Number(activeTab));
     }
 
     setFilteredFiles(result);
@@ -231,9 +195,7 @@ function Favorites() {
     const handleFavoriteRemoved = (event) => {
       const { fileId } = event.detail;
       setFiles((prev) => prev.filter((f) => (f.eduFileId || f.id) !== fileId));
-      setFilteredFiles((prev) =>
-        prev.filter((f) => (f.eduFileId || f.id) !== fileId),
-      );
+      setFilteredFiles((prev) => prev.filter((f) => (f.eduFileId || f.id) !== fileId));
     };
 
     const handleFavoriteAdded = (event) => {
@@ -261,13 +223,9 @@ function Favorites() {
         if (!collectionId) continue;
 
         try {
-          const collectionDetails = await axios.get(
-            `/api/v1/Collection/GetById/${collectionId}`,
-          );
+          const collectionDetails = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
           const filesInCollection = collectionDetails.data?.data?.files || [];
-          const fileExists = filesInCollection.some(
-            (f) => (f.eduFileId || f.id) === fileId,
-          );
+          const fileExists = filesInCollection.some((f) => (f.eduFileId || f.id) === fileId);
 
           if (fileExists) {
             await axios.delete("/api/v1/collection/RemoveFile", {
@@ -278,24 +236,16 @@ function Favorites() {
             });
             removedCount++;
 
-            const indexInCollections = updatedCollections.findIndex(
-              (c) => c.id === collectionId,
-            );
+            const indexInCollections = updatedCollections.findIndex((c) => c.id === collectionId);
             if (indexInCollections !== -1) {
               updatedCollections[indexInCollections] = {
                 ...updatedCollections[indexInCollections],
-                filesCount: Math.max(
-                  0,
-                  (updatedCollections[indexInCollections].filesCount || 0) - 1,
-                ),
+                filesCount: Math.max(0, (updatedCollections[indexInCollections].filesCount || 0) - 1),
               };
             }
           }
         } catch (err) {
-          console.log(
-            `Error checking/removing from My Collection ${collectionId}:`,
-            err,
-          );
+          console.log(`Error checking/removing from My Collection ${collectionId}:`, err);
         }
       }
 
@@ -309,8 +259,7 @@ function Favorites() {
 
   const toggleFavorite = async (fileId) => {
     try {
-      const removedFromMyCollections =
-        await removeFileFromMyCollections(fileId);
+      const removedFromMyCollections = await removeFileFromMyCollections(fileId);
 
       await axios.delete(`/Favorite/Delete/${fileId}`);
 
@@ -329,9 +278,7 @@ function Favorites() {
       }
 
       await fetchCollections();
-      window.dispatchEvent(
-        new CustomEvent("favoriteRemoved", { detail: { fileId } }),
-      );
+      window.dispatchEvent(new CustomEvent("favoriteRemoved", { detail: { fileId } }));
     } catch (err) {
       console.log("Error removing favorite:", err);
       showMessage(t("favorites.errorRemovingFromFavorites"), "error");
@@ -340,9 +287,7 @@ function Favorites() {
 
   const handleSelectFile = (fileId) => {
     setSelectedFiles((prev) =>
-      prev.includes(fileId)
-        ? prev.filter((id) => id !== fileId)
-        : [...prev, fileId],
+      prev.includes(fileId) ? prev.filter((id) => id !== fileId) : [...prev, fileId],
     );
   };
 
@@ -374,17 +319,10 @@ function Favorites() {
       let existingFileTitles = new Set();
 
       try {
-        const collectionDetails = await axios.get(
-          `/api/v1/Collection/GetById/${collectionId}`,
-        );
-        const existingFilesInCollection =
-          collectionDetails.data?.data?.files || [];
-        existingFileIds = new Set(
-          existingFilesInCollection.map((f) => f.eduFileId || f.id),
-        );
-        existingFileTitles = new Set(
-          existingFilesInCollection.map((f) => f.title?.toLowerCase()),
-        );
+        const collectionDetails = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
+        const existingFilesInCollection = collectionDetails.data?.data?.files || [];
+        existingFileIds = new Set(existingFilesInCollection.map((f) => f.eduFileId || f.id));
+        existingFileTitles = new Set(existingFilesInCollection.map((f) => f.title?.toLowerCase()));
       } catch (err) {
         console.log("Error fetching collection details:", err);
       }
@@ -394,8 +332,7 @@ function Favorites() {
 
         const isDuplicate =
           existingFileIds.has(fileId) ||
-          (fileDetails &&
-            existingFileTitles.has(fileDetails.title?.toLowerCase()));
+          (fileDetails && existingFileTitles.has(fileDetails.title?.toLowerCase()));
 
         if (isDuplicate) {
           duplicateCount++;
@@ -424,10 +361,7 @@ function Favorites() {
           }
         } catch (err) {
           console.log("Error adding file:", err);
-          if (
-            err.response?.data?.message?.includes("already") ||
-            err.response?.status === 409
-          ) {
+          if (err.response?.data?.message?.includes("already") || err.response?.status === 409) {
             duplicateCount++;
             if (fileDetails) {
               duplicateFiles.push(fileDetails.title);
@@ -448,9 +382,7 @@ function Favorites() {
       }
 
       if (successCount > 0) {
-        const collectionName = collections.find(
-          (c) => c.id === collectionId,
-        )?.name;
+        const collectionName = collections.find((c) => c.id === collectionId)?.name;
         showMessage(
           t("favorites.addedToCollection", {
             count: successCount,
@@ -573,10 +505,7 @@ function Favorites() {
                 />
               </div>
               {searchTerm && (
-                <button
-                  className="clear-search-btn"
-                  onClick={() => setSearchTerm("")}
-                >
+                <button className="clear-search-btn" onClick={() => setSearchTerm("")}>
                   ✕
                 </button>
               )}
@@ -593,9 +522,7 @@ function Favorites() {
                   <span className="tab-count">
                     {
                       files.filter(
-                        (f) =>
-                          type.id === "all" ||
-                          Number(f.fileType) === Number(type.id),
+                        (f) => type.id === "all" || Number(f.fileType) === Number(type.id),
                       ).length
                     }
                   </span>
@@ -617,10 +544,7 @@ function Favorites() {
               <div className="toolbar-right">
                 {isSelectMode ? (
                   <>
-                    <button
-                      className="clear-btn"
-                      onClick={handleClearSelection}
-                    >
+                    <button className="clear-btn" onClick={handleClearSelection}>
                       {t("favorites.clear")}
                     </button>
                     <button
@@ -641,10 +565,7 @@ function Favorites() {
                     </button>
                   </>
                 ) : (
-                  <button
-                    className="select-multiple-btn"
-                    onClick={() => setIsSelectMode(true)}
-                  >
+                  <button className="select-multiple-btn" onClick={() => setIsSelectMode(true)}>
                     {t("favorites.selectMultiple")}
                   </button>
                 )}
@@ -671,8 +592,7 @@ function Favorites() {
                       : messageType === "warning"
                       ? "#856404"
                       : "#721c24",
-                  border:
-                    messageType === "warning" ? "1px solid #ffeeba" : "none",
+                  border: messageType === "warning" ? "1px solid #ffeeba" : "none",
                 }}
               >
                 {message}
@@ -701,9 +621,7 @@ function Favorites() {
                     {t("favorites.noFilesFound")}
                   </p>
                   <p style={{ color: "var(--text-secondary)" }}>
-                    {searchTerm
-                      ? t("favorites.tryChangingSearch")
-                      : t("favorites.addFilesFromBrowse")}
+                    {searchTerm ? t("favorites.tryChangingSearch") : t("favorites.addFilesFromBrowse")}
                   </p>
                 </div>
               ) : (
