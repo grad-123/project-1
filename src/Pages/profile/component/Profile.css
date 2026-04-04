@@ -65,12 +65,12 @@
 .filters {
   margin: 15px 0;
   display: flex;              /* 👈 مهم */
-  justify-content: flex-start !important;  /* 👈 يخليهم يسار */
+  justify-content:start !important;  /* 👈 يخليهم يسار */
   align-items: center;
   gap: 8px;                  /* بدل margin-right */
 }
  .profile-container {
-  text-align: left;
+  text-align: start;
 }
 .filters button {
   padding: 6px 12px;
@@ -240,15 +240,15 @@
 .header-text h3 {
   margin: 0;
   font-size: 20px;
-  text-align: left;
+  text-align: start;
  color: var(--text-secondary);
 }
 
 .header-text p {
   margin: 5px 0 0;
-  color: #666;
+   color: var(--text-secondary);
   font-size: 14px;
-  text-align: left; /* 🟢 النص تحت العنوان على اليسار */
+  text-align: start; /* 🟢 النص تحت العنوان على اليسار */
 } 
 .error-text {
   color: #ef4444;
@@ -356,7 +356,7 @@
 
 .collection-card-header p {
   margin: 4px 0 0;
-  color: #6b7280;
+   color: var(--text-secondary);
   font-size: 13px;
 }
 
@@ -364,7 +364,7 @@
   display: flex;
   gap: 12px;
   font-size: 12px;
-  color: #6b7280;
+   color: var(--text-secondary);
   margin-bottom: 14px;
 }
 
@@ -560,14 +560,14 @@
   gap: 10px;
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #eee;
+ border: 1px solid var(--card-border);
   margin-bottom: 8px;
   transition: 0.2s;
   justify-content: space-between; /* ✅ أضف هاد */
 }
 
 .file-item-card:hover {
-  background: #f9f9f9;
+ background: var(--bg-secondary);
 }
 
 .file-info {
@@ -587,7 +587,7 @@
 
 .file-meta {
   font-size: 12px;
-  color: gray;
+  color: var(--text-secondary);
 }
 
 .files-list {
@@ -704,7 +704,124 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
- 
+ @media (max-width: 768px) {
 
+  .profile-container {
+    padding: 12px;
+  }
 
+  /* ✅ إصلاح الجدول */
+  .files-table-container {
+    overflow-x: auto;
+    width: 100%;
+  }
 
+  .files-table {
+    min-width: 600px; /* يخلي الجدول يتسكرول بدل ما ينكسر */
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tabs button {
+    flex: 1;
+    font-size: 13px;
+  }
+
+  /* Filters */
+  .filters {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .filters button {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  /* Collections */
+  .collections-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ✅ إصلاح أزرار الـ collection */
+  .collection-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .collection-actions button {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  /* Buttons */
+  .btns-row {
+    flex-direction: column;
+  }
+
+  .btns-row button {
+    width: 100%;
+  }
+
+  /* Modal */
+  .modal-content {
+    padding: 20px;
+  }
+
+  /* Photo section */
+  .photo-upload-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .files-table td:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+
+  .files-table td:last-child button {
+    width: 100%;
+    font-size: 11px;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  .profile-container {
+    padding: 16px;
+  }
+
+  /* ✅ إصلاح الجدول بالتابليت */
+  .files-table-container {
+    overflow-x: auto;
+  }
+
+  .files-table {
+    min-width: 650px;
+  }
+
+  .collections-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .collection-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+
+  .btns-row button {
+    min-width: 120px;
+  }
+}

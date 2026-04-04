@@ -133,7 +133,7 @@ const handleDrop = async (e, targetCollectionId, targetFileIndex) => {
     console.log("Reorder successful!");
   } catch (err) {
     console.error("Reorder error:", err);
-    alert("Error updating file order. Please try again.");
+    alert(t("profile.alerts.errorReorder"));
     
     // ✅ في حالة الخطأ، نعيد تحميل الملفات الأصلية
     try {
@@ -363,7 +363,7 @@ const addFilesToCollection = async (collectionId) => {
   setAddFilesModalOpen(true);
 };
 const deleteCollection = async (collectionId) => {
-  if (window.confirm("Are you sure you want to delete this collection?")) {
+  if (window.confirm(t("profile.collections.confirmDelete"))) {
     try {
       await axios.delete(`/api/v1/Collection/Delete/${collectionId}`);
       fetchCollections(); // تحديث البيانات بعد الحذف
@@ -406,14 +406,14 @@ const handleAddFilesToCollection = async () => {
   });
 }
 
-    alert("Collection updated ✅");
+    alert(t("profile.alerts.collectionUpdated"));
     setAddFilesModalOpen(false);
     setSelectedFiles([]);
     fetchCollections();
 
   } catch (err) {
     console.error(err);
-    alert("Error updating collection");
+    alert(t("profile.alerts.errorCollection"));
   }
 };
 const handleCreateCollection = async () => {
@@ -422,7 +422,7 @@ const handleCreateCollection = async () => {
 );
 
   if (!match) {
-    alert("❌ You must select an existing course");
+    alert(t("profile.alerts.selectCourse"));
     return;
   }
 
@@ -464,12 +464,12 @@ const handleUpdateProfile = async () => {
         setEmailSent(true);
         setNewEmail("");
       } else {
-        alert("Profile updated successfully!");
+        alert(t("profile.alerts.profileUpdated"));
       }
     }
   } catch (error) {
     console.error(error);
-    alert("Error updating profile.");
+    alert(t("profile.alerts.errorProfile"));
   }
 };
 // تحديث كلمة المرور
@@ -499,7 +499,7 @@ const handleUpdatePassword = async () => {
       confirmPassword: userData.confirmPassword, // ✅ أضيفي هاد
     });
 
-    alert("Password updated successfully!");
+    alert(t("profile.alerts.passwordUpdated"));
     setUserData({
       ...userData,
       currentPassword: "",
@@ -524,12 +524,12 @@ const handleUpdateCollection = async () => {
     fetchCollections();
   } catch (err) {
     console.error(err);
-    alert("Error updating collection.");
+    alert(t("profile.alerts.errorCollection"));
   }
 };
 // حذف ملف
 const deleteFile = async (fileId) => {
-  if (window.confirm("Are you sure you want to delete this file?")) {
+  if (window.confirm(t("profile.files.confirmDelete"))) {
     try {
       await axios.delete(`/Api/EduFile/StudentDelete/${fileId}`);
 
@@ -538,7 +538,7 @@ const deleteFile = async (fileId) => {
 
     } catch (err) {
       console.error("Delete error:", err);
-      alert("Error deleting file.");
+      alert(t("profile.alerts.errorDelete"));
     }
   }
 };
@@ -578,7 +578,7 @@ const handleUpdateFile = async () => {
 );
 
   if (!matchedCourse) {
-    alert("Please select a valid course from the list");
+    alert(t("profile.alerts.validCourse"));
     return;
   }
 
@@ -594,12 +594,12 @@ const handleUpdateFile = async () => {
     console.log("Payload:", payload);
 
     await axios.put("/Api/EduFile/UpdateMyFile", payload);
-    alert("File updated successfully!");
+    alert(t("profile.alerts.fileUpdated"));
     setEditFileModalOpen(false);
     fetchMyFiles();
   } catch (err) {
     console.log("Error response:", err.response?.data);
-    alert(err.response?.data?.message || "Error updating file.");
+    alert(err.response?.data?.message || t("profile.alerts.errorFile"));
   }
 };
 const fetchCourses = async (categoryId) => {
@@ -901,7 +901,7 @@ const openViewFiles = async (collectionId) => {
               <p>{collection.description}</p>
             </div>
             <span className={collection.isPublished ? "badge-published" : "badge-draft"}>
-              {collection.isPublished ? "Published" : "Draft"}
+           {collection.isPublished ? t("profile.collections.published") : t("profile.collections.draft")}
             </span>
           </div>
 
