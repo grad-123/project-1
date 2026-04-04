@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "../../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
+import { useTranslation } from "react-i18next";
 function Profile() {
+   const { t } = useTranslation();
   const BASE_URL = "https://corny-unevacuated-willy.ngrok-free.dev";
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
@@ -33,6 +35,129 @@ const [selectedCollectionCourse, setSelectedCollectionCourse] = useState("");
   confirmPassword: "",
   photo: null,
 });
+const [isReordering, setIsReordering] = useState(false);
+const [draggedFileIndex, setDraggedFileIndex] = useState(null);
+const [draggedCollectionId, setDraggedCollectionId] = useState(null);
+
+// بدء السحب
+const handleDragStart = (e, collectionId, fileIndex) => {
+  if (!collections.find(c => c.id === collectionId)?.isOwner) {
+    e.preventDefault();
+    return false;
+  }
+  
+  setIsReordering(true);
+  setDraggedCollectionId(collectionId);
+  setDraggedFileIndex(fileIndex);
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", JSON.stringify({
+    collectionId,
+    fileIndex
+  }));
+};
+
+// السحب فوق العنصر
+const handleDragOver = (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+};
+// إسقاط العنصر
+const handleDrop = async (e, targetCollectionId, targetFileIndex) => {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  let dragData;
+  try {
+    dragData = JSON.parse(e.dataTransfer.getData("text/plain"));
+  } catch (err) {
+    console.error("Invalid drag data", err);
+    setIsReordering(false);
+    setDraggedCollectionId(null);
+    setDraggedFileIndex(null);
+    return;
+  }
+  
+  const { collectionId: sourceCollectionId, fileIndex: sourceFileIndex } = dragData;
+  
+  // نفس المجموعة ونفس المكان -> لا تفعل شيئاً
+  if (sourceCollectionId === targetCollectionId && sourceFileIndex === targetFileIndex) {
+    setIsReordering(false);
+    setDraggedCollectionId(null);
+    setDraggedFileIndex(null);
+    return;
+  }
+  
+  // إنشاء نسخة جديدة من الملفات
+  const newFiles = [...viewFilesList];
+  
+  // التأكد من صحة المؤشرات
+  if (sourceFileIndex < 0 || sourceFileIndex >= newFiles.length ||
+      targetFileIndex < 0 || targetFileIndex >= newFiles.length) {
+    console.error("Invalid indices", { sourceFileIndex, targetFileIndex, length: newFiles.length });
+    setIsReordering(false);
+    setDraggedCollectionId(null);
+    setDraggedFileIndex(null);
+    return;
+  }
+  
+  // نقل الملف من مكانه القديم إلى المكان الجديد
+  const [movedFile] = newFiles.splice(sourceFileIndex, 1);
+  newFiles.splice(targetFileIndex, 0, movedFile);
+  
+  // ✅ تحديث الواجهة فوراً (هذا هو المفتاح!)
+  setViewFilesList([...newFiles]);
+  
+  // تحديث collectionFiles أيضاً
+  setCollectionFiles(prev => ({ 
+    ...prev, 
+    [sourceCollectionId]: [...newFiles] 
+  }));
+  
+  // تجهيز البيانات للإرسال إلى الخادم
+  const reorderData = {
+    collectionId: sourceCollectionId,
+    files: newFiles
+      .filter(file => file != null && (file.eduFileId || file.id))
+      .map((file, idx) => ({
+        eduFileId: file.eduFileId || file.id,
+        order: idx
+      }))
+  };
+  
+  console.log("Sending reorder data:", reorderData);
+  
+  try {
+    await axios.put("/api/v1/Collection/Reorder", reorderData, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    console.log("Reorder successful!");
+  } catch (err) {
+    console.error("Reorder error:", err);
+    alert("Error updating file order. Please try again.");
+    
+    // ✅ في حالة الخطأ، نعيد تحميل الملفات الأصلية
+    try {
+      const res = await axios.get(`/api/v1/Collection/GetById/${sourceCollectionId}`);
+      if (res.data.succeeded) {
+        const originalFiles = res.data.data.files || [];
+        setViewFilesList([...originalFiles]);
+        setCollectionFiles(prev => ({ ...prev, [sourceCollectionId]: [...originalFiles] }));
+      }
+    } catch (reloadErr) {
+      console.error("Error reloading files:", reloadErr);
+    }
+  } finally {
+    setIsReordering(false);
+    setDraggedCollectionId(null);
+    setDraggedFileIndex(null);
+  }
+};
+// إنهاء السحب
+const handleDragEnd = () => {
+  setIsReordering(false);
+  setDraggedCollectionId(null);
+  setDraggedFileIndex(null);
+};
   const [addFilesModalOpen, setAddFilesModalOpen] = useState(false);
 const [selectedCollectionId, setSelectedCollectionId] = useState(null);
 const [selectedFiles, setSelectedFiles] = useState([]);
@@ -489,10 +614,14 @@ const fetchCourses = async (categoryId) => {
   }
 };
 const openViewFiles = async (collectionId) => {
+  setSelectedCollectionId(collectionId);
   try {
     const res = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
     if (res.data.succeeded) {
-      setViewFilesList(res.data.data.files || []);
+      const files = res.data.data.files || [];
+      setViewFilesList(files);
+      // ✅ خزنهم بالـ collectionFiles كمان
+      setCollectionFiles(prev => ({ ...prev, [collectionId]: files }));
       setViewFilesModalOpen(true);
     }
   } catch (err) {
@@ -518,29 +647,30 @@ const openViewFiles = async (collectionId) => {
     </div>
 
     <div className="pp-header-info">
-      <span className="pp-badge">✦ ACADEMIC DASHBOARD</span>
+      <span className="pp-badge">{t("profile.badge")}
+</span>
       <h1 className="pp-name">{userData.name}</h1>
       <p className="pp-email">{userData.email}</p>
 
       <div className="pp-stats">
         <div className="pp-stat">
           <span className="pp-stat-num">{userData.totalFiles ?? 0}</span>
-          <span className="pp-stat-label">Files Uploaded</span>
+          <span className="pp-stat-label">{t("profile.filesUploaded")}</span>
         </div>
         <div className="pp-stat-divider"></div>
         <div className="pp-stat">
           <span className="pp-stat-num">{userData.totalDownloads ?? 0}</span>
-          <span className="pp-stat-label">Downloads</span>
+          <span className="pp-stat-label">{t("profile.downloads")}</span>
         </div>
         <div className="pp-stat-divider"></div>
         <div className="pp-stat">
           <span className="pp-stat-num">{userData.collectionsCount ?? 0}</span>
-          <span className="pp-stat-label">Collections</span>
+          <span className="pp-stat-label">{t("profile.collectionss")}</span>
         </div>
         <div className="pp-stat-divider"></div>
         <div className="pp-stat">
           <span className="pp-stat-num">{files.filter(f => f.status === 1).length}</span>
-          <span className="pp-stat-label">Approved</span>
+          <span className="pp-stat-label">{t("profile.approved")}</span>
         </div>
       </div>
     </div>
@@ -553,47 +683,47 @@ const openViewFiles = async (collectionId) => {
     className={activeTab === "files" ? "active-tab" : ""}
     onClick={() => setActiveTab("files")}
   >
-   📁 My Files
+{t("profile.tabFiles")}
   </button>
 
   <button
     className={activeTab === "collections" ? "active-tab" : ""}
     onClick={() => setActiveTab("collections")}
   >
-   📚 Collections
+  {t("profile.tabCollections")}
   </button>
 
   <button
     className={activeTab === "settings" ? "active-tab" : ""}
     onClick={() => setActiveTab("settings")}
   >
-    ⚙ Settings
+    {t("profile.tabSettings")}
   </button>
 </div>
 
       {/* ================= FILES ================= */}
     {activeTab === "files" && (
   <div className="files-table-container">
-    <h3>My Files</h3>
-    <p>Manage and publish your uploaded content</p>
+   <h3>{t("profile.files.title")}</h3>
+   <p>{t("profile.files.subtitle")}</p>
 
     {/* Filters */}
     <div className="filters">
-      <button onClick={() => setFilter("all")} className={filter==="all"?"active":""}>All</button>
-      <button onClick={() => setFilter("approved")} className={filter==="approved"?"active":""}>Approved</button>
-      <button onClick={() => setFilter("pending")} className={filter==="pending"?"active":""}>Pending</button>
-      <button onClick={() => setFilter("rejected")} className={filter==="rejected"?"active":""}>Rejected</button>
+      <button onClick={() => setFilter("all")} className={filter==="all"?"active":""}>{t("profile.files.filterAll")}</button>
+      <button onClick={() => setFilter("approved")} className={filter==="approved"?"active":""}>{t("profile.files.filterApproved")}</button>
+      <button onClick={() => setFilter("pending")} className={filter==="pending"?"active":""}>{t("profile.files.filterPending")}</button>
+      <button onClick={() => setFilter("rejected")} className={filter==="rejected"?"active":""}>{t("profile.files.filterRejected")}</button>
     </div>
 
     {/* Table */}
     <table className="files-table">
       <thead>
         <tr>
-          <th>Resource</th>
-          <th>Course</th>
-          <th>Status</th>
-          <th>Date</th>
-          <th>Actions</th>
+          <th>{t("profile.files.colResource")}</th>
+          <th>{t("profile.files.colCourse")}</th>
+          <th>{t("profile.files.colStatus")}</th>
+          <th>{t("profile.files.colDate")}</th>
+          <th>{t("profile.files.colActions")}</th>
         </tr>
       </thead>
       <tbody>
@@ -614,22 +744,22 @@ const openViewFiles = async (collectionId) => {
       : "status-rejected"
   }`}
 >
-                {file.status === 0 && "Pending"}
-                {file.status === 1 && "Approved"}
-                {file.status === 2 && "Rejected"}
+                {file.status === 0 && t("profile.files.statusPending")}
+                {file.status === 1 && t("profile.files.statusApproved")}
+                {file.status === 2 && t("profile.files.statusRejected")}
               </span>
             </td>
         <td>{new Date(file.uploadedAt).toLocaleDateString("en-GB")}</td>
            <td>
   {file.status === 1 && (
     !file.isPublished ? (
-      <button onClick={() => publishFile(file.id)}>Publish</button>
+      <button onClick={() => publishFile(file.id)}>{t("profile.files.publish")}</button>
     ) : (
-      <button onClick={() => unpublishFile(file.id)}>Unpublish</button>
+      <button onClick={() => unpublishFile(file.id)}>{t("profile.files.unpublish")}</button>
     )
   )}
   <button onClick={() => deleteFile(file.id)}>🗑️</button>
-  <button onClick={() => openEditFile(file)}>✏️ Edit</button>
+  <button onClick={() => openEditFile(file)}>{t("profile.files.edit")}</button>
 </td>
           </tr>
         ))}
@@ -640,12 +770,12 @@ const openViewFiles = async (collectionId) => {
 {editFileModalOpen && (
   <div className="modal">
     <div className="modal-content">
-      <h3>Edit File</h3>
-      <p>Update file information</p>
+      {t("profile.editFile.title")}
+      {t("profile.editFile.subtitle")}
 
       {/* Title */}
       <div className="form-group">
-        <label>Title</label>
+        <label>{t("profile.editFile.titleLabel")}</label>
         <input
           type="text"
           value={editFileData.title}
@@ -657,14 +787,14 @@ const openViewFiles = async (collectionId) => {
 
       {/* Category */}
       <div className="form-group">
-        <label>Category</label>
+        <label>{t("profile.editFile.category")}</label>
         <select
           value={editFileData.categoryId || ""}
           onChange={(e) =>
             setEditFileData({ ...editFileData, categoryId: e.target.value })
           }
         >
-          <option value="">Select Category</option>
+          <option value="">{t("profile.editFile.selectCategory")}</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>{cat.name}</option>
           ))}
@@ -673,7 +803,7 @@ const openViewFiles = async (collectionId) => {
 
       {/* Course */}
       <div className="form-group">
-        <label>Course</label>
+        <label>{t("profile.editFile.course")}</label>
         <input
           type="text"
           value={editFileData.courseInput}
@@ -695,7 +825,7 @@ const openViewFiles = async (collectionId) => {
 }}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           onFocus={() => setShowSuggestions(true)}
-          placeholder="Enter course name"
+          placeholder={t("profile.editFile.coursePlaceholder")}
         />
         {showSuggestions && filteredCourses.length > 0 && (
   <div className="suggestions-box">
@@ -716,32 +846,32 @@ const openViewFiles = async (collectionId) => {
   </div>
 )}
         {isNewCourse && editFileData.courseInput && (
-          <small>This course does not exist. It will be added automatically.</small>
+          <small>{t("profile.editFile.newCourseHint")}</small>
         )}
       </div>
 
       {/* File Type */}
       <div className="form-group">
-        <label>File Type</label>
+        <label>{t("profile.editFile.fileType")}</label>
         <select
           value={editFileData.fileType || ""}
           onChange={(e) =>
             setEditFileData({ ...editFileData, fileType: e.target.value })
           }
         >
-          <option value="">Select Type</option>
-          <option value="1">Lecture</option>
-          <option value="2">Assignment</option>
-          <option value="3">Exam</option>
-          <option value="4">Summary</option>
-          <option value="5">Slides</option>
+          <option value="">{t("profile.editFile.selectType")}</option>
+          <option value="1">{t("profile.editFile.types.lecture")}</option>
+          <option value="2">{t("profile.editFile.types.assignment")}</option>
+          <option value="3">{t("profile.editFile.types.exam")}</option>
+          <option value="4">{t("profile.editFile.types.summary")}</option>
+          <option value="5">{t("profile.editFile.types.slides")}</option>
         </select>
       </div>
 
       {/* Buttons */}
       <div className="btns-row">
-        <button onClick={() => setEditFileModalOpen(false)}>Cancel</button>
-        <button onClick={handleUpdateFile}>Save Changes</button>
+        <button onClick={() => setEditFileModalOpen(false)}>{t("profile.editFile.cancel")}</button>
+        <button onClick={handleUpdateFile}> {t("profile.editFile.save")}</button>
       </div>
     </div>
   </div>
@@ -752,11 +882,11 @@ const openViewFiles = async (collectionId) => {
   <div className="collections">
     <div className="collections-header">
       <div className="header-text">
-        <h3>My Collections</h3>
-        <p>Organize and publish your study sets to Browse</p>
+        <h3>{t("profile.collections.title")}</h3>
+        <p>{t("profile.collections.subtitle")}</p>
       </div>
       <button className="new-btn" onClick={() => setNewCollectionModal(true)}>
-        + New Collection
+       {t("profile.collections.newBtn")}
       </button>
     </div>
 
@@ -776,13 +906,13 @@ const openViewFiles = async (collectionId) => {
           </div>
 
           <div className="collections-meta">
-  <span>📁 {collection.filesCount} files</span>
+  <span>📁 {collection.filesCount} {t("profile.collections.files")}</span>
   <span>📅 {new Date(collection.createdAt).toLocaleDateString("en-CA")}</span>
   <span>📂 {collection.courseName}</span>
 </div>
           <div className="collection-actions">
             <button className="add-files-btn" 
-            onClick={() => addFilesToCollection(collection.id)}>+ Add Files
+            onClick={() => addFilesToCollection(collection.id)}>{t("profile.collections.addFiles")}
             </button>
               <button className="edit-btn"
     onClick={() => {
@@ -793,22 +923,22 @@ const openViewFiles = async (collectionId) => {
       });
       setEditCollectionModal(true);
     }}>
-    ✏️ Edit
+    {t("profile.collections.edit")}
   </button>
             {!collection.isPublished ? (
               <button className="publish-btn" 
                 onClick={() => publishCollection(collection.id)}>
-                🌐 Publish
+                {t("profile.collections.publish")}
               </button>
             ) : (
               <button className="published-btn" 
                 onClick={() => unpublishCollection(collection.id)}>
-                Published ✓
+               {t("profile.collections.publishedBtn")}
               </button>
             )}
             <button className="view-files-btn"
     onClick={() => openViewFiles(collection.id)}>
-    👁️ View Files
+    {t("profile.collections.viewFiles")}
   </button>
 
             <button className="trash-btn" 
@@ -822,24 +952,24 @@ const openViewFiles = async (collectionId) => {
     {newCollectionModal && (
       <div className="modal">
         <div className="modal-content">
-          <h3>Create New Collection</h3>
-          <p>This collection will be linked to a specific course and can be published to Browse</p>
+          <h3>{t("profile.newCollection.title")}</h3>
+          <p>{t("profile.newCollection.subtitle")}</p>
 
           <div className="form-group">
-            <label>Collection Name</label>
+            <label>{t("profile.newCollection.nameLabel")}</label>
             <input
               type="text"
-              placeholder="e.g. Data Structures – Dr. Anas"
+              placeholder={t("profile.newCollection.namePlaceholder")}
               value={newCollectionData.name}
               onChange={(e) => setNewCollectionData({...newCollectionData, name: e.target.value})}
             />
           </div>
 
           <div className="form-group">
-            <label>Description (optional)</label>
+            <label>{t("profile.newCollection.descLabel")} (optional)</label>
             <input
               type="text"
-              placeholder="Brief description..."
+              placeholder={t("profile.newCollection.descPlaceholder")}
               value={newCollectionData.description}
               onChange={(e) => setNewCollectionData({...newCollectionData, description: e.target.value})}
             />
@@ -847,7 +977,7 @@ const openViewFiles = async (collectionId) => {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Category</label>
+              <label>{t("profile.newCollection.categoryLabel")}</label>
              <select
   value={newCollectionData.categoryId}
   onChange={(e) => {
@@ -856,7 +986,7 @@ const openViewFiles = async (collectionId) => {
     fetchCourses(catId); // تحديث قائمة الكورسات
   }}
 >
-                <option value="">Select Category</option>
+                <option value="">{t("profile.newCollection.selectCategory")}</option>
                 {categories.map(cat => (
                   <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
@@ -864,10 +994,10 @@ const openViewFiles = async (collectionId) => {
             </div>
 
            <div className="form-group">
-  <label>Course</label>
+  <label>{t("profile.newCollection.courseLabel")}</label>
 <input
   type="text"
-  placeholder="e.g. Data Structures"
+ placeholder={t("profile.newCollection.coursePlaceholder")}
   value={newCollectionData.courseName}
  onChange={(e) => {
   const value = e.target.value;
@@ -905,12 +1035,12 @@ const openViewFiles = async (collectionId) => {
           
 
           <div className="info-note">
-            ℹ️ Files added to this collection must belong to the selected course
+           {t("profile.newCollection.infoNote")}
           </div>
 
           <div className="btns-row">
-            <button onClick={() => setNewCollectionModal(false)}>Cancel</button>
-            <button onClick={handleCreateCollection}>Create Collection</button>
+            <button onClick={() => setNewCollectionModal(false)}>{t("profile.newCollection.cancel")}</button>
+            <button onClick={handleCreateCollection}>{t("profile.newCollection.create")}</button>
           </div>
         </div>
       </div>
@@ -920,12 +1050,12 @@ const openViewFiles = async (collectionId) => {
 {addFilesModalOpen && (
   <div className="modal">
     <div className="modal-content">
-      <h3>Add Files to Collection</h3>
-      <p>Select approved files</p>
+      <h3>{t("profile.addFiles.title")}</h3>
+      <p>{t("profile.addFiles.subtitle")}</p>
 
       <div className="files-list">
         {approvedFiles.length === 0 ? (
-          <p>No approved files</p>
+          <p>{t("profile.addFiles.noFiles")}</p>
         ) : (
           approvedFiles.map(file => (
             <div className="file-item-card">
@@ -957,10 +1087,10 @@ const openViewFiles = async (collectionId) => {
 
       <div className="btns-row">
         <button onClick={() => setAddFilesModalOpen(false)}>
-          Cancel
+          {t("profile.addFiles.cancel")}
         </button>
         <button onClick={handleAddFilesToCollection}>
-          Add Selected
+          {t("profile.addFiles.addSelected")}
         </button>
       </div>
     </div>
@@ -968,41 +1098,65 @@ const openViewFiles = async (collectionId) => {
 )}
 {viewFilesModalOpen && (
   <div className="modal">
-    <div className="modal-content">
-      <h3>Collection Files</h3>
-      <p>Files in this collection</p>
+    <div className="modal-content files-reorder-modal">
+      <h3>{t("profile.viewFiles.title")}</h3>
+      <p className="reorder-hint">
+        {t("profile.viewFiles.hint")}
+      </p>
 
-      <div className="files-list">
+      <div className="files-list reorderable-list">
         {viewFilesList.length === 0 ? (
-          <p>No files in this collection</p>
+          <p>{t("profile.viewFiles.noFiles")}</p>
         ) : (
-          viewFilesList.map(file => (
-            <div
-              key={file.eduFileId}
-              className="file-item-card"
-              style={{ cursor: "pointer" }}
-              onClick={() => window.open(`${BASE_URL}${file.filePath}`, "_blank")}
-            >
-              <div className="file-info">
-                <div className="file-icon">
-                  {fileIcons[Number(file.fileType)] || "📁"}
+          viewFilesList.map((file, index) => {
+            const isDragging = isReordering && 
+                               draggedCollectionId === selectedCollectionId && 
+                               draggedFileIndex === index;
+            
+            return (
+              <div
+                key={file.eduFileId || file.id}
+                className={`file-item-card reorder-item ${isDragging ? 'dragging' : ''}`}
+                draggable={collections.find(c => c.id === selectedCollectionId)?.isOwner === true}
+                onDragStart={(e) => handleDragStart(e, selectedCollectionId, index)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, selectedCollectionId, index)}
+                onDragEnd={handleDragEnd}
+              >
+                {/* Drag Handle */}
+                {collections.find(c => c.id === selectedCollectionId)?.isOwner && (
+                  <div className="drag-handle" title="Drag to reorder">
+                    ⋮⋮
+                  </div>
+                )}
+                
+                <div 
+                  className="file-info"
+                  onClick={() => window.open(`${BASE_URL}${file.filePath}`, "_blank")}
+                  style={{ cursor: "pointer", flex: 1 }}
+                >
+                  <div className="file-icon">
+                    {fileIcons[Number(file.fileType)] || "📁"}
+                  </div>
+                  <div>
+                    <div className="file-title">
+                      <span className="file-order">{index + 1}.</span> {file.title}
+                    </div>
+                    <div className="file-meta">{file.courseName}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="file-title">{file.title}</div>
-                  <div className="file-meta">{file.courseName}</div>
-                </div>
-              </div>
 
-              <span className={`file-type-badge type-${Number(file.fileType)}`}>
-                {fileTypeNames[Number(file.fileType)]}
-              </span>
-            </div>
-          ))
+                <span className={`file-type-badge type-${Number(file.fileType)}`}>
+                  {fileTypeNames[Number(file.fileType)]}
+                </span>
+              </div>
+            );
+          })
         )}
       </div>
 
       <div className="btns-row">
-        <button onClick={() => setViewFilesModalOpen(false)}>Close</button>
+        <button onClick={() => setViewFilesModalOpen(false)}>{t("profile.viewFiles.close")}</button>
       </div>
     </div>
   </div>
@@ -1010,10 +1164,10 @@ const openViewFiles = async (collectionId) => {
 {editCollectionModal && (
   <div className="modal">
     <div className="modal-content">
-      <h3>Edit Collection</h3>
+      <h3>{t("profile.editCollection.title")}</h3>
 
       <div className="form-group">
-        <label>Collection Name</label>
+        <label>{t("profile.editCollection.nameLabel")}</label>
         <input
           type="text"
           value={editCollectionData.name}
@@ -1024,7 +1178,7 @@ const openViewFiles = async (collectionId) => {
       </div>
 
       <div className="form-group">
-        <label>Description</label>
+        <label>{t("profile.editCollection.descLabel")}</label>
         <input
           type="text"
           value={editCollectionData.description}
@@ -1035,8 +1189,8 @@ const openViewFiles = async (collectionId) => {
       </div>
 
       <div className="btns-row">
-        <button onClick={() => setEditCollectionModal(false)}>Cancel</button>
-        <button onClick={handleUpdateCollection}>Save Changes</button>
+        <button onClick={() => setEditCollectionModal(false)}>{t("profile.editCollection.cancel")}</button>
+        <button onClick={handleUpdateCollection}> {t("profile.editCollection.save")}</button>
       </div>
     </div>
   </div>
@@ -1047,8 +1201,8 @@ const openViewFiles = async (collectionId) => {
 
     {/* ===== Edit Profile Section ===== */}
    <div className="card">
-  <h3>Edit Profile</h3>
-  <p className="sub-text">Update your personal information</p>
+  <h3>{t("profile.settings.editTitle")}</h3>
+  <p className="sub-text">{t("profile.settings.editSubtitle")}</p>
 
   {/* تغيير الصورة */}
   <div className="photo-upload-section">
@@ -1064,7 +1218,7 @@ const openViewFiles = async (collectionId) => {
 
     <div className="photo-upload-info">
       <label className="change-photo-btn">
-        📷 Change Photo
+       {t("profile.settings.changePhoto")}
         <input
           type="file"
           accept="image/*"
@@ -1072,12 +1226,12 @@ const openViewFiles = async (collectionId) => {
           onChange={(e) => setUserData({ ...userData, photo: e.target.files[0] })}
         />
       </label>
-      <small>JPG, PNG or WebP · Max 5MB</small>
+      <small> {t("profile.settings.photoHint")}</small>
     </div>
   </div>
 
       <div className="form-group">
-        <label>Full Name</label>
+        <label>{t("profile.settings.nicknameLabel")}</label>
         <input
           type="text"
           value={userData.name}
@@ -1089,7 +1243,7 @@ const openViewFiles = async (collectionId) => {
 
 {/* Current Email - Read Only */}
 <div className="form-group">
-  <label>Email Address</label>
+  <label>{t("profile.settings.emailLabel")}</label>
   <input
     type="email"
     value={newEmail}
@@ -1103,32 +1257,32 @@ const openViewFiles = async (collectionId) => {
   {/* ✅ يظهر لما المستخدم يكتب إيميل جديد */}
   {newEmail && !emailSent && (
     <small className="email-hint">
-      ⚠️ A confirmation link will be sent to your current email
+     {t("profile.settings.emailChangeHint")}
     </small>
   )}
 
   {/* ✅ يظهر بعد ما يتبعت الطلب */}
   {emailSent && (
     <small className="email-hint" style={{ color: "green" }}>
-      ✅ Confirmation link sent! Check your current email to confirm the change.
+      {t("profile.settings.emailSentMsg")}
     </small>
   )}
 </div>
       <div className="btns-row">
-        <button className="cancel-btns">Cancel</button>
+        <button className="cancel-btns">{t("profile.settings.cancel")}</button>
         <button className="save-btns" onClick={handleUpdateProfile}>
-          Save Changes
+         {t("profile.settings.saveChanges")}
         </button>
       </div>
     </div>
 
     {/* ===== Change Password Section ===== */}
     <div className="card">
-      <h3>Change Password</h3>
-      <p className="sub-text">Keep your account secure</p>
+      <h3>{t("profile.settings.passwordTitle")}</h3>
+      <p className="sub-text">{t("profile.settings.passwordSubtitle")}</p>
 
       <div className="form-group">
-        <label>Current Password</label>
+        <label>{t("profile.settings.currentPassword")}</label>
         <input
           type="password"
           value={userData.currentPassword}
@@ -1142,7 +1296,7 @@ const openViewFiles = async (collectionId) => {
       </div>
 
       <div className="form-group">
-        <label>New Password</label>
+        <label>{t("profile.settings.newPassword")}</label>
         <input
           type="password"
          
@@ -1156,14 +1310,14 @@ const openViewFiles = async (collectionId) => {
         /> 
         {!userData.newPassword && (
   <small className="hint">
-    At least 8 characters, uppercase, lowercase, number & special character
+   {t("profile.settings.passwordHint")}
   </small>
 )}
          {passwordError && <p className="error-text">{passwordError}</p>}
       </div>
 
       <div className="form-group">
-        <label>Confirm New Password</label>
+        <label>{t("profile.settings.confirmPassword")}</label>
         <input
           type="password"
           value={userData.confirmPassword}
@@ -1177,9 +1331,9 @@ const openViewFiles = async (collectionId) => {
       </div>
 
       <div className="btns-row">
-        <button className="cancel-btns">Cancel</button>
+        <button className="cancel-btns">{t("profile.settings.cancel")}</button>
         <button className="save-btns" onClick={handleUpdatePassword}>
-          Update Password
+        {t("profile.settings.updatePassword")}
         </button>
       </div>
     </div>

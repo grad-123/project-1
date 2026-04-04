@@ -1,5 +1,7 @@
 .profile-container {
   padding: 20px;
+   background: var(--bg-main);
+  color: var(--text-main);
 }
 
 /* HEADER */
@@ -48,14 +50,15 @@
   margin-right: 10px;
   padding: 8px 15px;
   border: none;
-  background: #eee;
   border-radius: 10px;
   cursor: pointer;
   transition: 0.3s;
+    background: var(--bg-secondary);
+  color: var(--text-main);
 }
 
 .tabs .active-tab {
-  background: #007bff;
+   background: var(--primary);
   color: white;
 }
 /* FILTERS */
@@ -73,8 +76,9 @@
   padding: 6px 12px;
   border-radius: 20px;
   border: none;
-  background: #eee;
   cursor: pointer;
+   background: var(--bg-secondary);
+  color: var(--text-main);
 }
 
 .filters .active {
@@ -87,7 +91,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8f9fa;
+  background: var(--bg-card);
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 10px;
@@ -130,16 +134,16 @@
 
 /* الكارد */
 .card {
-  background: #f8fafc;
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 25px;
-  border: 1px solid #e5e7eb;
+   background: var(--bg-card);
+  border: 1px solid var(--card-border);
 }
 
 /* النص الصغير */
 .sub-text {
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 14px;
   margin-bottom: 20px;
 }
@@ -163,7 +167,9 @@
   width: 100%;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #d1d5db;
+   background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-main);
   outline: none;
 }
 .hint {
@@ -192,7 +198,8 @@
 }
 
 .cancel-btns {
-  background: #e5e7eb;
+   background: var(--bg-secondary);
+  color: var(--text-main);
   border: none;
 }
 
@@ -207,7 +214,7 @@
 
 .files-header p ,.collections-header p ,.edit-profile p {
   margin: 5px 0 0;
-  color: #666;
+ color: var(--text-secondary);
   font-size: 14px;
 }
 .collections-header {
@@ -233,7 +240,8 @@
 .header-text h3 {
   margin: 0;
   font-size: 20px;
-  text-align: left; /* 🟢 ضمن div العنوان */
+  text-align: left;
+ color: var(--text-secondary);
 }
 
 .header-text p {
@@ -263,8 +271,9 @@
 }
 
 /* Modal Box */
-.modal-content {
-  background: #fff;
+.modal-content { 
+  background: var(--bg-card);
+  color: var(--text-main);
   border-radius: 12px;
   padding: 32px;
   width: 700px;
@@ -276,16 +285,19 @@
   font-size: 20px;
   font-weight: 600;
   margin: 0 0 4px;
+  color: var(--text-main);
 }
 
 .modal-content p {
-  color: #6b7280;
+   color: var(--text-secondary);
   font-size: 14px;
   margin: 0 0 24px;
 }
 .form-group select {
   padding: 10px 12px;
-  border: 1px solid #e5e7eb;
+  background: var(--input-bg);
+  color: var(--text-main);
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   font-size: 14px;
   outline: none;
@@ -324,8 +336,8 @@
 }
 
 .collection-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 20px;
 }
@@ -421,8 +433,8 @@
 }
 
 .info-note {
-  background: #eff6ff;
-  color: #1d4ed8;
+   background: var(--badge-bg);
+  color: var(--badge-color);
   padding: 10px 14px;
   border-radius: 8px;
   font-size: 13px;
@@ -434,8 +446,8 @@
   top: 100%;
   left: 0;
   width: 100%;
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
   max-height: 150px;
   overflow-y: auto;
   z-index: 1000;
@@ -447,7 +459,7 @@
 }
 
 .suggestion-item:hover {
-  background-color: #f0f0f0;
+ background-color: var(--bg-secondary);
 }
 .edit-btn {
   background-color:  #3b82f6;
@@ -482,7 +494,7 @@
   align-items: center;
   gap: 16px;
   padding: 16px;
-  background: #f8fafc;
+  background: var(--bg-secondary);
   border-radius: 12px;
   margin-bottom: 16px;
 }
@@ -518,8 +530,9 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: white;
-  border: 1px solid #e2e8f0;
+   background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
@@ -528,7 +541,7 @@
 }
 
 .change-photo-btn:hover {
-  background: #f1f5f9;
+  background: var(--bg-secondary);
 }
 
 .photo-upload-info {
@@ -589,3 +602,109 @@
   font-weight: 500;
   flex-shrink: 0; /* ✅ أضف هاد */
 }
+
+
+
+
+
+/* ===== REORDER MODAL STYLES ===== */
+.files-reorder-modal .modal-content {
+  max-width: 700px;
+  width: 90%;
+}
+
+.reorder-hint {
+  font-size: 13px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.reorderable-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.reorder-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.reorder-item:active {
+  cursor: grabbing;
+}
+
+.reorder-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+  background: var(--bg-secondary);
+  border: 2px dashed var(--primary);
+}
+
+.reorder-item:hover:not(.dragging) {
+ background: var(--bg-secondary);
+  border-color: var(--card-border);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.drag-handle {
+  cursor: grab;
+  font-size: 20px;
+   color: var(--drag-handle-color);
+  padding: 4px;
+  user-select: none;
+  width: 24px;
+  text-align: center;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.file-order {
+  font-weight: 600;
+  color: #3b82f6;
+  margin-right: 8px;
+}
+
+/* Loading overlay for reorder */
+.reordering-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-spinner-small {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #f3f4f6;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+ 
+
+
+

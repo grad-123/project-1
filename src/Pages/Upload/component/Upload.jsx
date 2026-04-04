@@ -11,6 +11,19 @@ import { useTranslation } from "react-i18next";
 import axios from "../../../api/axiosInstance";
 export default function Upload() { 
    const { t } = useTranslation();
+   const MAX_FILE_SIZE_DOC = 20 * 1024 * 1024;   // 20MB
+const MAX_FILE_SIZE_VIDEO = 500 * 1024 * 1024; // 500MB
+
+const ALLOWED_TYPES = [
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "video/mp4",
+  "video/quicktime",
+  "video/x-msvideo",
+  "video/x-matroska"
+];
  const { register, handleSubmit, watch, formState: { errors } } = useForm();
  const selectedCategory = watch("category");
    const [selectedFile, setSelectedFile] = useState(null);
@@ -148,8 +161,32 @@ Swal.fire("Error", "Something went wrong", "error");
 };
 
 const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const isVideo = file.type.startsWith("video/");
+  const isAllowed = ALLOWED_TYPES.includes(file.type);
+
+  if (!isAllowed) {
+    Swal.fire("Error", "Only PDF, DOCX, PPTX, XLSX, MP4, MOV, AVI, MKV files are allowed", "error");
+    e.target.value = "";
+    return;
+  }
+
+  if (isVideo && file.size > MAX_FILE_SIZE_VIDEO) {
+    Swal.fire("Error", "Video files must be less than 500MB", "error");
+    e.target.value = "";
+    return;
+  }
+
+  if (!isVideo && file.size > MAX_FILE_SIZE_DOC) {
+    Swal.fire("Error", "Document files must be less than 20MB", "error");
+    e.target.value = "";
+    return;
+  }
+
+  setSelectedFile(file);
+};
 
   const removeFile = () => {
     setSelectedFile(null);
@@ -209,7 +246,7 @@ const [showSuggestions, setShowSuggestions] = useState(false);
       id="fileInput"
       type="file"
       {...register("file", { required:t("upload.form.fileRequired" )})}
-      accept=".pdf,.docx,.mp4,.avi,.mov,.mkv"
+     accept=".pdf,.docx,.pptx,.xlsx,.mp4,.mov,.avi,.mkv"
       hidden
       onChange={handleFileChange}
     />

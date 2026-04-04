@@ -447,8 +447,7 @@ const unbanUser = async (id) => {
 };
   const deleteFile = async (id) => {
   try {
-    await axios.delete(`/Api/EduFile/Delete/${id}`);
-
+    await axios.delete(`/Api/EduFile/AdminDelete/${id}`);
     setFiles(files.filter((file) => file.id !== id));
   } catch (error) {
     console.error("Delete file error:", error);
@@ -664,7 +663,7 @@ const filterFiles = files.filter((file) => {
     </span>
 {file.status === 1 && (
     <button
-      className="delete-btn"
+      className="delet-btn"
       onClick={() => deleteFile(file.id)}
     >
       {t("admin.buttons.disabled")}
