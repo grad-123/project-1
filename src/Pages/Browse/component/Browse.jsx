@@ -167,21 +167,24 @@ function Browse() {
     try {
       const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
       if (res.data && res.data.succeeded && res.data.data) {
-        const files = (res.data.data.files || []).map(file => ({
+        const collectionData = res.data.data;
+        const files = (collectionData.files || []).map(file => ({
           ...file,
           id: file.eduFileId,
           eduFileId: file.eduFileId,
           fileType: Number(file.fileType),
           title: file.title,
           filePath: file.filePath,
+          description: file.description,
           courseName: file.courseName,
           categoryName: file.categoryName,
           downloadCount: file.downloadCount || 0,
-          uploadedAt: file.uploadedAt,
-          uploadedByUserName: file.uploadedByUserName,
-          uploadedByUserId: file.uploadedByUserId
+          uploadedAt: file.uploadedAt || collectionData.createdAt,
+          uploadedByUserName: file.uploadedByUserName || collectionData.uploaderName,
+          uploadedByUserId: file.uploadedByUserId || collectionData.uploaderId
         }));
         setCollectionFiles(files);
+        console.log("✅ Collection files with uploader info:", files);
       } else {
         setCollectionFiles([]);
       }
@@ -239,11 +242,19 @@ function Browse() {
       const filesData = res.data.data?.files || [];
       const collectionsData = res.data.data?.collections || [];
       
+      console.log("Files:", filesData);
+      console.log("Collections data from API:", collectionsData);
+      if (collectionsData.length > 0) {
+        console.log("First collection uploader info:", {
+          uploadedByUserId: collectionsData[0].uploadedByUserId,
+          uploaderId: collectionsData[0].uploaderId,
+          uploaderName: collectionsData[0].uploaderName,
+          uploadedByUserName: collectionsData[0].uploadedByUserName
+        });
+      }
+      
       setFiles(Array.isArray(filesData) ? filesData : []);
       setCollections(Array.isArray(collectionsData) ? collectionsData : []);
-      
-      console.log("Files:", filesData);
-      console.log("Collections:", collectionsData);
       
     } catch (err) {
       console.error("Search error:", err);
@@ -303,20 +314,37 @@ function Browse() {
   // دالة للتعامل مع النقر على اسم المستخدم في المجموعة
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
+    e.preventDefault();
+    
+    console.log("🔵 Clicked on uploader - received:", { userId, userName });
+    
     const token = localStorage.getItem("token");
     if (!token) {
       setMessage(t("browse.loginToViewProfile") || "Please login to view profile");
       setTimeout(() => setMessage(""), 3000);
       return;
     }
-    if (userId) {
-      navigate(`/PublicProfile/${userId}`);
+    
+    const validUserId = userId || null;
+    if (validUserId && validUserId !== 0 && validUserId !== "0") {
+      console.log("✅ Navigating to profile:", validUserId);
+      navigate(`/PublicProfile/${validUserId}`);
+    } else {
+      console.log("⚠️ No valid userId provided:", userId);
+      setMessage("لا يمكن عرض الملف الشخصي - معرف المستخدم غير صالح", "warning");
+      setTimeout(() => setMessage(""), 3000);
     }
   };
 
   const CollectionCard = ({ collection }) => {
     const isFav = favoriteCollections.includes(collection.id);
     const isToggling = togglingCollectionId === collection.id;
+
+    // تأكد من الحصول على معرف المستخدم من المكان الصحيح
+    const uploaderId = collection.uploadedByUserId || collection.uploaderId || collection.userId;
+    const uploaderName = collection.uploaderName || collection.uploadedByUserName || collection.userName;
+
+    console.log("Collection uploader info:", { uploaderId, uploaderName, collection });
 
     return (
       <div className="collection-card" onClick={() => openCollection(collection)}>
@@ -331,10 +359,11 @@ function Browse() {
             <span>📄 {collection.filesCount || 0} {t("browse.files")}</span>
             <span 
               className="uploader-name-clickable"
-              onClick={(e) => handleUploaderClick(collection.uploadedByUserId, collection.uploaderName, e)}
+              onClick={(e) => handleUploaderClick(uploaderId, uploaderName, e)}
               title={t("browse.clickToViewProfile")}
+              style={{ cursor: 'pointer', color: '#007bff' }}
             >
-              👤 {collection.uploaderName || t("browse.unknown")}
+              👤 {uploaderName || t("browse.unknown")}
             </span>
           </div>
         </div>
@@ -523,10 +552,10 @@ function Browse() {
                         file={file}
                         isFavorite={favorites.includes(file.id || file.eduFileId)}
                         toggleFavorite={toggleFavorite}
-                        handleDownload={handleDownload}
                         serverUrl={serverUrl}
                         setMessage={setMessage}
                         hideFileType={true}
+                        hideUploader={false}
                       />
                     ))}
                 </div>
@@ -544,10 +573,10 @@ function Browse() {
                         file={file}
                         isFavorite={favorites.includes(file.id || file.eduFileId)}
                         toggleFavorite={toggleFavorite}
-                        handleDownload={handleDownload}
                         serverUrl={serverUrl}
                         setMessage={setMessage}
                         hideFileType={false}
+                        hideUploader={false}
                       />
                     ))}
                   </div>

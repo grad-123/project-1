@@ -38,28 +38,49 @@ function Favorites() {
     { id: 6, name: t("fileTypes.other"), icon: "📁" },
   ];
 
-  const fetchFavorites = useCallback(async () => {
-    try {
-      const res = await axios.get("/Favorite/GetList");
-      if (res.data && res.data.data) {
-        const filesWithId = res.data.data.map((file) => ({
-          ...file,
-          eduFileId: file.eduFileId || file.id,
-          id: file.id || file.eduFileId,
-          fileType: file.fileType !== undefined ? Number(file.fileType) : file.type,
-          uploadedAt: file.uploadedAt || file.createdAt || file.upload_date,
-          downloadCount: file.downloadCount || file.download_count || 0,
-        }));
-        setFiles(filesWithId);
-        setFilteredFiles(filesWithId);
-      }
-    } catch (err) {
-      console.log("Error fetching favorites:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+const fetchFavorites = useCallback(async () => {
+  try {
+    const res = await axios.get("/Favorite/GetList");
+    if (res.data && res.data.data) {
+      let filesData = res.data.data.map((file) => ({
+        ...file,
+        eduFileId: file.eduFileId || file.id,
+        id: file.id || file.eduFileId,
+        fileType: file.fileType !== undefined ? Number(file.fileType) : file.type,
+        uploadedAt: file.uploadedAt || file.createdAt || file.upload_date,
+        downloadCount: file.downloadCount || file.download_count || 0,
+      }));
 
+      // ✅ جلب معلومات إضافية لكل ملف إذا كانت مفقودة
+      for (let i = 0; i < filesData.length; i++) {
+        const file = filesData[i];
+        if (!file.uploadedByUserName && file.id) {
+          try {
+            const fileDetails = await axios.get(`/Api/EduFile/GetById/${file.id}`);
+            if (fileDetails.data && fileDetails.data.data) {
+              filesData[i] = {
+                ...filesData[i],
+                uploadedByUserId: fileDetails.data.data.uploadedByUserId || fileDetails.data.data.uploaderId,
+                uploadedByUserName: fileDetails.data.data.uploadedByUserName || fileDetails.data.data.uploaderName,
+                courseName: fileDetails.data.data.courseName || filesData[i].courseName,
+                categoryName: fileDetails.data.data.categoryName || filesData[i].categoryName,
+              };
+            }
+          } catch (err) {
+            console.log(`Could not fetch details for file ${file.id}:`, err);
+          }
+        }
+      }
+
+      setFiles(filesData);
+      setFilteredFiles(filesData);
+    }
+  } catch (err) {
+    console.log("Error fetching favorites:", err);
+  } finally {
+    setLoading(false);
+  }
+}, []);
   useEffect(() => {
     window.refreshFavorites = () => {
       fetchFavorites();

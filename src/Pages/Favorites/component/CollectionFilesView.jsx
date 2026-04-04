@@ -27,15 +27,23 @@ function CollectionFilesView({
   const hasLoadedRef = useRef(false);
   const collectionIdRef = useRef(collection?.id);
 
+  // ✅ هذه الدالة ستستخدم فقط للملفات في Favorite Collections (لن تظهر في My Collections)
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
+    e.preventDefault();
+    
+    console.log("🔵 CollectionFilesView - Clicked on uploader:", { userId, userName });
+    
     const token = localStorage.getItem("token");
     if (!token) {
       if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
       return;
     }
-    if (userId) {
+    if (userId && userId !== 0) {
       navigate(`/PublicProfile/${userId}`);
+    } else {
+      console.log("⚠️ No valid userId provided");
+      if (showMessage) showMessage("لا يمكن عرض الملف الشخصي", "warning");
     }
   };
 
@@ -64,48 +72,17 @@ function CollectionFilesView({
       setLoading(true);
       
       try {
-        if (collection.files && Array.isArray(collection.files) && collection.files.length > 0) {
-          console.log("✅ Using files from collection prop:", collection.files.length);
-          const formattedFiles = collection.files.map((file, index) => ({
-            ...file,
-            id: file.eduFileId || file.id,
-            eduFileId: file.eduFileId || file.id,
-            fileType: Number(file.fileType),
-            title: file.title || file.name || "Untitled",
-            filePath: file.filePath,
-            courseName: file.courseName,
-            categoryName: file.categoryName,
-            downloadCount: file.downloadCount || 0,
-            order: file.order !== undefined ? file.order : index,
-            uploadedByUserId: collection.uploaderId,
-            uploadedByUserName: collection.uploaderName,
-            uploadedAt: collection.createdAt,
-          }));
-          
-          formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
-          setFiles(formattedFiles);
-          
-          const savedProgress = localStorage.getItem(`learning_progress_${collection.id}`);
-          if (savedProgress) {
-            try {
-              const progress = JSON.parse(savedProgress);
-              setCompletedCount(progress.completedCount || 0);
-              setCurrentFileIndex(progress.currentFileIndex || 0);
-            } catch (e) {
-              console.log("Error parsing saved progress");
-            }
-          }
-          
-          setLoading(false);
-          hasLoadedRef.current = true;
-          return;
-        }
-        
         console.log("🔄 Fetching files from API for collection:", collection.id);
         const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
         
         if (res.data && res.data.data && res.data.data.files) {
           const collectionData = res.data.data;
+          console.log("📦 Collection data from API:", collectionData);
+          console.log("👤 Uploader info:", {
+            uploaderId: collectionData.uploaderId,
+            uploaderName: collectionData.uploaderName
+          });
+          
           const formattedFiles = collectionData.files.map((file, index) => ({
             ...file,
             id: file.eduFileId || file.id,
@@ -113,13 +90,14 @@ function CollectionFilesView({
             fileType: Number(file.fileType),
             title: file.title || file.name || "Untitled",
             filePath: file.filePath,
+            description: file.description,
             courseName: file.courseName,
             categoryName: file.categoryName,
             downloadCount: file.downloadCount || 0,
             order: file.order !== undefined ? file.order : index,
-            uploadedByUserId: collectionData.uploaderId,
-            uploadedByUserName: collectionData.uploaderName,
-            uploadedAt: collectionData.createdAt,
+            uploadedByUserId: file.uploadedByUserId || collectionData.uploaderId,
+            uploadedByUserName: file.uploadedByUserName || collectionData.uploaderName,
+            uploadedAt: file.uploadedAt || collectionData.createdAt,
           }));
           
           formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -140,8 +118,9 @@ function CollectionFilesView({
         }
       } catch (err) {
         console.error("Error loading files:", err);
+        
         if (collection.files && Array.isArray(collection.files)) {
-          console.log("⚠️ API failed, using files from collection prop as fallback:", collection.files.length);
+          console.log("⚠️ Using files from collection prop as fallback");
           const formattedFiles = collection.files.map((file, index) => ({
             ...file,
             id: file.eduFileId || file.id,
@@ -149,13 +128,14 @@ function CollectionFilesView({
             fileType: Number(file.fileType),
             title: file.title || file.name || "Untitled",
             filePath: file.filePath,
+            description: file.description,
             courseName: file.courseName,
             categoryName: file.categoryName,
             downloadCount: file.downloadCount || 0,
             order: file.order !== undefined ? file.order : index,
-            uploadedByUserId: collection.uploaderId,
-            uploadedByUserName: collection.uploaderName,
-            uploadedAt: collection.createdAt,
+            uploadedByUserId: file.uploadedByUserId || collection.uploaderId,
+            uploadedByUserName: file.uploadedByUserName || collection.uploaderName,
+            uploadedAt: file.uploadedAt || collection.createdAt,
           }));
           
           formattedFiles.sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -465,11 +445,13 @@ function CollectionFilesView({
             <span className="files-count-badge">
               {files.length} {files.length === 1 ? t("collection.file") : t("collection.files")}
             </span>
-            {collection?.uploaderName && (
+            {/* ✅ يظهر اسم المستخدم فقط في Favorite Collections */}
+            {collection?.uploaderName && isFavoriteCollection && (
               <span 
                 className="uploader-name-clickable collection-uploader"
                 onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
                 title="انقر لعرض الملف الشخصي"
+                style={{ cursor: 'pointer', color: '#007bff' }}
               >
                 <FaUser /> {collection.uploaderName}
               </span>
@@ -570,13 +552,19 @@ function CollectionFilesView({
                     <div className="file-meta-collection">
                       <span className="file-type-badge">{getFileTypeText(file.fileType)}</span>
                       {file.courseName && <span className="course-name">{file.courseName}</span>}
-                      {file.uploadedByUserName && (
+                      {/* ✅ يظهر اسم المستخدم فقط في Favorite Collections */}
+                      {isFavoriteCollection && (file.uploadedByUserName || collection?.uploaderName) && (
                         <span 
                           className="uploader-name-clickable file-uploader"
-                          onClick={(e) => handleUploaderClick(file.uploadedByUserId, file.uploadedByUserName, e)}
+                          onClick={(e) => handleUploaderClick(
+                            file.uploadedByUserId || collection?.uploaderId, 
+                            file.uploadedByUserName || collection?.uploaderName, 
+                            e
+                          )}
                           title="انقر لعرض الملف الشخصي"
+                          style={{ cursor: 'pointer', color: '#007bff' }}
                         >
-                          <FaUser /> {file.uploadedByUserName}
+                          <FaUser /> {file.uploadedByUserName || collection?.uploaderName}
                         </span>
                       )}
                       {file.uploadedAt && (

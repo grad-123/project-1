@@ -24,7 +24,7 @@ export default function FavoriteFileCard({
   onAddToCollection = null,
   hideFileType = false,
   downloadingId = null,
-  hideUploader = false,  // ✅ أضف هذا السطر
+  hideUploader = false,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -61,13 +61,20 @@ export default function FavoriteFileCard({
 
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
+    e.preventDefault();
+    
+    console.log("🔵 FavoriteFileCard - Clicked on uploader:", { userId, userName });
+    
     const token = localStorage.getItem("token");
     if (!token) {
       if (setMessage) setMessage("الرجاء تسجيل الدخول أولاً", "warning");
       return;
     }
-    if (userId) {
+    if (userId && userId !== 0) {
       navigate(`/PublicProfile/${userId}`);
+    } else {
+      console.log("⚠️ No valid userId provided");
+      if (setMessage) setMessage("لا يمكن عرض الملف الشخصي", "warning");
     }
   };
 
@@ -116,12 +123,12 @@ export default function FavoriteFileCard({
             <span>📁 {file.categoryName}</span>
           </div>
           <div className="file-footer">
-            {/* ✅ عرض اسم المستخدم فقط إذا hideUploader = false */}
             {!hideUploader && file.uploadedByUserName && (
               <span 
                 className="uploader-name-clickable"
                 onClick={(e) => handleUploaderClick(file.uploadedByUserId, file.uploadedByUserName, e)}
                 title={t("browse.clickToViewProfile") || "انقر لعرض الملف الشخصي"}
+                style={{ cursor: 'pointer', color: '#007bff' }}
               >
                 👤 {file.uploadedByUserName}
               </span>
@@ -137,16 +144,16 @@ export default function FavoriteFileCard({
       <div className="file-actions">
         {file.fileType === 0 && (
           <button
-            className="download-btn"
+            className="watch-btn"
             onClick={() => {
               window.open(`${serverUrl}${file.filePath}`, "_blank");
             }}
           >
-            {t("browse.watchVideo")}
+            🎥 {t("browse.watch")}
           </button>
         )}
         <button className="download-btn" onClick={handleDownload}>
-          {t("browse.download")}
+          ⬇ {t("browse.download")}
         </button>
 
         {showAddButton && onAddToCollection && (

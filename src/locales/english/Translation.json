@@ -70,6 +70,7 @@
   
   "browse": {
     "searchPlaceholder": "Tap to search...",
+    "watch":"watch video",
     "categories": "Browse Categories",
     "description": "Explore different fields of study and discover the topics that match your interests",
     "searchButton": "Search",

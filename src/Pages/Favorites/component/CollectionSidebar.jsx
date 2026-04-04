@@ -25,15 +25,23 @@ function CollectionSidebar({
   const [newDescription, setNewDescription] = useState("");
   const [copyingId, setCopyingId] = useState(null);
 
+  // ✅ هذه الدالة سيتم استخدامها فقط في Favorite Collections (لن تظهر في My Collections)
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
+    e.preventDefault();
+    
+    console.log("🔵 CollectionSidebar - Clicked on uploader:", { userId, userName });
+    
     const token = localStorage.getItem("token");
     if (!token) {
       if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
       return;
     }
-    if (userId) {
+    if (userId && userId !== 0) {
       navigate(`/PublicProfile/${userId}`);
+    } else {
+      console.log("⚠️ No valid userId provided");
+      if (showMessage) showMessage("لا يمكن عرض الملف الشخصي", "warning");
     }
   };
 
@@ -329,6 +337,7 @@ function CollectionSidebar({
                         📅 {formatDate(collection.createdAt)}
                       </span>
                     </div>
+                    {/* ✅ تم إخفاء اسم المستخدم في My Collections - لا يوجد uploader name هنا */}
                   </div>
                   <div className="collection-actions">
                     <button
@@ -378,10 +387,12 @@ function CollectionSidebar({
                             📚 {collection.courseName}
                           </span>
                         )}
+                        {/* ✅ يظهر اسم المستخدم فقط في Favorite Collections */}
                         <span 
                           className="uploader-name-clickable"
                           onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
                           title="انقر لعرض الملف الشخصي لصاحب المجموعة"
+                          style={{ cursor: 'pointer', color: '#007bff' }}
                         >
                           👤 {collection.uploaderName || t("collection.unknown")}
                         </span>
