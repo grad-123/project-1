@@ -2,7 +2,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const axiosInstance = axios.create({
-  baseURL: "https://corny-unevacuated-willy.ngrok-free.dev",
+  baseURL:"https://corny-unevacuated-willy.ngrok-free.dev" 
 });
 
 let isRefreshing = false;
@@ -36,7 +36,6 @@ const isTokenExpiredFast = () => {
   return !expiry || Date.now() > parseInt(expiry) - 5000;
 };
 
-// ✅ تم إزالة الـ try/catch غير الضروري
 const refreshTokenRequest = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
   
@@ -82,7 +81,7 @@ const clearTokens = () => {
   localStorage.removeItem("role");
 };
 
-// ✅ دالة ذكية لتحديد إذا كان المسار يحتاج توكن
+// ✅ دالة تحديد是否需要 توكن - المبسطة
 const requiresAuth = (url, method) => {
   if (!url) return false;
   
@@ -90,62 +89,67 @@ const requiresAuth = (url, method) => {
   if (url.includes('/api/v1/Authentication/')) return false;
   if (url.includes('/RefreshToken')) return false;
   
-  // طرق GET لجلب البيانات - لا تحتاج توكن (عامة)
-  if (method === 'get' && (
-    url.includes('/Get') || 
-    url.includes('/Download') ||
-    url.includes('/Browse') ||
-    url.includes('/Course') ||
-    url.includes('/Category')
-  )) return false;
-  
-  // الكلمات المفتاحية التي تدل على حاجة توكن
-  const authKeywords = ['Favorite', 'Upload', 'Profile', 'ChangePassword', 'Create', 'Update', 'Delete', 'Add', 'Remove'];
-  if (authKeywords.some(keyword => url.includes(keyword))) {
-    return true;
-  }
-  
-  // طرق POST, PUT, DELETE التي تعدل بيانات - تحتاج توكن
+  // طرق POST, PUT, DELETE التي تعدل بيانات - تحتاج توكن دائماً
   if (method === 'post' || method === 'put' || method === 'delete') {
     return true;
   }
   
+  // طرق GET - لا نمنعها أبداً، لكننا سنحاول إضافة توكن إذا وجد
   return false;
 };
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
   async (config) => {
+    // لا نريد إضافة أي شيء لطلبات الـ RefreshToken أبداً
     if (config.url?.includes("/RefreshToken")) {
       return config;
     }
 
     let token = localStorage.getItem("token");
     
+    // التحقق إذا كان هذا الطلب يتطلب توكن (POST/PUT/DELETE فقط)
     const needsAuth = requiresAuth(config.url, config.method?.toLowerCase());
     
+    // إذا كان الطلب يتطلب توكن ولا يوجد توكن، نرفضه فوراً
     if (needsAuth && !token) {
       return Promise.reject({
         response: { status: 401, data: { message: "Authentication required" } }
       });
     }
     
+    // إذا كان الطلب لا يحتاج توكن (GET بشكل عام)
+    if (!needsAuth) {
+      // نحاول إضافة التوكن إذا كان موجوداً ولم ينته صلاحيته
+      if (token && !isTokenExpiredFast()) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      
+      // إضافة الهيدرز العامة
+      const language = localStorage.getItem("lang") || "ar";
+      config.headers["Accept-Language"] = language === "ar" ? "ar-EG" : "en-US";
+      config.headers["ngrok-skip-browser-warning"] = "true";
+      return config;
+    }
+    
+    // --- من هنا فصاعداً، الكود خاص بالطلبات POST/PUT/DELETE فقط ---
+    
+    // التحقق من صلاحية التوكن وتجديده إذا لزم الأمر
     if (token && isTokenExpiredFast()) {
       try {
         token = await refreshTokenRequest();
       } catch (error) {
         clearTokens();
-        if (needsAuth) {
-          return Promise.reject(error);
-        }
-        token = null;
+        return Promise.reject(error);
       }
     }
     
+    // إضافة التوكن إلى الهيدر
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // إضافة الهيدرز العامة
     const language = localStorage.getItem("lang") || "ar";
     config.headers["Accept-Language"] = language === "ar" ? "ar-EG" : "en-US";
     config.headers["ngrok-skip-browser-warning"] = "true";
@@ -161,12 +165,10 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config || {};
     
-    if (originalRequest._retryCount >= MAX_REFRESH_ATTEMPTS) {
-      clearTokens();
-      return Promise.reject(error);
-    }
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // نتأكد أن هذا الطلب كان يحتاج توكن أصلاً قبل محاولة إعادة المحاولة
+    const needsAuth = requiresAuth(originalRequest.url, originalRequest.method?.toLowerCase());
+    
+    if (needsAuth && error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });

@@ -105,6 +105,7 @@
     "collectionRemovedFromFavorites": "💔 تمت إزالة المجموعة من المفضلة",
     "errorAddingCollection": "❌ خطأ في إضافة المجموعة إلى المفضلة",
     "errorRemovingCollection": "❌ خطأ في إزالة المجموعة من المفضلة",
+     "watch":"شاهد الفيديو",
     "backToResults": "العودة إلى نتائج البحث",
     "noFilesInCollection": "لا توجد ملفات في هذه المجموعة",
     "noResults": "لا توجد نتائج",

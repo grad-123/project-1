@@ -934,3 +934,128 @@ html[dir="rtl"] .card-content {
 [data-theme="dark"] .file-footer span {
   color: var(--text-secondary);
 }
+
+/* Style for clickable uploader name */
+.uploader-name-clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.uploader-name-clickable:hover {
+  color: #007bff;
+  text-decoration: underline;
+  transform: scale(1.02);
+}
+
+.uploader-name-clickable:active {
+  transform: scale(0.98);
+}
+
+.uploader-name-clickable {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.uploader-name-clickable:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.file-footer .uploader-name-clickable,
+.file-meta-collection .uploader-name-clickable,
+.collection-meta .uploader-name-clickable {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.file-footer .uploader-name-clickable:hover,
+.file-meta-collection .uploader-name-clickable:hover,
+.collection-meta .uploader-name-clickable:hover {
+    color: #0056b3;
+}
+
+/* Watch Video Button Styles */
+.watch-btn {
+  background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.watch-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.watch-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.watch-btn:hover {
+  background: linear-gradient(135deg, #e84118 0%, #ff4757 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+}
+
+.watch-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
+}
+
+/* Responsive styles for watch button */
+@media (max-width: 768px) {
+  .watch-btn {
+    padding: 6px 14px;
+    font-size: 11px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .watch-btn {
+    padding: 6px 12px;
+    font-size: 10px;
+    gap: 4px;
+  }
+}
+
+/* Dark mode support for watch button */
+[data-theme="dark"] .watch-btn {
+  background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.2);
+}
+
+[data-theme="dark"] .watch-btn:hover {
+  background: linear-gradient(135deg, #e84118 0%, #ff4757 100%);
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+}

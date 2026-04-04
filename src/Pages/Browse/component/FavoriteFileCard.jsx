@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./Browse.css";
 import { useTranslation } from "react-i18next";
 import axios from "../../../api/axiosInstance";
@@ -22,8 +23,11 @@ export default function FavoriteFileCard({
   showAddButton = true,
   onAddToCollection = null,
   hideFileType = false,
+  downloadingId = null,
+  hideUploader = false,
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const handleDownload = async () => {
     try {
@@ -52,6 +56,25 @@ export default function FavoriteFileCard({
       console.log("Download error:", err);
       if (setMessage) setMessage(t("browse.downloadError") || "Download failed");
       setTimeout(() => setMessage && setMessage(""), 3000);
+    }
+  };
+
+  const handleUploaderClick = (userId, userName, e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    console.log("🔵 FavoriteFileCard - Clicked on uploader:", { userId, userName });
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+      if (setMessage) setMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      return;
+    }
+    if (userId && userId !== 0) {
+      navigate(`/PublicProfile/${userId}`);
+    } else {
+      console.log("⚠️ No valid userId provided");
+      if (setMessage) setMessage("لا يمكن عرض الملف الشخصي", "warning");
     }
   };
 
@@ -91,7 +114,6 @@ export default function FavoriteFileCard({
           >
             {file.title}
           </h3>
-          {/* إظهار نوع الملف فقط إذا لم يكن مخفياً */}
           {!hideFileType && (
             <span className="file-type">{fileTypeText[file.fileType]}</span>
           )}
@@ -101,10 +123,19 @@ export default function FavoriteFileCard({
             <span>📁 {file.categoryName}</span>
           </div>
           <div className="file-footer">
-            <span>👤 {file.uploadedByUserName}</span>
+            {!hideUploader && file.uploadedByUserName && (
+              <span 
+                className="uploader-name-clickable"
+                onClick={(e) => handleUploaderClick(file.uploadedByUserId, file.uploadedByUserName, e)}
+                title={t("browse.clickToViewProfile") || "انقر لعرض الملف الشخصي"}
+                style={{ cursor: 'pointer', color: '#007bff' }}
+              >
+                👤 {file.uploadedByUserName}
+              </span>
+            )}
             <span>⬇ {file.downloadCount}</span>
             <span>
-              📅 {new Date(file.uploadedAt).toLocaleDateString("en-GB")}
+              📅 {file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString("en-GB") : ""}
             </span>
           </div>
         </div>
@@ -113,16 +144,16 @@ export default function FavoriteFileCard({
       <div className="file-actions">
         {file.fileType === 0 && (
           <button
-            className="download-btn"
+            className="watch-btn"
             onClick={() => {
               window.open(`${serverUrl}${file.filePath}`, "_blank");
             }}
           >
-            {t("browse.watchVideo")}
+            🎥 {t("browse.watch")}
           </button>
         )}
         <button className="download-btn" onClick={handleDownload}>
-          {t("browse.download")}
+          ⬇ {t("browse.download")}
         </button>
 
         {showAddButton && onAddToCollection && (

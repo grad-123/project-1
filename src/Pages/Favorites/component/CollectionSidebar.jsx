@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 import { useTranslation } from "react-i18next";
 import CreateCollectionModal from "./CreateCollectionModal";
@@ -17,13 +18,33 @@ function CollectionSidebar({
   className = "",
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingCollection, setEditingCollection] = useState(null);
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [copyingId, setCopyingId] = useState(null);
 
-  // دالة مساعدة للحصول على ID المجموعة بشكل موحد
+  // ✅ هذه الدالة سيتم استخدامها فقط في Favorite Collections (لن تظهر في My Collections)
+  const handleUploaderClick = (userId, userName, e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    console.log("🔵 CollectionSidebar - Clicked on uploader:", { userId, userName });
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+      if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      return;
+    }
+    if (userId && userId !== 0) {
+      navigate(`/PublicProfile/${userId}`);
+    } else {
+      console.log("⚠️ No valid userId provided");
+      if (showMessage) showMessage("لا يمكن عرض الملف الشخصي", "warning");
+    }
+  };
+
   const getCollectionId = (collection) => {
     return collection.collectionId || collection.id;
   };
@@ -51,21 +72,17 @@ function CollectionSidebar({
           files: files,
           filesCount: files.length,
           courseName: res.data.data.courseName || collection.courseName,
+          uploaderId: res.data.data.uploaderId || collection.uploaderId,
           uploaderName: res.data.data.uploaderName || collection.uploaderName,
+          createdAt: res.data.data.createdAt || collection.createdAt,
           source: activeTab,
           isFavorite: activeTab === "favorite",
         };
-
-        console.log("✅ Full collection prepared:", {
-          name: fullCollection.name,
-          filesCount: fullCollection.files.length,
-        });
 
         if (onSelectCollection) {
           onSelectCollection(fullCollection);
         }
       } else {
-        console.log("⚠️ Using existing collection data");
         if (onSelectCollection) {
           onSelectCollection({
             ...collection,
@@ -74,6 +91,9 @@ function CollectionSidebar({
             isFavorite: activeTab === "favorite",
             files: collection.files || [],
             filesCount: collection.filesCount || collection.files?.length || 0,
+            uploaderId: collection.uploaderId,
+            uploaderName: collection.uploaderName,
+            createdAt: collection.createdAt,
           });
         }
       }
@@ -87,6 +107,9 @@ function CollectionSidebar({
           isFavorite: activeTab === "favorite",
           files: collection.files || [],
           filesCount: collection.filesCount || collection.files?.length || 0,
+          uploaderId: collection.uploaderId,
+          uploaderName: collection.uploaderName,
+          createdAt: collection.createdAt,
         });
       }
     }
@@ -132,22 +155,14 @@ function CollectionSidebar({
     }
   };
 
-  // ✅ الدالة المعدلة لنسخ المجموعة - باستخدام API الباك اند فقط
   const handleCopyCollection = async (collectionId, e) => {
     e.stopPropagation();
     setCopyingId(collectionId);
 
     try {
       console.log("📦 Copying collection via API:", collectionId);
+      const response = await axios.post(`/api/v1/collection/Copy/${collectionId}`);
 
-      // ✅ استدعاء API النسخ الموجود في الباك اند
-      const response = await axios.post(
-        `/api/v1/collection/Copy/${collectionId}`,
-      );
-
-      console.log("✅ Copy response:", response.data);
-
-      // ✅ الباك اند يرسل رسالة نجاح فقط (مثل "تمت العملية بنجاح")
       if (
         response.status === 200 ||
         response.data?.succeeded ||
@@ -159,7 +174,6 @@ function CollectionSidebar({
           "✨ Collection copied successfully!";
         if (showMessage) showMessage(successMessage, "success");
 
-        // ✅ تحديث القوائم لعرض المجموعة الجديدة
         if (onCollectionUpdate) {
           await onCollectionUpdate();
         }
@@ -168,31 +182,24 @@ function CollectionSidebar({
           await onFavoriteCollectionsUpdate();
         }
 
-        // ✅ تبديل التاب إلى "My Collections" لإظهار المجموعة الجديدة
         if (onTabChange && activeTab !== "my") {
           onTabChange("my");
         }
 
-        // ✅ محاولة جلب المجموعة الجديدة وتحديدها (اختياري)
         setTimeout(async () => {
           try {
-            // جلب قائمة المجموعات المحدثة
             const collectionsRes = await axios.get(
               "/api/v1/Collection/GetLibraryCollections",
             );
             if (collectionsRes.data?.data?.length > 0) {
-              // البحث عن المجموعة المنسوخة (التي تنتهي بـ "(Copy)")
               const copiedCollection = collectionsRes.data.data.find(
                 (c) => c.name?.endsWith("(Copy)") || c.name?.includes("Copy"),
               );
-
-              // إذا وجدناها، نأخذ آخر مجموعة كبديل
               const newCollection =
                 copiedCollection ||
                 collectionsRes.data.data[collectionsRes.data.data.length - 1];
 
               if (newCollection && onSelectCollection) {
-                // جلب تفاصيل المجموعة الجديدة كاملة
                 const detailsRes = await axios.get(
                   `/api/v1/Collection/GetById/${newCollection.id}`,
                 );
@@ -217,8 +224,6 @@ function CollectionSidebar({
       }
     } catch (err) {
       console.error("🔴 Copy error:", err);
-
-      // محاولة استخراج رسالة الخطأ من الـ response
       let errorMsg = t("collection.copyError") || "❌ Error copying collection";
       if (err.response?.data?.message) {
         errorMsg = err.response.data.message;
@@ -227,7 +232,6 @@ function CollectionSidebar({
       } else if (err.message) {
         errorMsg = err.message;
       }
-
       if (showMessage) showMessage(errorMsg, "error");
     } finally {
       setCopyingId(null);
@@ -259,8 +263,6 @@ function CollectionSidebar({
   };
 
   const safeCollections = Array.isArray(collections) ? collections : [];
-
-  // تحويل favoriteCollections إلى تنسيق موحد مع id
   const safeFavoriteCollections = Array.isArray(favoriteCollections)
     ? favoriteCollections.map((collection) => ({
         ...collection,
@@ -268,6 +270,16 @@ function CollectionSidebar({
         collectionId: collection.collectionId || collection.id,
       }))
     : [];
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className={`collection-sidebar ${className}`}>
@@ -316,12 +328,16 @@ function CollectionSidebar({
                 >
                   <div className="collection-info">
                     <h4>{collection.name}</h4>
-                    <p>
-                      {collection.description || t("collection.noDescription")}
-                    </p>
-                    <span className="collection-meta">
-                      {collection.filesCount || 0} {t("collection.files")}
-                    </span>
+                    <p>{collection.description || t("collection.noDescription")}</p>
+                    <div className="collection-meta-details">
+                      <span className="collection-meta">
+                        📄 {collection.filesCount || 0} {t("collection.files")}
+                      </span>
+                      <span className="collection-date">
+                        📅 {formatDate(collection.createdAt)}
+                      </span>
+                    </div>
+                    {/* ✅ تم إخفاء اسم المستخدم في My Collections - لا يوجد uploader name هنا */}
                   </div>
                   <div className="collection-actions">
                     <button
@@ -361,46 +377,47 @@ function CollectionSidebar({
                   >
                     <div className="collection-info">
                       <h4>{collection.name}</h4>
-                      <p>
-                        {collection.description ||
-                          t("collection.noDescription")}
-                      </p>
-                      <span className="collection-meta">
-                        {collection.filesCount || 0} {t("collection.files")}
-                      </span>
-                      {collection.courseName && (
-                        <span className="course-name-badge">
-                          📚 {collection.courseName}
+                      <p>{collection.description || t("collection.noDescription")}</p>
+                      <div className="collection-meta-details">
+                        <span className="collection-meta">
+                          📄 {collection.filesCount || 0} {t("collection.files")}
                         </span>
-                      )}
+                        {collection.courseName && (
+                          <span className="course-name-badge">
+                            📚 {collection.courseName}
+                          </span>
+                        )}
+                        {/* ✅ يظهر اسم المستخدم فقط في Favorite Collections */}
+                        <span 
+                          className="uploader-name-clickable"
+                          onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
+                          title="انقر لعرض الملف الشخصي لصاحب المجموعة"
+                          style={{ cursor: 'pointer', color: '#007bff' }}
+                        >
+                          👤 {collection.uploaderName || t("collection.unknown")}
+                        </span>
+                        <span className="collection-date">
+                          📅 {formatDate(collection.addedAt || collection.createdAt)}
+                        </span>
+                      </div>
                     </div>
                     <div className="collection-actions">
                       <button
                         className="copy-collection-btn"
                         onClick={(e) => handleCopyCollection(collectionId, e)}
                         disabled={copyingId === collectionId}
-                        title={
-                          t("collection.copyToMyCollections") ||
-                          "Copy to my collections"
-                        }
+                        title={t("collection.copyToMyCollections") || "Copy to my collections"}
                       >
                         {copyingId === collectionId ? (
                           <span className="copy-spinner">⏳</span>
                         ) : (
-                          <span className="copy-text">
-                            {t("collection.copy") || "Copy"}
-                          </span>
+                          <span className="copy-text">{t("collection.copy") || "Copy"}</span>
                         )}
                       </button>
                       <button
                         className="remove-favorite-btn"
-                        onClick={(e) =>
-                          handleRemoveFromFavorites(collectionId, e)
-                        }
-                        title={
-                          t("collection.removeFromFavorites") ||
-                          "Remove from favorites"
-                        }
+                        onClick={(e) => handleRemoveFromFavorites(collectionId, e)}
+                        title={t("collection.removeFromFavorites") || "Remove from favorites"}
                       >
                         ❤️
                       </button>
