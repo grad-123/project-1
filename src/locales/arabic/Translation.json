@@ -68,6 +68,8 @@
     "totalDownloads": "إجمالي التحميلات"
   },
   "browse": {
+     "loginToViewProfile": "الرجاء تسجيل الدخول أولاً",
+    "cannotViewProfile": "لا يمكن عرض الملف الشخصي",
      "loginToViewProfile": "سجل الدخول لمشاهدة الملف الشخصي",
   "invalidUserId": "لا يمكن عرض الملف الشخصي - معرف المستخدم غير صالح",
   "clickToViewProfile": "انقر لعرض الملف الشخصي",

@@ -69,6 +69,8 @@
   },
   
   "browse": {
+    "loginToViewProfile": "Please login first",
+    "cannotViewProfile": "Cannot view profile",
     "loginToViewProfile": "Please login to view profile",
   "invalidUserId": "Cannot view profile - Invalid user ID",
   "clickToViewProfile": "Click to view profile",
