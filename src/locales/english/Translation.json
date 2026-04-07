@@ -69,6 +69,11 @@
   },
   
   "browse": {
+    "loginToViewProfile": "Please login first",
+    "cannotViewProfile": "Cannot view profile",
+    "loginToViewProfile": "Please login to view profile",
+  "invalidUserId": "Cannot view profile - Invalid user ID",
+  "clickToViewProfile": "Click to view profile",
     "searchPlaceholder": "Tap to search...",
     "watch":"watch video",
     "categories": "Browse Categories",
@@ -434,6 +439,8 @@
     "downloadStarted": "⬇️ Download started!",
     "downloadError": "❌ Download failed",
     "error": "❌ Error occurred",
+     "loginToViewProfile": "Please login to view profile",
+  "clickToViewProfile": "Click to view profile",
     "invalidCollection": "❌ Invalid collection",
     "collectionNotFound": "❌ Collection not found or has been deleted",
     "errorLoadingFiles": "❌ Error loading collection files",
@@ -559,6 +566,15 @@
     "loadingCollectionFiles": "Loading collection files...",
     "currentlyLearningBadge": "▶ Currently Learning",
     "addedToCollection": "Added",
+  "removeFromFavoritesConfirm": "Are you sure you want to remove this collection from favorites?",
+  "unknown": "Unknown",
+  "copySuccess": "✨ Collection copied successfully!",
+     "loginRequired": "Please login first",
+  "cannotViewProfile": "Cannot view profile",
+  "clickToViewProfile": "Click to view profile",
+  "removeFileConfirm": "Are you sure you want to remove this file from the collection?",
+  "favoriteCollections": "Favorite Collections",
+  "filesInCollection": "Files in this collection",
     "toCollection": "to collection",
     "filesReordered": "Files reordered successfully",
     "errorReordering": "Error reordering files",
@@ -653,8 +669,9 @@
     "fileAlreadyInCollection": "File already exists in this collection",
     "filesAlreadyInCollection": "files already exist in this collection",
       "removedFromCollections": "and removed from {{count}} collections",
-       "removedFromMyCollections": "and removed from {{count}} of your collections"
- 
+       "removedFromMyCollections": "and removed from {{count}} of your collections",
+        "loginRequired": "Please login first",
+  "cannotViewProfile": "Cannot view profile"
   },
   "publicProfile": {
   "badge": "✦ STUDENT PROFILE",

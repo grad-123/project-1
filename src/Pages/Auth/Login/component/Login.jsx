@@ -282,9 +282,9 @@ function Login() {
         </button>
       </form>
 
-      {/* زر Google دائري - بدون Client ID */}
-      <div className="google-circle-wrapper">
-        <div className="google-circle-container">
+      {/* Google Sign-In Button - Rectangular Shape with Text */}
+      <div className="google-btn-wrapper">
+        <div className="google-btn-container">
           <GoogleLogin
             onSuccess={handleGoogleLogin}
             onError={() => {
@@ -292,12 +292,11 @@ function Login() {
             }}
             theme="outline"
             size="large"
-            shape="circle"
-            width="48"
+            shape="rectangular"
+            text="signin_with"
             locale={i18n.language === "ar" ? "ar" : "en"}
           />
         </div>
-        <span className="google-circle-text">{t("login.orContinueWith")}</span>
       </div>
 
       <Link to="/auth/forgot" className="forgot">

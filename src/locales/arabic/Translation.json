@@ -68,6 +68,11 @@
     "totalDownloads": "إجمالي التحميلات"
   },
   "browse": {
+     "loginToViewProfile": "الرجاء تسجيل الدخول أولاً",
+    "cannotViewProfile": "لا يمكن عرض الملف الشخصي",
+     "loginToViewProfile": "سجل الدخول لمشاهدة الملف الشخصي",
+  "invalidUserId": "لا يمكن عرض الملف الشخصي - معرف المستخدم غير صالح",
+  "clickToViewProfile": "انقر لعرض الملف الشخصي",
     "searchPlaceholder": "اضغط للبحث...",
     "categories": "تصفح التصنيفات",
     "description": "استكشف مختلف مجالات الدراسة واختر المجال الذي يناسب اهتماماتك",
@@ -432,6 +437,8 @@
     "downloadStarted": "⬇️ بدء التحميل!",
     "downloadError": "❌ فشل التحميل",
     "error": "❌ حدث خطأ",
+     "loginToViewProfile": "سجل الدخول لمشاهدة الملف الشخصي",
+  "clickToViewProfile": "انقر لعرض الملف الشخصي",
     "invalidCollection": "❌ مجموعة غير صالحة",
     "collectionNotFound": "❌ المجموعة غير موجودة أو تم حذفها",
     "errorLoadingFiles": "❌ خطأ في تحميل الملفات",
@@ -558,6 +565,16 @@
     "currentlyLearningBadge": "▶ جارٍ التعلم الآن",
     "addedToCollection": "تمت إضافة",
     "toCollection": "إلى المجموعة",
+      
+  "removeFromFavoritesConfirm": "هل أنت متأكد من إزالة هذه المجموعة من المفضلة؟",
+  "unknown": "غير معروف",
+  "copySuccess": "✨ تم نسخ المجموعة بنجاح!",
+     "loginRequired": "الرجاء تسجيل الدخول أولاً",
+  "cannotViewProfile": "لا يمكن عرض الملف الشخصي",
+  "clickToViewProfile": "انقر لعرض الملف الشخصي",
+  "removeFileConfirm": "هل أنت متأكد من إزالة هذا الملف من المجموعة؟",
+  "favoriteCollections": "المجموعات المفضلة",
+  "filesInCollection": "الملفات في هذه المجموعة",
     "filesReordered": "تم إعادة ترتيب الملفات بنجاح",
     "errorReordering": "حدث خطأ في إعادة ترتيب الملفات",
     "dragHint": "اسحب أيقونة ⋮⋮ لإعادة ترتيب الملفات",
@@ -653,7 +670,9 @@
       "removedFromCollections": "وتمت إزالته من {{count}} مجموعة",
       "removedFromMyCollections": "وتمت إزالته من {{count}} مجموعة من مجموعاتك",
      "removedFromCollections": "and removed from {{count}} collections",
-    "removedFromMyCollections": "and removed from {{count}} of your collections"
+    "removedFromMyCollections": "and removed from {{count}} of your collections",
+    "loginRequired": "الرجاء تسجيل الدخول أولاً",
+  "cannotViewProfile": "لا يمكن عرض الملف الشخصي"
   } ,
   "publicProfile": {
   "badge": "✦ ملف الطالب",
