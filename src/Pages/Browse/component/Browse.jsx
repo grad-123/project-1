@@ -33,7 +33,7 @@ function Browse() {
   const [collectionFileType, setCollectionFileType] = useState("all");
   
   const navigate = useNavigate();
-  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
+  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
 
   useEffect(() => {
     axios
