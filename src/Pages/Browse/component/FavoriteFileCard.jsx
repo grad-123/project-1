@@ -39,8 +39,9 @@ export default function FavoriteFileCard({
       );
 
       const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
-      const fileName = file.filePath?.split("/").pop() || file.title || "download";
-      
+      const fileName =
+        file.filePath?.split("/").pop() || file.title || "download";
+
       const link = document.createElement("a");
       link.href = fileUrl;
       link.download = fileName;
@@ -49,12 +50,14 @@ export default function FavoriteFileCard({
       document.body.removeChild(link);
 
       window.URL.revokeObjectURL(fileUrl);
-      
-      if (setMessage) setMessage(t("browse.downloadStarted") || "Download started!");
+
+      if (setMessage)
+        setMessage(t("browse.downloadStarted") || "Download started!");
       setTimeout(() => setMessage && setMessage(""), 2000);
     } catch (err) {
       console.log("Download error:", err);
-      if (setMessage) setMessage(t("browse.downloadError") || "Download failed");
+      if (setMessage)
+        setMessage(t("browse.downloadError") || "Download failed");
       setTimeout(() => setMessage && setMessage(""), 3000);
     }
   };
@@ -62,19 +65,22 @@ export default function FavoriteFileCard({
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
     e.preventDefault();
-    
-    console.log("🔵 FavoriteFileCard - Clicked on uploader:", { userId, userName });
-    
+
+    console.log("🔵 FavoriteFileCard - Clicked on uploader:", {
+      userId,
+      userName,
+    });
+
     const token = localStorage.getItem("token");
     if (!token) {
-      if (setMessage) setMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      if (setMessage) setMessage(t("browse.loginToViewProfile"), "warning");
       return;
     }
     if (userId && userId !== 0) {
       navigate(`/PublicProfile/${userId}`);
     } else {
       console.log("⚠️ No valid userId provided");
-      if (setMessage) setMessage("لا يمكن عرض الملف الشخصي", "warning");
+      if (setMessage) setMessage(t("browse.cannotViewProfile"), "warning");
     }
   };
 
@@ -124,18 +130,29 @@ export default function FavoriteFileCard({
           </div>
           <div className="file-footer">
             {!hideUploader && file.uploadedByUserName && (
-              <span 
+              <span
                 className="uploader-name-clickable"
-                onClick={(e) => handleUploaderClick(file.uploadedByUserId, file.uploadedByUserName, e)}
-                title={t("browse.clickToViewProfile") || "انقر لعرض الملف الشخصي"}
-                style={{ cursor: 'pointer', color: '#007bff' }}
+                onClick={(e) =>
+                  handleUploaderClick(
+                    file.uploadedByUserId,
+                    file.uploadedByUserName,
+                    e,
+                  )
+                }
+                title={
+                  t("browse.clickToViewProfile") || "انقر لعرض الملف الشخصي"
+                }
+                style={{ cursor: "pointer", color: "#007bff" }}
               >
                 👤 {file.uploadedByUserName}
               </span>
             )}
             <span>⬇ {file.downloadCount}</span>
             <span>
-              📅 {file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString("en-GB") : ""}
+              📅{" "}
+              {file.uploadedAt
+                ? new Date(file.uploadedAt).toLocaleDateString("en-GB")
+                : ""}
             </span>
           </div>
         </div>
