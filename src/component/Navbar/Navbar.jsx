@@ -78,24 +78,8 @@ function Navbar() {
     );
   }, []);
 
-// أضف هذا الـ useEffect مع باقي الـ useEffects في Navbar
 
-useEffect(() => {
-  const handleBeforeUnload = () => {
-    const currentPath = window.location.pathname;
-    const token = localStorage.getItem("token");
-    if (token && currentPath !== "/auth/login") {
-      sessionStorage.setItem("savedPath", currentPath);
-    }
-  };
-
-  window.addEventListener("beforeunload", handleBeforeUnload);
   
-  return () => {
-    window.removeEventListener("beforeunload", handleBeforeUnload);
-  };
-}, []);
-
   return (
     <nav className="navbar">
       <div className="logo">E D U P R O</div>

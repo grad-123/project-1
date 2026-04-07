@@ -61,7 +61,7 @@ console.log(currentUser);
 
 function Admin() {
   const { t } = useTranslation();
-  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
+  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
   const [activeTab, setActiveTab] = useState("Pending");
   const [activeSection, setActiveSection] = useState("dashboard");
   const [files, setFiles] = useState([ ]);

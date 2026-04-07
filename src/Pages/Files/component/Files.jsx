@@ -14,7 +14,7 @@ function Files() {
   const { t } = useTranslation();
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const serverUrl = "https://corny-unevacuated-willy.ngrok-free.dev";
+  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState(null);
