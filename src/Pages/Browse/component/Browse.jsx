@@ -80,7 +80,7 @@ function Browse() {
       console.log("Error fetching favorite collections:", err);
       setFavoriteCollections([]);
     }
-  }, []);
+  }, []); 
 
   useEffect(() => {
     fetchFavoriteCollections();
