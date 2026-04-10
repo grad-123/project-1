@@ -584,7 +584,9 @@
   "remaining": "متبقي",
   "done": "تم",
       "updatingOrder": "جاري تحديث الترتيب...",
-      "copiedSuccessfullyToMyCollections": "✨ تم نسخ المجموعة إلى مجموعاتي بنجاح!"
+      "copiedSuccessfullyToMyCollections": "✨ تم نسخ المجموعة إلى مجموعاتي بنجاح!",
+        "cannotCopyOwn": "❌ لا يمكنك نسخ مجموعتك الخاصة"
+   
   },
   "addToCollection": {
     "title": "إضافة إلى المجموعة",

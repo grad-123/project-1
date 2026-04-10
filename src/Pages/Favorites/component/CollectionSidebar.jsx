@@ -117,6 +117,14 @@ function CollectionSidebar({
 
   const handleDeleteCollection = async (id, e) => {
     e.stopPropagation();
+    
+    // ✅ تحقق من وجود توكن
+    const token = localStorage.getItem("token");
+    if (!token) {
+      if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      return;
+    }
+    
     if (window.confirm(t("collection.deleteConfirm"))) {
       try {
         await axios.delete(`/api/v1/collection/Delete/${id}`);
@@ -126,8 +134,19 @@ function CollectionSidebar({
         }
         if (showMessage) showMessage(t("collection.deleted"), "success");
       } catch (err) {
-        console.log(err);
-        if (showMessage) showMessage(t("collection.deleteError"), "error");
+        console.log("Delete error:", err);
+        
+        let errorMsg = t("collection.deleteError") || "فشل حذف المجموعة";
+        
+        if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.response?.status === 401) {
+          errorMsg = "انتهت صلاحية الجلسة. الرجاء تسجيل الدخول مرة أخرى";
+        } else if (err.response?.status === 403) {
+          errorMsg = "ليس لديك صلاحية حذف هذه المجموعة";
+        }
+        
+        if (showMessage) showMessage(errorMsg, "error");
       }
     }
   };
@@ -150,94 +169,127 @@ function CollectionSidebar({
           showMessage(t("collection.removedFromFavorites"), "success");
       } catch (err) {
         console.log("Error removing from favorites:", err);
-        if (showMessage) showMessage(t("collection.removeError"), "error");
+        
+        let errorMsg = t("collection.removeError") || "فشل إزالة المجموعة من المفضلة";
+        
+        if (err.response?.data?.message) {
+          errorMsg = err.response.data.message;
+        }
+        
+        if (showMessage) showMessage(errorMsg, "error");
       }
     }
   };
 
-  const handleCopyCollection = async (collectionId, e) => {
-    e.stopPropagation();
-    setCopyingId(collectionId);
+const handleCopyCollection = async (collectionId, e) => {
+  e.stopPropagation();
+  
+  const token = localStorage.getItem("token");
+  if (!token) {
+    if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+    return;
+  }
+  
+  setCopyingId(collectionId);
 
-    try {
-      console.log("📦 Copying collection via API:", collectionId);
-      const response = await axios.post(`/api/v1/collection/Copy/${collectionId}`);
+  try {
+    console.log("📦 Copying collection via API:", collectionId);
+    const response = await axios.post(`/api/v1/collection/Copy/${collectionId}`);
 
-      if (
-        response.status === 200 ||
-        response.data?.succeeded ||
-        response.data?.statusCode === 200
-      ) {
-        const successMessage =
-          response.data?.message ||
-          t("collection.copySuccess") ||
-          "✨ Collection copied successfully!";
-        if (showMessage) showMessage(successMessage, "success");
+    if (
+      response.status === 200 ||
+      response.data?.succeeded ||
+      response.data?.statusCode === 200
+    ) {
+      const successMessage =
+        response.data?.message ||
+        t("collection.copySuccess") ||
+        "✨ Collection copied successfully!";
+      if (showMessage) showMessage(successMessage, "success");
 
-        if (onCollectionUpdate) {
-          await onCollectionUpdate();
-        }
+      if (onCollectionUpdate) {
+        await onCollectionUpdate();
+      }
 
-        if (onFavoriteCollectionsUpdate) {
-          await onFavoriteCollectionsUpdate();
-        }
+      if (onFavoriteCollectionsUpdate) {
+        await onFavoriteCollectionsUpdate();
+      }
 
-        if (onTabChange && activeTab !== "my") {
-          onTabChange("my");
-        }
+      if (onTabChange && activeTab !== "my") {
+        onTabChange("my");
+      }
 
-        setTimeout(async () => {
-          try {
-            const collectionsRes = await axios.get(
-              "/api/v1/Collection/GetLibraryCollections",
+      setTimeout(async () => {
+        try {
+          const collectionsRes = await axios.get(
+            "/api/v1/Collection/GetLibraryCollections",
+          );
+          if (collectionsRes.data?.data?.length > 0) {
+            const copiedCollection = collectionsRes.data.data.find(
+              (c) => c.name?.endsWith("(Copy)") || c.name?.includes("Copy"),
             );
-            if (collectionsRes.data?.data?.length > 0) {
-              const copiedCollection = collectionsRes.data.data.find(
-                (c) => c.name?.endsWith("(Copy)") || c.name?.includes("Copy"),
-              );
-              const newCollection =
-                copiedCollection ||
-                collectionsRes.data.data[collectionsRes.data.data.length - 1];
+            const newCollection =
+              copiedCollection ||
+              collectionsRes.data.data[collectionsRes.data.data.length - 1];
 
-              if (newCollection && onSelectCollection) {
-                const detailsRes = await axios.get(
-                  `/api/v1/Collection/GetById/${newCollection.id}`,
-                );
-                if (detailsRes.data?.data) {
-                  const fullCollection = {
-                    ...detailsRes.data.data,
-                    id: newCollection.id,
-                    source: "my",
-                    isFavorite: false,
-                    files: detailsRes.data.data.files || [],
-                  };
-                  onSelectCollection(fullCollection);
-                }
+            if (newCollection && onSelectCollection) {
+              const detailsRes = await axios.get(
+                `/api/v1/Collection/GetById/${newCollection.id}`,
+              );
+              if (detailsRes.data?.data) {
+                const fullCollection = {
+                  ...detailsRes.data.data,
+                  id: newCollection.id,
+                  source: "my",
+                  isFavorite: false,
+                  files: detailsRes.data.data.files || [],
+                };
+                onSelectCollection(fullCollection);
               }
             }
-          } catch (err) {
-            console.log("Could not auto-open new collection:", err);
           }
-        }, 1000);
-      } else {
-        throw new Error("Copy failed");
-      }
-    } catch (err) {
-      console.error("🔴 Copy error:", err);
-      let errorMsg = t("collection.copyError") || "❌ Error copying collection";
-      if (err.response?.data?.message) {
-        errorMsg = err.response.data.message;
-      } else if (err.response?.data?.errors) {
-        errorMsg = Object.values(err.response.data.errors).flat()[0];
-      } else if (err.message) {
-        errorMsg = err.message;
-      }
-      if (showMessage) showMessage(errorMsg, "error");
-    } finally {
-      setCopyingId(null);
+        } catch (err) {
+          console.log("Could not auto-open new collection:", err);
+        }
+      }, 1000);
+    } else {
+      throw new Error("Copy failed");
     }
-  };
-
+  } catch (err) {
+    console.error("🔴 Copy error:", err);
+    console.error("🔴 Response data:", err.response?.data);
+    console.error("🔴 Response status:", err.response?.status);
+    
+    // ✅修正: استخراج الرسالة من response بشكل صحيح
+    let errorMessage = "❌ لا يمكنك نسخ مجموعتك الخاصة!";
+    
+    if (err.response?.data?.message) {
+      // الرسالة من الباك (مثل: 'You cannot copy your own collection')
+      errorMessage = err.response.data.message;
+    } else if (err.response?.data?.title) {
+      errorMessage = err.response.data.title;
+    } else if (err.message) {
+      errorMessage = err.message;
+    }
+    
+    // ✅ ترجمة الرسالة إذا كانت موجودة في ملف الترجمة
+    // إذا كانت الرسالة "You cannot copy your own collection" نعرضها مترجمة
+    if (errorMessage === "You cannot copy your own collection") {
+      errorMessage = t("collection.cannotCopyOwn") || "لا يمكنك نسخ مجموعتك الخاصة";
+    }
+    
+    console.log("📢 Final error message to show:", errorMessage);
+    
+    // ✅ عرض الرسالة للمستخدم
+    if (showMessage) {
+      showMessage(errorMessage, "error");
+    } else {
+      alert(errorMessage);
+    }
+  } finally {
+    setCopyingId(null);
+  }
+};
   const handleRenameStart = (collection, e) => {
     e.stopPropagation();
     setEditingCollection(collection);
@@ -258,7 +310,13 @@ function CollectionSidebar({
       if (showMessage) showMessage(t("collection.updated"), "success");
     } catch (err) {
       console.log(err);
-      if (showMessage) showMessage(t("collection.updateError"), "error");
+      
+      let errorMsg = t("collection.updateError") || "فشل تحديث المجموعة";
+      if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      }
+      
+      if (showMessage) showMessage(errorMsg, "error");
     }
   };
 
@@ -337,7 +395,6 @@ function CollectionSidebar({
                         📅 {formatDate(collection.createdAt)}
                       </span>
                     </div>
-                    {/* ✅ تم إخفاء اسم المستخدم في My Collections - لا يوجد uploader name هنا */}
                   </div>
                   <div className="collection-actions">
                     <button
@@ -387,7 +444,6 @@ function CollectionSidebar({
                             📚 {collection.courseName}
                           </span>
                         )}
-                        {/* ✅ يظهر اسم المستخدم فقط في Favorite Collections */}
                         <span 
                           className="uploader-name-clickable"
                           onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}

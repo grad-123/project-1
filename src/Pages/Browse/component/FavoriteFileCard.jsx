@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Browse.css";
 import { useTranslation } from "react-i18next";
@@ -28,37 +28,100 @@ export default function FavoriteFileCard({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = async () => {
+    // منع النقر المتكرر
+    if (isDownloading) return;
+    
+    setIsDownloading(true);
+    
     try {
-      const response = await axios.get(
-        `/Api/EduFile/Download/${file.id || file.eduFileId}`,
-        {
-          responseType: "blob",
-        },
-      );
+      const fileId = file.id || file.eduFileId;
+      
+      // التحقق من وجود ID
+      if (!fileId) {
+        console.error("❌ No file ID found:", file);
+        if (setMessage) {
+          setMessage("File ID not found", "error");
+        }
+        setIsDownloading(false);
+        return;
+      }
+      
+      const downloadUrl = `/Api/EduFile/Download/${fileId}`;
+      console.log("📥 Download URL:", downloadUrl);
+      console.log("📥 File ID:", fileId);
+      
+      const response = await axios.get(downloadUrl, {
+        responseType: "blob",
+        headers: {
+          'Accept': '*/*',
+          'ngrok-skip-browser-warning': 'true',
+        }
+      });
 
-      const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
-      const fileName =
-        file.filePath?.split("/").pop() || file.title || "download";
+      // التحقق من أن الاستجابة تحتوي على بيانات
+      if (!response.data || response.data.size === 0) {
+        throw new Error("No data received from server");
+      }
 
-      const link = document.createElement("a");
+      console.log("✅ Download successful, file size:", response.data.size, "bytes");
+
+      // استخراج اسم الملف من Content-Disposition
+      let fileName = `file_${fileId}`;
+      const contentDisposition = response.headers['content-disposition'];
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (match && match[1]) {
+          fileName = match[1].replace(/['"]/g, '');
+        }
+      } else {
+        // استخدام اسم الملف من الـ file object إذا وجد
+        fileName = file.title || file.filePath?.split('/').pop() || `download_${fileId}`;
+      }
+
+      // إنشاء رابط التحميل
+      const blob = new Blob([response.data]);
+      const fileUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
       link.href = fileUrl;
       link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
+      
+      // تنظيف الذاكرة
       window.URL.revokeObjectURL(fileUrl);
 
-      if (setMessage)
-        setMessage(t("browse.downloadStarted") || "Download started!");
-      setTimeout(() => setMessage && setMessage(""), 2000);
+      if (setMessage) {
+        setMessage(t("browse.downloadStarted") || "Download started!", "success");
+        setTimeout(() => setMessage && setMessage(""), 2000);
+      }
     } catch (err) {
-      console.log("Download error:", err);
-      if (setMessage)
-        setMessage(t("browse.downloadError") || "Download failed");
-      setTimeout(() => setMessage && setMessage(""), 3000);
+      console.error("❌ Download error details:", {
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        message: err.message,
+        data: err.response?.data
+      });
+      
+      let errorMessage = t("browse.downloadError") || "Download failed";
+      
+      if (err.response?.status === 401) {
+        errorMessage = t("browse.sessionExpired") || "Session expired. Please login again.";
+      } else if (err.response?.status === 404) {
+        errorMessage = t("browse.fileNotFound") || "File not found or has been deleted.";
+      } else if (err.response?.status === 400) {
+        errorMessage = err.response?.data?.message || "Invalid request. Please try again.";
+      }
+      
+      if (setMessage) {
+        setMessage(errorMessage, "error");
+        setTimeout(() => setMessage && setMessage(""), 3000);
+      }
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -169,8 +232,12 @@ export default function FavoriteFileCard({
             🎥 {t("browse.watch")}
           </button>
         )}
-        <button className="download-btn" onClick={handleDownload}>
-          ⬇ {t("browse.download")}
+        <button 
+          className="download-btn" 
+          onClick={handleDownload}
+          disabled={isDownloading}
+        >
+          {isDownloading ? "⏳ ..." : "⬇ " + t("browse.download")}
         </button>
 
         {showAddButton && onAddToCollection && (

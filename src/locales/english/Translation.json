@@ -585,8 +585,9 @@
       "learningProgress": "Learning Progress",
   "remaining": "remaining",
   "done": "Done",
-    "copiedSuccessfullyToMyCollections": "✨ Collection copied to My Collections successfully!"
-  },
+    "copiedSuccessfullyToMyCollections": "✨ Collection copied to My Collections successfully!",
+        "cannotCopyOwn": "❌ You cannot copy your own collection"
+       },
   "addToCollection": {
     "title": "Add to Collection",
     "noCollections": "No collections yet. Create one!",
