@@ -18,8 +18,8 @@ function Browse() {
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [categoryId, setCategoryId] = useState("");
   const [fileType, setFileType] = useState("");
-  const [orderBy, setOrderBy] = useState("");
-  const [isDescending, setIsDescending] = useState(true);
+  const [orderBy, setOrderBy] = useState("0"); // 0 = Most Downloaded, 1 = Newest
+  const [isDescending] = useState(true); // ثابت = تنازلي دائماً
   const [courses, setCourses] = useState([]);
   const [courseId, setCourseId] = useState("");
   const [showResults, setShowResults] = useState(false);
@@ -33,8 +33,7 @@ function Browse() {
   const [collectionFileType, setCollectionFileType] = useState("all");
   
   const navigate = useNavigate();
-  const serverUrl ="https://verdict-prevent-very.ngrok-free.dev";
-
+  const serverUrl = "https://verdict-prevent-very.ngrok-free.dev";
 
   useEffect(() => {
     axios
@@ -185,7 +184,6 @@ function Browse() {
           uploadedByUserId: file.uploadedByUserId || collectionData.uploaderId
         }));
         setCollectionFiles(files);
-        console.log("✅ Collection files with uploader info:", files);
       } else {
         setCollectionFiles([]);
       }
@@ -223,36 +221,33 @@ function Browse() {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
     }, 500);
-
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
+  // دالة البحث
   const searchFiles = async () => {
     try {
+      // تحويل orderBy إلى القيمة الصحيحة للـ API
+      let orderByValue = undefined;
+      if (orderBy === "0") {
+        orderByValue = "DownloadCount";
+      } else if (orderBy === "1") {
+        orderByValue = "UploadedAt";
+      }
+      
       const res = await axios.get("/Api/EduFile/Search", {
         params: {
           Keyword: debouncedSearch || undefined,
           CategoryId: categoryId || undefined,
           CourseId: courseId || undefined,
           FileType: fileType || undefined,
-          OrderBy: orderBy || undefined,
-          IsDescending: isDescending,
+          OrderBy: orderByValue,
+          IsDescending: isDescending, // دائماً true (تنازلي)
         },
       });
 
       const filesData = res.data.data?.files || [];
       const collectionsData = res.data.data?.collections || [];
-      
-      console.log("Files:", filesData);
-      console.log("Collections data from API:", collectionsData);
-      if (collectionsData.length > 0) {
-        console.log("First collection uploader info:", {
-          uploadedByUserId: collectionsData[0].uploadedByUserId,
-          uploaderId: collectionsData[0].uploaderId,
-          uploaderName: collectionsData[0].uploaderName,
-          uploadedByUserName: collectionsData[0].uploadedByUserName
-        });
-      }
       
       setFiles(Array.isArray(filesData) ? filesData : []);
       setCollections(Array.isArray(collectionsData) ? collectionsData : []);
@@ -278,21 +273,7 @@ function Browse() {
   useEffect(() => {
     if (!showResults) return;
     searchFiles();
-  }, [debouncedSearch, categoryId, courseId, fileType, orderBy, isDescending]);
-
-  const handleDownload = async (fileId, filePath) => {
-    try {
-      await axios.get(`/Api/EduFile/Download/${fileId}`);
-      setFiles((prevFiles) =>
-        prevFiles.map((f) =>
-          f.id === fileId ? { ...f, downloadCount: f.downloadCount + 1 } : f,
-        ),
-      );
-      window.open(`${serverUrl}${filePath}`, "_blank");
-    } catch (err) {
-      console.log("Download error:", err);
-    }
-  };
+  }, [debouncedSearch, categoryId, courseId, fileType, orderBy]);
 
   const getFileTypeIcon = (type) => {
     const icons = { 0: "🎥", 1: "📄", 2: "📝", 3: "📝", 4: "📌", 5: "📚", 6: "📁" };
@@ -312,12 +293,9 @@ function Browse() {
     return names[type] || t("browse.types.other");
   };
 
-  // دالة للتعامل مع النقر على اسم المستخدم في المجموعة
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
     e.preventDefault();
-    
-    console.log("🔵 Clicked on uploader - received:", { userId, userName });
     
     const token = localStorage.getItem("token");
     if (!token) {
@@ -328,11 +306,9 @@ function Browse() {
     
     const validUserId = userId || null;
     if (validUserId && validUserId !== 0 && validUserId !== "0") {
-      console.log("✅ Navigating to profile:", validUserId);
       navigate(`/PublicProfile/${validUserId}`);
     } else {
-      console.log("⚠️ No valid userId provided:", userId);
-      setMessage("لا يمكن عرض الملف الشخصي - معرف المستخدم غير صالح", "warning");
+      setMessage("لا يمكن عرض الملف الشخصي - معرف المستخدم غير صالح");
       setTimeout(() => setMessage(""), 3000);
     }
   };
@@ -341,11 +317,8 @@ function Browse() {
     const isFav = favoriteCollections.includes(collection.id);
     const isToggling = togglingCollectionId === collection.id;
 
-    // تأكد من الحصول على معرف المستخدم من المكان الصحيح
     const uploaderId = collection.uploadedByUserId || collection.uploaderId || collection.userId;
     const uploaderName = collection.uploaderName || collection.uploadedByUserName || collection.userName;
-
-    console.log("Collection uploader info:", { uploaderId, uploaderName, collection });
 
     return (
       <div className="collection-card" onClick={() => openCollection(collection)}>
@@ -427,7 +400,6 @@ function Browse() {
             className="search-input"
           />
         </div>
-
         <button className="search-btn" onClick={handleSearch}>
           {t("browse.searchButton")}
         </button>
@@ -496,18 +468,13 @@ function Browse() {
               </select>
             )}
             
+            {/* ✅ قائمة الترتيب فقط - بدون Descending/Ascending */}
             <select
-              onChange={(e) =>
-                setOrderBy(e.target.value === "" ? "" : Number(e.target.value))
-              }
+              value={orderBy}
+              onChange={(e) => setOrderBy(e.target.value)}
             >
               <option value="0">{t("browse.order.mostDownloaded")}</option>
               <option value="1">{t("browse.order.newest")}</option>
-            </select>
-            
-            <select onChange={(e) => setIsDescending(e.target.value === "true")}>
-              <option value="true">{t("browse.descending")}</option>
-              <option value="false">{t("browse.ascending")}</option>
             </select>
           </div>
 

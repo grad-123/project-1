@@ -1,5 +1,5 @@
 import "./Sidebar.css";
-import { FaRobot, FaSearch } from "react-icons/fa";
+import { FaRobot, FaSearch, FaDownload, FaCalendar, FaUser } from "react-icons/fa";
 import { useEffect, useState, useCallback } from "react";
 import axios from "../../../../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +20,8 @@ function Sidebar() {
   const [courseId, setCourseId] = useState("");
   const [fileType, setFileType] = useState("");
   const [orderBy, setOrderBy] = useState("0");
-  const [isDescending, setIsDescending] = useState(true);
+  // ✅ isDescending ثابت = true (تنازلي دائماً)
+  const [isDescending] = useState(true);
   const [showResults, setShowResults] = useState(false);
   
   // For collection view
@@ -93,7 +94,7 @@ function Sidebar() {
         CourseId: courseId || undefined,
         FileType: fileType || undefined,
         OrderBy: orderBy === "0" ? "DownloadCount" : "UploadedAt",
-        IsDescending: isDescending,
+        IsDescending: isDescending, // ✅ دائماً true (تنازلي)
       };
       
       console.log("🔍 Searching with params:", params);
@@ -143,7 +144,6 @@ function Sidebar() {
     setCourseId("");
     setFileType("");
     setOrderBy("0");
-    setIsDescending(true);
     setShowResults(false);
     setFiles([]);
     setCollections([]);
@@ -194,11 +194,11 @@ function Sidebar() {
     setCollectionFiles([]);
   };
 
-  // Handle file click - open in new tab
+  // Handle file click - navigate to chat page
   const handleFileClick = (file) => {
-    if (file.filePath) {
-      const fileUrl = `${serverUrl}${file.filePath}`;
-      window.open(fileUrl, "_blank");
+    const fileId = file.id || file.eduFileId;
+    if (fileId) {
+      navigate(`/ai/file/${fileId}`);
     }
   };
 
@@ -227,6 +227,31 @@ function Sidebar() {
   const getFileIcon = (fileType) => {
     const icons = { 0: "🎥", 1: "📄", 2: "📝", 3: "🧾", 4: "📌", 5: "📚", 6: "📁" };
     return icons[fileType] || "📄";
+  };
+
+  // Get file type text
+  const getFileTypeText = (type) => {
+    const types = {
+      0: t("browse.types.lecture") || "محاضرة",
+      1: t("browse.types.slides") || "شرائح",
+      2: t("browse.types.summary") || "ملخص",
+      3: t("browse.types.exam") || "امتحان",
+      4: t("browse.types.assignment") || "واجب",
+      5: t("browse.types.book") || "كتاب",
+      6: t("browse.types.other") || "أخرى"
+    };
+    return types[type] || t("browse.types.other") || "أخرى";
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
   return (
@@ -303,14 +328,10 @@ function Sidebar() {
               <option value="6">{t("browse.types.other") || "أخرى"}</option>
             </select>
 
+            {/* ✅ فقط قائمة الترتيب - بدون Descending/Ascending */}
             <select className="ai-filter-select" value={orderBy} onChange={(e) => setOrderBy(e.target.value)}>
               <option value="0">{t("browse.order.mostDownloaded") || "الأكثر تحميلاً"}</option>
               <option value="1">{t("browse.order.newest") || "الأحدث"}</option>
-            </select>
-
-            <select className="ai-filter-select" value={isDescending} onChange={(e) => setIsDescending(e.target.value === "true")}>
-              <option value="true">{t("browse.descending") || "تنازلي"}</option>
-              <option value="false">{t("browse.ascending") || "تصاعدي"}</option>
             </select>
           </div>
         )}
@@ -352,16 +373,26 @@ function Sidebar() {
                   <div className="ai-file-icon">{getFileIcon(file.fileType)}</div>
                   <div className="ai-file-info">
                     <h4 className="ai-file-title">{file.title}</h4>
+                    <div className="ai-file-type-badge">
+                      <span className="type-badge">{getFileTypeText(file.fileType)}</span>
+                    </div>
+                    {file.description && (
+                      <p className="ai-file-description">{file.description}</p>
+                    )}
                     <div className="ai-meta-info">
-                      <span className="ai-category-name">{file.categoryName}</span>
-                      <span className="ai-course-name">{file.courseName}</span>
+                      <span className="ai-category-name">📁 {file.categoryName}</span>
+                      <span className="ai-course-name">📚 {file.courseName}</span>
+                    </div>
+                    <div className="ai-file-stats">
+                      <span className="ai-download-count"><FaDownload /> {file.downloadCount || 0}</span>
+                      <span className="ai-file-date"><FaCalendar /> {formatDate(file.uploadedAt)}</span>
                     </div>
                     {file.uploadedByUserName && (
                       <p 
                         className="ai-uploader-name"
                         onClick={(e) => handleUploaderClick(file.uploadedByUserId, file.uploadedByUserName, e)}
                       >
-                        👤 {file.uploadedByUserName}
+                        <FaUser /> {file.uploadedByUserName}
                       </p>
                     )}
                   </div>
@@ -385,16 +416,26 @@ function Sidebar() {
                   <div className="ai-file-icon">{getFileIcon(file.fileType)}</div>
                   <div className="ai-file-info">
                     <h4 className="ai-file-title">{file.title}</h4>
+                    <div className="ai-file-type-badge">
+                      <span className="type-badge">{getFileTypeText(file.fileType)}</span>
+                    </div>
+                    {file.description && (
+                      <p className="ai-file-description">{file.description}</p>
+                    )}
                     <div className="ai-meta-info">
-                      <span className="ai-category-name">{file.categoryName}</span>
-                      <span className="ai-course-name">{file.courseName}</span>
+                      <span className="ai-category-name">📁 {file.categoryName}</span>
+                      <span className="ai-course-name">📚 {file.courseName}</span>
+                    </div>
+                    <div className="ai-file-stats">
+                      <span className="ai-download-count"><FaDownload /> {file.downloadCount || 0}</span>
+                      <span className="ai-file-date"><FaCalendar /> {formatDate(file.uploadedAt)}</span>
                     </div>
                     {file.uploadedByUserName && (
                       <p 
                         className="ai-uploader-name"
                         onClick={(e) => handleUploaderClick(file.uploadedByUserId, file.uploadedByUserName, e)}
                       >
-                        👤 {file.uploadedByUserName}
+                        <FaUser /> {file.uploadedByUserName}
                       </p>
                     )}
                   </div>
@@ -418,21 +459,24 @@ function Sidebar() {
                   <div className="ai-file-icon">📁</div>
                   <div className="ai-collection-info">
                     <h4 className="ai-collection-title">{collection.name}</h4>
-                    <div className="ai-meta-info">
-                      <span className="ai-category-name">{collection.categoryName}</span>
-                      <span className="ai-course-name">{collection.courseName}</span>
-                    </div>
                     {collection.description && (
                       <p className="ai-collection-desc">
-                        {collection.description.substring(0, 60)}...
+                        {collection.description.substring(0, 80)}...
                       </p>
                     )}
+                    <div className="ai-meta-info">
+                      <span className="ai-category-name">📁 {collection.categoryName}</span>
+                      <span className="ai-course-name">📚 {collection.courseName}</span>
+                    </div>
+                    <div className="ai-collection-stats">
+                      <span className="ai-files-count">📄 {collection.filesCount || 0} ملف</span>
+                    </div>
                     {collection.uploaderName && (
                       <p 
                         className="ai-uploader-name"
                         onClick={(e) => handleUploaderClick(collection.uploaderId || collection.uploadedByUserId, collection.uploaderName, e)}
                       >
-                        👤 {collection.uploaderName}
+                        <FaUser /> {collection.uploaderName}
                       </p>
                     )}
                   </div>
