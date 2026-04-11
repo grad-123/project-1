@@ -37,7 +37,7 @@ function ForgotPassword() {
 
   try {
     const response = await axios.post(
-      "https://corny-unevacuated-willy.ngrok-free.dev/api/v1/Authentication/SendResetPasswordCode",
+  "/api/v1/Authentication/SendResetPasswordCode",
       null,
       {
         params: {

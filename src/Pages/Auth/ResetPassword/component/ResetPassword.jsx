@@ -27,7 +27,7 @@ function ResetPassword() {
     const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).+$/;
 
     if (!password) return t("reset.passwordRequired");
-    if (password.length < 6) return t("reset.passwordMin");
+    if (password.length < 8) return t("reset.passwordMin");
     if (!pattern.test(password)) return t("reset.passwordPattern");
     if (password !== confirmPassword) return t("reset.passwords_not_match");
 
