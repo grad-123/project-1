@@ -2,7 +2,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const axiosInstance = axios.create({
-  baseURL:"https://ozie-unneedful-freely.ngrok-free.dev" 
+  baseURL:"https://verdict-prevent-very.ngrok-free.dev" 
 });
 
 let isRefreshing = false;

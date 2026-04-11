@@ -5,7 +5,7 @@ import "./Profile.css";
 import { useTranslation } from "react-i18next";
 function Profile() {
    const { t } = useTranslation();
-  const BASE_URL = "https://ozie-unneedful-freely.ngrok-free.dev";
+  const BASE_URL = "https://verdict-prevent-very.ngrok-free.dev";
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [activeTab, setActiveTab] = useState("files");

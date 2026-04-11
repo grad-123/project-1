@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 function Favorites() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
+  const serverUrl = "https://verdict-prevent-very.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [filteredFiles, setFilteredFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);

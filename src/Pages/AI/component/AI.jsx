@@ -6,7 +6,6 @@ function AI() {
   return (
     <div className="ai-wrapper">
       <Sidebar />
-
       <div className="ai-content">
         <Outlet />
       </div>

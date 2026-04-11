@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
+import axiosLib from "axios";
 import { useTranslation } from "react-i18next";
 import { FaArrowLeft, FaPlay, FaStop, FaDownload, FaVideo, FaArrowRight, FaCheck, FaUser } from "react-icons/fa";
 import "./CollectionFilesView.css";
@@ -27,7 +28,6 @@ function CollectionFilesView({
   const hasLoadedRef = useRef(false);
   const collectionIdRef = useRef(collection?.id);
 
-  // ✅ هذه الدالة ستستخدم فقط للملفات في Favorite Collections (لن تظهر في My Collections)
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -36,14 +36,14 @@ function CollectionFilesView({
     
     const token = localStorage.getItem("token");
     if (!token) {
-      if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      if (showMessage) showMessage(t("collection.loginRequired") || "Please login first", "warning");
       return;
     }
     if (userId && userId !== 0) {
       navigate(`/PublicProfile/${userId}`);
     } else {
       console.log("⚠️ No valid userId provided");
-      if (showMessage) showMessage("لا يمكن عرض الملف الشخصي", "warning");
+      if (showMessage) showMessage(t("collection.cannotViewProfile") || "Cannot view profile", "warning");
     }
   };
 
@@ -173,7 +173,7 @@ function CollectionFilesView({
 
   const startLearningMode = () => {
     if (files.length === 0) {
-      showMessage(t("collection.noFilesToLearn"), "warning");
+      showMessage(t("collection.noFilesToLearn") || "No files to learn from!", "warning");
       return;
     }
     
@@ -211,7 +211,7 @@ function CollectionFilesView({
     };
     localStorage.setItem(`learning_progress_${collection.id}`, JSON.stringify(finalProgress));
     setIsLearningMode(false);
-    showMessage(t("collection.congratulations"), "success");
+    showMessage(t("collection.congratulations") || "🎉 Congratulations! You've completed all files!", "success");
   };
 
   const remainingFiles = files.length - completedCount;
@@ -273,14 +273,14 @@ function CollectionFilesView({
       await axios.put("/api/v1/Collection/Reorder", reorderData, {
         headers: { 'Content-Type': 'application/json' }
       });
-      if (showMessage) showMessage(t("collection.orderUpdated"), "success");
+      if (showMessage) showMessage(t("collection.orderUpdated") || "Order updated successfully!", "success");
       
       const updatedFiles = newFiles.map((file, idx) => ({ ...file, order: idx }));
       setFiles(updatedFiles);
       
     } catch (err) {
       console.log("Error updating order:", err);
-      if (showMessage) showMessage(t("collection.orderUpdateError"), "error");
+      if (showMessage) showMessage(t("collection.orderUpdateError") || "Failed to update order", "error");
       
       try {
         const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
@@ -321,12 +321,13 @@ function CollectionFilesView({
   const handleDownload = async (file, e) => {
     e.stopPropagation();
     if (!file || !file.id) {
-      if (showMessage) showMessage(t("collection.fileIdNotAvailable"), "error");
+      if (showMessage) showMessage(t("collection.fileIdNotAvailable") || "File ID not available", "error");
       return;
     }
     
     try {
-      const response = await axios.get(`/Api/EduFile/Download/${file.id}`, {
+      const downloadUrl = `${serverUrl}/Api/EduFile/Download/${file.id}`;
+      const response = await axiosLib.get(downloadUrl, {
         responseType: "blob",
       });
 
@@ -340,28 +341,28 @@ function CollectionFilesView({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(fileUrl);
       
-      if (showMessage) showMessage(t("collection.downloadStarted"), "success");
+      if (showMessage) showMessage(t("collection.downloadStarted") || "Download started!", "success");
     } catch (err) {
       console.log("Download error:", err);
-      if (showMessage) showMessage(t("collection.downloadError"), "error");
+      if (showMessage) showMessage(t("collection.downloadError") || "Error downloading file", "error");
     }
   };
 
   const handleWatchVideo = (file, e) => {
     e.stopPropagation();
     if (!file || !file.filePath) {
-      if (showMessage) showMessage(t("collection.filePathNotAvailable"), "error");
+      if (showMessage) showMessage(t("collection.filePathNotAvailable") || "File path not available", "error");
       return;
     }
     const fileUrl = `${serverUrl}${file.filePath}`;
     window.open(fileUrl, "_blank");
-    if (showMessage) showMessage(t("collection.watchingVideo"), "info");
+    if (showMessage) showMessage(t("collection.watchingVideo") || "Opening video...", "info");
   };
 
   const handleRemoveFile = async (fileId, e) => {
     e.stopPropagation();
     if (isFavoriteCollection) {
-      if (showMessage) showMessage(t("collection.cannotRemoveFromFavorite"), "warning");
+      if (showMessage) showMessage(t("collection.cannotRemoveFromFavorite") || "Cannot remove file from favorite collection", "warning");
       return;
     }
     
@@ -380,11 +381,11 @@ function CollectionFilesView({
         const newFiles = files.filter(f => (f.id || f.eduFileId) !== fileId);
         setFiles(newFiles);
         
-        if (showMessage) showMessage(t("collection.fileRemoved"), "success");
+        if (showMessage) showMessage(t("collection.fileRemoved") || "File removed from collection", "success");
         if (onCollectionUpdate) onCollectionUpdate();
       } catch (err) {
         console.log("Error removing file:", err);
-        if (showMessage) showMessage(t("collection.removeError"), "error");
+        if (showMessage) showMessage(t("collection.removeError") || "Error removing file", "error");
       } finally {
         setIsReordering(false);
       }
@@ -393,7 +394,7 @@ function CollectionFilesView({
 
   const handleFileClick = (file) => {
     if (!file || !file.filePath) {
-      if (showMessage) showMessage(t("collection.filePathNotAvailable"), "error");
+      if (showMessage) showMessage(t("collection.filePathNotAvailable") || "File path not available", "error");
       return;
     }
     const fileUrl = `${serverUrl}${file.filePath}`;
@@ -407,15 +408,15 @@ function CollectionFilesView({
 
   const getFileTypeText = (fileType) => {
     const types = {
-      0: t("collection.video"),
-      1: t("collection.slides"),
-      2: t("collection.summary"),
-      3: t("collection.exam"),
-      4: t("collection.assignment"),
-      5: t("collection.book"),
-      6: t("collection.other")
+      0: t("collection.video") || "Video",
+      1: t("collection.slides") || "Slides",
+      2: t("collection.summary") || "Summary",
+      3: t("collection.exam") || "Exam",
+      4: t("collection.assignment") || "Assignment",
+      5: t("collection.book") || "Book",
+      6: t("collection.other") || "Other"
     };
-    return types[fileType] || t("collection.other");
+    return types[fileType] || t("collection.other") || "Other";
   };
 
   const isVideo = (fileType) => fileType === 0;
@@ -424,7 +425,7 @@ function CollectionFilesView({
     return (
       <div className="collection-loading">
         <div className="loading-spinner"></div>
-        <p>{t("collection.loadingCollectionFiles")}</p>
+        <p>{t("collection.loadingCollectionFiles") || "Loading collection files..."}</p>
       </div>
     );
   }
@@ -433,24 +434,23 @@ function CollectionFilesView({
     <div className="collection-files-view">
       <div className="collection-view-header">
         <button className="back-btn" onClick={onBack}>
-          <FaArrowLeft /> {t("collection.backToFavorites")}
+          <FaArrowLeft /> {t("collection.backToFavorites") || "Back to Favorites"}
         </button>
         <div className="collection-info-header">
           <h1>
-            {collection?.name || t("collection.collections")}
-            {isFavoriteCollection && <span className="favorite-badge"> ❤️ {t("collection.favoriteCollections")}</span>}
+            {collection?.name || t("collection.collections") || "Collections"}
+            {isFavoriteCollection && <span className="favorite-badge"> ❤️ {t("collection.favoriteCollections") || "Favorite Collections"}</span>}
           </h1>
-          <p>{collection?.description || t("collection.noDescription")}</p>
+          <p>{collection?.description || t("collection.noDescription") || "No description"}</p>
           <div className="collection-stats">
             <span className="files-count-badge">
-              {files.length} {files.length === 1 ? t("collection.file") : t("collection.files")}
+              {files.length} {files.length === 1 ? (t("collection.file") || "file") : (t("collection.files") || "files")}
             </span>
-            {/* ✅ يظهر اسم المستخدم فقط في Favorite Collections */}
             {collection?.uploaderName && isFavoriteCollection && (
               <span 
                 className="uploader-name-clickable collection-uploader"
                 onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
-                title="انقر لعرض الملف الشخصي"
+                title={t("collection.clickToViewProfile") || "Click to view profile"}
                 style={{ cursor: 'pointer', color: '#007bff' }}
               >
                 <FaUser /> {collection.uploaderName}
@@ -463,7 +463,7 @@ function CollectionFilesView({
             )}
             {files.length > 0 && !isLearningMode && (
               <button className="start-learning-btn" onClick={startLearningMode}>
-                <FaPlay /> {t("collection.startLearning")}
+                <FaPlay /> {t("collection.startLearning") || "Start Learning Mode"}
               </button>
             )}
           </div>
@@ -475,10 +475,10 @@ function CollectionFilesView({
           <div className="learning-progress-container">
             <div className="learning-progress-info">
               <span className="learning-progress-text">
-                {t("collection.learningProgress")}: {completedCount}/{files.length} ({progressPercentage}%)
+                {t("collection.learningProgress") || "Learning Progress"}: {completedCount}/{files.length} ({progressPercentage}%)
               </span>
               <span className="learning-remaining-text">
-                {remainingFiles} {t("collection.remaining")}
+                {remainingFiles} {t("collection.remaining") || "remaining"}
               </span>
             </div>
             <div className="learning-progress-bar">
@@ -491,15 +491,15 @@ function CollectionFilesView({
           
           <div className="learning-controls">
             <button className="learning-stop-btn" onClick={stopLearningMode}>
-              <FaStop /> {t("collection.stop")}
+              <FaStop /> {t("collection.stop") || "Stop"}
             </button>
             {!isCompleted ? (
               <button className="learning-next-btn" onClick={nextFile}>
-                {t("collection.next")} <FaArrowRight />
+                {t("collection.next") || "Next"} <FaArrowRight />
               </button>
             ) : (
               <button className="learning-done-btn" onClick={completeLearning}>
-                <FaCheck /> {t("collection.done")}
+                <FaCheck /> {t("collection.done") || "Done"}
               </button>
             )}
           </div>
@@ -507,18 +507,18 @@ function CollectionFilesView({
       )}
 
       <div className="files-list-collection">
-        <h3>{isFavoriteCollection ? t("collection.filesInCollection") : t("collection.dragHint")}</h3>
+        <h3>{isFavoriteCollection ? (t("collection.filesInCollection") || "Files in this collection") : (t("collection.dragHint") || "Drag the ⋮⋮ icon to reorder files")}</h3>
         
         {isReordering && (
           <div className="reordering-overlay">
             <div className="loading-spinner-small"></div>
-            <p>{t("collection.updatingOrder")}</p>
+            <p>{t("collection.updatingOrder") || "Updating order..."}</p>
           </div>
         )}
         
         {files.length === 0 ? (
           <div className="empty-files-message">
-            <p>📁 {t("collection.noFilesFound")}</p>
+            <p>📁 {t("collection.noFilesFound") || "No files found in this collection"}</p>
           </div>
         ) : (
           <div className={`files-grid-collection ${isFavoriteCollection ? "readonly-grid" : "reorderable-grid"}`}>
@@ -548,11 +548,10 @@ function CollectionFilesView({
                       {isCompletedFile && <FaCheck className="completed-check" />}
                       {index + 1}. {file.title}
                     </h4>
-                    <p>{file.description || t("collection.noDescription")}</p>
+                    <p>{file.description || t("collection.noDescription") || "No description"}</p>
                     <div className="file-meta-collection">
                       <span className="file-type-badge">{getFileTypeText(file.fileType)}</span>
                       {file.courseName && <span className="course-name">{file.courseName}</span>}
-                      {/* ✅ يظهر اسم المستخدم فقط في Favorite Collections */}
                       {isFavoriteCollection && (file.uploadedByUserName || collection?.uploaderName) && (
                         <span 
                           className="uploader-name-clickable file-uploader"
@@ -561,7 +560,7 @@ function CollectionFilesView({
                             file.uploadedByUserName || collection?.uploaderName, 
                             e
                           )}
-                          title="انقر لعرض الملف الشخصي"
+                          title={t("collection.clickToViewProfile") || "Click to view profile"}
                           style={{ cursor: 'pointer', color: '#007bff' }}
                         >
                           <FaUser /> {file.uploadedByUserName || collection?.uploaderName}
@@ -576,16 +575,16 @@ function CollectionFilesView({
                     </div>
                   </div>
                   <div className="file-actions">
-                    <button className="download-file-btn-collection" onClick={(e) => handleDownload(file, e)} title={t("collection.download")}>
+                    <button className="download-file-btn-collection" onClick={(e) => handleDownload(file, e)} title={t("collection.download") || "Download"}>
                       <FaDownload />
                     </button>
                     {isVideo(file.fileType) && (
-                      <button className="watch-video-btn-collection" onClick={(e) => handleWatchVideo(file, e)} title={t("collection.watchVideo")}>
+                      <button className="watch-video-btn-collection" onClick={(e) => handleWatchVideo(file, e)} title={t("collection.watchVideo") || "Watch Video"}>
                         <FaVideo />
                       </button>
                     )}
                     {!isFavoriteCollection && (
-                      <button className="remove-file-btn-collection" onClick={(e) => handleRemoveFile(file.id || file.eduFileId, e)} title={t("collection.removeFromCollection")}>
+                      <button className="remove-file-btn-collection" onClick={(e) => handleRemoveFile(file.id || file.eduFileId, e)} title={t("collection.removeFromCollection") || "Remove from collection"}>
                         ✕
                       </button>
                     )}

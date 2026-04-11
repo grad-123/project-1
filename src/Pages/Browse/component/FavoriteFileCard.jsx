@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Browse.css";
 import { useTranslation } from "react-i18next";
-import axios from "../../../api/axiosInstance";
+import axios from "axios"; // ✅ استخدام axios العادي بدل axiosInstance
 
 const fileTypeText = {
   0: "Lecture",
@@ -31,7 +31,6 @@ export default function FavoriteFileCard({
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleDownload = async () => {
-    // منع النقر المتكرر
     if (isDownloading) return;
     
     setIsDownloading(true);
@@ -39,7 +38,6 @@ export default function FavoriteFileCard({
     try {
       const fileId = file.id || file.eduFileId;
       
-      // التحقق من وجود ID
       if (!fileId) {
         console.error("❌ No file ID found:", file);
         if (setMessage) {
@@ -49,26 +47,37 @@ export default function FavoriteFileCard({
         return;
       }
       
-      const downloadUrl = `/Api/EduFile/Download/${fileId}`;
-      console.log("📥 Download URL:", downloadUrl);
-      console.log("📥 File ID:", fileId);
+      const token = localStorage.getItem("token");
+      const downloadUrl = `${serverUrl}/Api/EduFile/Download/${fileId}`;
       
+      // ✅ تجهيز الهيدرز الصحيحة لـ ngrok
+      const headers = {
+        'Accept': '*/*',
+        'ngrok-skip-browser-warning': '69420', // ✅ أي قيمة عشوائية تشتغل
+      };
+      
+      // ✅ إضافة التوكن إذا كان موجود
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      console.log("📥 Download URL:", downloadUrl);
+      console.log("📥 Headers:", headers);
+      
+      // ✅ استخدام axios العادي مع الإعدادات الصحيحة
       const response = await axios.get(downloadUrl, {
         responseType: "blob",
-        headers: {
-          'Accept': '*/*',
-          'ngrok-skip-browser-warning': 'true',
-        }
+        headers: headers,
+        withCredentials: false, // ✅ مهم لـ CORS مع ngrok
       });
 
-      // التحقق من أن الاستجابة تحتوي على بيانات
       if (!response.data || response.data.size === 0) {
         throw new Error("No data received from server");
       }
 
       console.log("✅ Download successful, file size:", response.data.size, "bytes");
 
-      // استخراج اسم الملف من Content-Disposition
+      // استخراج اسم الملف من Content-Disposition أو من file object
       let fileName = `file_${fileId}`;
       const contentDisposition = response.headers['content-disposition'];
       if (contentDisposition) {
@@ -77,8 +86,12 @@ export default function FavoriteFileCard({
           fileName = match[1].replace(/['"]/g, '');
         }
       } else {
-        // استخدام اسم الملف من الـ file object إذا وجد
+        // استخدام اسم الملف الأصلي من الـ file object
         fileName = file.title || file.filePath?.split('/').pop() || `download_${fileId}`;
+        // إضافة الامتداد الصحيح حسب نوع الملف
+        if (file.fileType === 0 && !fileName.includes('.mp4')) fileName += '.mp4';
+        if (file.fileType === 1 && !fileName.includes('.pdf')) fileName += '.pdf';
+        if (file.fileType === 2 && !fileName.includes('.docx')) fileName += '.docx';
       }
 
       // إنشاء رابط التحميل
@@ -99,21 +112,20 @@ export default function FavoriteFileCard({
         setTimeout(() => setMessage && setMessage(""), 2000);
       }
     } catch (err) {
-      console.error("❌ Download error details:", {
-        status: err.response?.status,
-        statusText: err.response?.statusText,
-        message: err.message,
-        data: err.response?.data
-      });
+      console.error("❌ Download error:", err);
       
       let errorMessage = t("browse.downloadError") || "Download failed";
       
-      if (err.response?.status === 401) {
+      if (err.response?.status === 400) {
+        // ✅ الحل البديل: فتح الرابط في تبويب جديد
+        const directUrl = `${serverUrl}/Api/EduFile/Download/${file.id || file.eduFileId}`;
+        console.log("Trying direct URL in new tab:", directUrl);
+        window.open(directUrl, "_blank");
+        errorMessage = "Opening download in new tab...";
+      } else if (err.response?.status === 401) {
         errorMessage = t("browse.sessionExpired") || "Session expired. Please login again.";
       } else if (err.response?.status === 404) {
         errorMessage = t("browse.fileNotFound") || "File not found or has been deleted.";
-      } else if (err.response?.status === 400) {
-        errorMessage = err.response?.data?.message || "Invalid request. Please try again.";
       }
       
       if (setMessage) {
@@ -125,25 +137,24 @@ export default function FavoriteFileCard({
     }
   };
 
+  const handleOpenFile = () => {
+    const directUrl = `${serverUrl}${file.filePath}`;
+    window.open(directUrl, "_blank");
+  };
+
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
     e.preventDefault();
 
-    console.log("🔵 FavoriteFileCard - Clicked on uploader:", {
-      userId,
-      userName,
-    });
-
     const token = localStorage.getItem("token");
     if (!token) {
-      if (setMessage) setMessage(t("browse.loginToViewProfile"), "warning");
+      if (setMessage) setMessage(t("browse.loginToViewProfile") || "Please login to view profile", "warning");
       return;
     }
     if (userId && userId !== 0) {
       navigate(`/PublicProfile/${userId}`);
     } else {
-      console.log("⚠️ No valid userId provided");
-      if (setMessage) setMessage(t("browse.cannotViewProfile"), "warning");
+      if (setMessage) setMessage(t("browse.cannotViewProfile") || "Cannot view profile", "warning");
     }
   };
 
@@ -154,7 +165,7 @@ export default function FavoriteFileCard({
         onClick={() => {
           const token = localStorage.getItem("token");
           if (!token) {
-            setMessage(t("browse.loginFirst"));
+            setMessage(t("browse.loginFirst") || "Login first to add/remove favorites!");
             return;
           }
           toggleFavorite(file.id || file.eduFileId);
@@ -176,10 +187,8 @@ export default function FavoriteFileCard({
         <div className="file-details">
           <h3
             className="file-title clickable"
-            onClick={() => {
-              const directUrl = `${serverUrl}${file.filePath}`;
-              window.open(directUrl, "_blank");
-            }}
+            onClick={handleOpenFile}
+            style={{ cursor: 'pointer' }}
           >
             {file.title}
           </h3>
@@ -195,16 +204,8 @@ export default function FavoriteFileCard({
             {!hideUploader && file.uploadedByUserName && (
               <span
                 className="uploader-name-clickable"
-                onClick={(e) =>
-                  handleUploaderClick(
-                    file.uploadedByUserId,
-                    file.uploadedByUserName,
-                    e,
-                  )
-                }
-                title={
-                  t("browse.clickToViewProfile") || "انقر لعرض الملف الشخصي"
-                }
+                onClick={(e) => handleUploaderClick(file.uploadedByUserId, file.uploadedByUserName, e)}
+                title={t("browse.clickToViewProfile") || "Click to view profile"}
                 style={{ cursor: "pointer", color: "#007bff" }}
               >
                 👤 {file.uploadedByUserName}
@@ -212,10 +213,7 @@ export default function FavoriteFileCard({
             )}
             <span>⬇ {file.downloadCount}</span>
             <span>
-              📅{" "}
-              {file.uploadedAt
-                ? new Date(file.uploadedAt).toLocaleDateString("en-GB")
-                : ""}
+              📅 {file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString("en-GB") : ""}
             </span>
           </div>
         </div>
@@ -223,13 +221,8 @@ export default function FavoriteFileCard({
 
       <div className="file-actions">
         {file.fileType === 0 && (
-          <button
-            className="watch-btn"
-            onClick={() => {
-              window.open(`${serverUrl}${file.filePath}`, "_blank");
-            }}
-          >
-            🎥 {t("browse.watch")}
+          <button className="watch-btn" onClick={handleOpenFile}>
+            🎥 {t("browse.watchVideo") || "Watch video"}
           </button>
         )}
         <button 
@@ -237,15 +230,12 @@ export default function FavoriteFileCard({
           onClick={handleDownload}
           disabled={isDownloading}
         >
-          {isDownloading ? "⏳ ..." : "⬇ " + t("browse.download")}
+          {isDownloading ? "⏳ ..." : "⬇ " + (t("browse.download") || "Download")}
         </button>
 
         {showAddButton && onAddToCollection && (
-          <button
-            className="add-to-collection-btn-card"
-            onClick={onAddToCollection}
-          >
-            + {t("addToCollection.title")}
+          <button className="add-to-collection-btn-card" onClick={onAddToCollection}>
+            + {t("addToCollection.title") || "Add to Collection"}
           </button>
         )}
       </div>

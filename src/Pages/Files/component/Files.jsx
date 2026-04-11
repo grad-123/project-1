@@ -14,7 +14,7 @@ function Files() {
   const { t } = useTranslation();
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const serverUrl = "https://ozie-unneedful-freely.ngrok-free.dev";
+  const serverUrl = "https://verdict-prevent-very.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState(null);
@@ -245,7 +245,7 @@ function Files() {
   const openCollection = async (collection) => {
     if (!collection || !collection.id) {
       console.error("Invalid collection:", collection);
-      setMessage(t("files.invalidCollection"));
+      setMessage(t("files.invalidCollection") || "❌ Invalid collection");
       setTimeout(() => setMessage(""), 3000);
       return;
     }
@@ -328,7 +328,7 @@ function Files() {
       setFavorites((prev) => prev.filter((id) => id !== fileId));
       
       if (removedFromMyCollections > 0) {
-        setMessage(`${t("files.removedFromFavorites")} ${t("files.removedFromMyCollections", { count: removedFromMyCollections })}`);
+        setMessage(`${t("files.removedFromFavorites") || "💔 Removed from favorites"} ${t("files.removedFromMyCollections", { count: removedFromMyCollections })}`);
       } else {
         setMessage(t("files.removedFromFavorites") || "💔 Removed from favorites");
       }
@@ -348,49 +348,6 @@ function Files() {
       return;
     }
     favorites.includes(fileId) ? removeFavorite(fileId) : addFavorite(fileId);
-  };
-
-  const handleDownload = async (fileId, filePath) => {
-    setDownloadingId(fileId);
-    try {
-      const response = await axios.get(`/Api/EduFile/Download/${fileId}`, {
-        responseType: "blob",
-      });
-
-      const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      link.download = filePath?.split("/").pop() || "file";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(fileUrl);
-
-      setFiles((prevFiles) =>
-        prevFiles.map((f) =>
-          f.id === fileId || f.eduFileId === fileId
-            ? { ...f, downloadCount: (f.downloadCount || 0) + 1 }
-            : f,
-        ),
-      );
-
-      setCollectionFiles((prevFiles) =>
-        prevFiles.map((f) =>
-          f.id === fileId || f.eduFileId === fileId
-            ? { ...f, downloadCount: (f.downloadCount || 0) + 1 }
-            : f,
-        ),
-      );
-
-      setMessage(t("files.downloadStarted") || "⬇️ Download started!");
-      setTimeout(() => setMessage(""), 3000);
-    } catch (err) {
-      console.log("Download error:", err);
-      setMessage(t("files.downloadError") || "❌ Download failed");
-      setTimeout(() => setMessage(""), 3000);
-    } finally {
-      setDownloadingId(null);
-    }
   };
 
   const handleUploaderClick = (userId, userName, e) => {
@@ -450,7 +407,8 @@ function Files() {
             <span 
               className="uploader-name-clickable"
               onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
-              title={t("files.clickToViewProfile")}
+              title={t("files.clickToViewProfile") || "Click to view profile"}
+              style={{ cursor: 'pointer', color: '#007bff' }}
             >
               👤 {collection.uploaderName || t("files.unknown") || "Unknown"}
             </span>
@@ -465,7 +423,7 @@ function Files() {
               await toggleFavoriteCollection(collection.id, e);
             }}
             disabled={isToggling}
-            title={isFav ? t("files.removeFromFavorites") : t("files.addToFavorites")}
+            title={isFav ? (t("files.removeFromFavorites") || "Remove from favorites") : (t("files.addToFavorites") || "Add to favorites")}
           >
             {isToggling ? "⏳" : isFav ? "❤️" : <FaHeart style={{ color: "white", stroke: "black", strokeWidth: "40px" }} />}
           </button>

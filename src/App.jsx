@@ -2,6 +2,8 @@ import "./Theme.css";
 import React from "react";
 import Profile from "./Pages/profile/component/Profile";
 import AI from "./Pages/AI/component/AI";
+import AIHome from "./Pages/AI/components/homeAI/HomeAI";  // ✅ المسار الصحيح
+import Chat from "./Pages/AI/components/chat/Chat";        // ✅ المسار الصحيح
 import AuthPage from "./Pages/Auth/AuthPage/component/AuthPage";
 import Admin from "./Pages/Admin/component/Admin";
 import {
@@ -30,7 +32,7 @@ import ProtectedAdmin from "./component/ProtectedAdmin";
 import PublicProfile from "./Pages/PublicProfile/component/PublicProfile";
 import ConfirmEmailChange from "./Pages/Auth/CheckEmail/component/ConfirmEmailChange";
 
-// ✅ إعدادات axios الافتراضية
+// axios settings
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
 const router = createBrowserRouter([
@@ -77,6 +79,10 @@ const router = createBrowserRouter([
       {
         path: "ai",
         element: <AI />,
+        children: [
+          { index: true, element: <AIHome /> },
+          { path: "file/:fileId", element: <Chat /> },
+        ],
       },
       {
         path: "auth",
