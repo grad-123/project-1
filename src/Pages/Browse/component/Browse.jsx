@@ -18,8 +18,8 @@ function Browse() {
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [categoryId, setCategoryId] = useState("");
   const [fileType, setFileType] = useState("");
-  const [orderBy, setOrderBy] = useState("0"); // 0 = Most Downloaded, 1 = Newest
-  const [isDescending] = useState(true); // ثابت = تنازلي دائماً
+  const [orderBy, setOrderBy] = useState("0"); 
+  const [isDescending] = useState(true);
   const [courses, setCourses] = useState([]);
   const [courseId, setCourseId] = useState("");
   const [showResults, setShowResults] = useState(false);
@@ -242,7 +242,7 @@ function Browse() {
           CourseId: courseId || undefined,
           FileType: fileType || undefined,
           OrderBy: orderByValue,
-          IsDescending: isDescending, // دائماً true (تنازلي)
+          IsDescending: isDescending,
         },
       });
 
@@ -468,7 +468,6 @@ function Browse() {
               </select>
             )}
             
-            {/* ✅ قائمة الترتيب فقط - بدون Descending/Ascending */}
             <select
               value={orderBy}
               onChange={(e) => setOrderBy(e.target.value)}
