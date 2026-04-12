@@ -1,8 +1,9 @@
+// FavoriteFileCard.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Browse.css";
 import { useTranslation } from "react-i18next";
-import axios from "axios"; // ✅ استخدام axios العادي بدل axiosInstance
+import axiosInstance from "../../../api/axiosInstance"; // ✅ استيراد axiosInstance المعدل
 
 const fileTypeText = {
   0: "Lecture",
@@ -47,28 +48,11 @@ export default function FavoriteFileCard({
         return;
       }
       
-      const token = localStorage.getItem("token");
-      const downloadUrl = `${serverUrl}/Api/EduFile/Download/${fileId}`;
-      
-      // ✅ تجهيز الهيدرز الصحيحة لـ ngrok
-      const headers = {
-        'Accept': '*/*',
-        'ngrok-skip-browser-warning': '69420', // ✅ أي قيمة عشوائية تشتغل
-      };
-      
-      // ✅ إضافة التوكن إذا كان موجود
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      console.log("📥 Download URL:", downloadUrl);
-      console.log("📥 Headers:", headers);
-      
-      // ✅ استخدام axios العادي مع الإعدادات الصحيحة
-      const response = await axios.get(downloadUrl, {
+      // ✅ استخدام axiosInstance بدلاً من axios العادي
+      // ✅ المسار النسبي لأن baseURL موجود في axiosInstance
+      const response = await axiosInstance.get(`/Api/EduFile/Download/${fileId}`, {
         responseType: "blob",
-        headers: headers,
-        withCredentials: false, // ✅ مهم لـ CORS مع ngrok
+        // ✅ axiosInstance سيتولى إضافة التوكن والـ headers تلقائياً
       });
 
       if (!response.data || response.data.size === 0) {
@@ -77,7 +61,7 @@ export default function FavoriteFileCard({
 
       console.log("✅ Download successful, file size:", response.data.size, "bytes");
 
-      // استخراج اسم الملف من Content-Disposition أو من file object
+      // استخراج اسم الملف من Content-Disposition
       let fileName = `file_${fileId}`;
       const contentDisposition = response.headers['content-disposition'];
       if (contentDisposition) {
@@ -86,9 +70,7 @@ export default function FavoriteFileCard({
           fileName = match[1].replace(/['"]/g, '');
         }
       } else {
-        // استخدام اسم الملف الأصلي من الـ file object
         fileName = file.title || file.filePath?.split('/').pop() || `download_${fileId}`;
-        // إضافة الامتداد الصحيح حسب نوع الملف
         if (file.fileType === 0 && !fileName.includes('.mp4')) fileName += '.mp4';
         if (file.fileType === 1 && !fileName.includes('.pdf')) fileName += '.pdf';
         if (file.fileType === 2 && !fileName.includes('.docx')) fileName += '.docx';
@@ -104,7 +86,6 @@ export default function FavoriteFileCard({
       link.click();
       document.body.removeChild(link);
       
-      // تنظيف الذاكرة
       window.URL.revokeObjectURL(fileUrl);
 
       if (setMessage) {
@@ -117,7 +98,7 @@ export default function FavoriteFileCard({
       let errorMessage = t("browse.downloadError") || "Download failed";
       
       if (err.response?.status === 400) {
-        // ✅ الحل البديل: فتح الرابط في تبويب جديد
+        // ✅ حل بديل: فتح الرابط في تبويب جديد
         const directUrl = `${serverUrl}/Api/EduFile/Download/${file.id || file.eduFileId}`;
         console.log("Trying direct URL in new tab:", directUrl);
         window.open(directUrl, "_blank");

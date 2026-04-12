@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 import { useTranslation } from "react-i18next";
@@ -181,115 +182,111 @@ function CollectionSidebar({
     }
   };
 
-const handleCopyCollection = async (collectionId, e) => {
-  e.stopPropagation();
-  
-  const token = localStorage.getItem("token");
-  if (!token) {
-    if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
-    return;
-  }
-  
-  setCopyingId(collectionId);
+  const handleCopyCollection = async (collectionId, e) => {
+    e.stopPropagation();
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+      if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      return;
+    }
+    
+    setCopyingId(collectionId);
 
-  try {
-    console.log("📦 Copying collection via API:", collectionId);
-    const response = await axios.post(`/api/v1/collection/Copy/${collectionId}`);
+    try {
+      console.log("📦 Copying collection via API:", collectionId);
+      const response = await axios.post(`/api/v1/collection/Copy/${collectionId}`);
 
-    if (
-      response.status === 200 ||
-      response.data?.succeeded ||
-      response.data?.statusCode === 200
-    ) {
-      const successMessage =
-        response.data?.message ||
-        t("collection.copySuccess") ||
-        "✨ Collection copied successfully!";
-      if (showMessage) showMessage(successMessage, "success");
+      if (
+        response.status === 200 ||
+        response.data?.succeeded ||
+        response.data?.statusCode === 200
+      ) {
+        const successMessage =
+          response.data?.message ||
+          t("collection.copySuccess") ||
+          "✨ Collection copied successfully!";
+        if (showMessage) showMessage(successMessage, "success");
 
-      if (onCollectionUpdate) {
-        await onCollectionUpdate();
-      }
+        if (onCollectionUpdate) {
+          await onCollectionUpdate();
+        }
 
-      if (onFavoriteCollectionsUpdate) {
-        await onFavoriteCollectionsUpdate();
-      }
+        if (onFavoriteCollectionsUpdate) {
+          await onFavoriteCollectionsUpdate();
+        }
 
-      if (onTabChange && activeTab !== "my") {
-        onTabChange("my");
-      }
+        if (onTabChange && activeTab !== "my") {
+          onTabChange("my");
+        }
 
-      setTimeout(async () => {
-        try {
-          const collectionsRes = await axios.get(
-            "/api/v1/Collection/GetLibraryCollections",
-          );
-          if (collectionsRes.data?.data?.length > 0) {
-            const copiedCollection = collectionsRes.data.data.find(
-              (c) => c.name?.endsWith("(Copy)") || c.name?.includes("Copy"),
+        setTimeout(async () => {
+          try {
+            const collectionsRes = await axios.get(
+              "/api/v1/Collection/GetLibraryCollections",
             );
-            const newCollection =
-              copiedCollection ||
-              collectionsRes.data.data[collectionsRes.data.data.length - 1];
-
-            if (newCollection && onSelectCollection) {
-              const detailsRes = await axios.get(
-                `/api/v1/Collection/GetById/${newCollection.id}`,
+            if (collectionsRes.data?.data?.length > 0) {
+              const copiedCollection = collectionsRes.data.data.find(
+                (c) => c.name?.endsWith("(Copy)") || c.name?.includes("Copy"),
               );
-              if (detailsRes.data?.data) {
-                const fullCollection = {
-                  ...detailsRes.data.data,
-                  id: newCollection.id,
-                  source: "my",
-                  isFavorite: false,
-                  files: detailsRes.data.data.files || [],
-                };
-                onSelectCollection(fullCollection);
+              const newCollection =
+                copiedCollection ||
+                collectionsRes.data.data[collectionsRes.data.data.length - 1];
+
+              if (newCollection && onSelectCollection) {
+                const detailsRes = await axios.get(
+                  `/api/v1/Collection/GetById/${newCollection.id}`,
+                );
+                if (detailsRes.data?.data) {
+                  const fullCollection = {
+                    ...detailsRes.data.data,
+                    id: newCollection.id,
+                    source: "my",
+                    isFavorite: false,
+                    files: detailsRes.data.data.files || [],
+                  };
+                  onSelectCollection(fullCollection);
+                }
               }
             }
+          } catch (err) {
+            console.log("Could not auto-open new collection:", err);
           }
-        } catch (err) {
-          console.log("Could not auto-open new collection:", err);
-        }
-      }, 1000);
-    } else {
-      throw new Error("Copy failed");
+        }, 1000);
+      } else {
+        throw new Error("Copy failed");
+      }
+    } catch (err) {
+      console.error("🔴 Copy error:", err);
+      console.error("🔴 Response data:", err.response?.data);
+      console.error("🔴 Response status:", err.response?.status);
+      
+      let errorMessage = "❌ لا يمكنك نسخ مجموعتك الخاصة!";
+      
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.data?.title) {
+        errorMessage = err.response.data.title;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      if (errorMessage === "You cannot copy your own collection") {
+        errorMessage = t("collection.cannotCopyOwn") || "لا يمكنك نسخ مجموعتك الخاصة";
+      }
+      
+      console.log("📢 Final error message to show:", errorMessage);
+      
+      if (showMessage) {
+        showMessage(errorMessage, "error");
+      } else {
+        alert(errorMessage);
+      }
+    } finally {
+      setCopyingId(null);
     }
-  } catch (err) {
-    console.error("🔴 Copy error:", err);
-    console.error("🔴 Response data:", err.response?.data);
-    console.error("🔴 Response status:", err.response?.status);
-    
-    // ✅修正: استخراج الرسالة من response بشكل صحيح
-    let errorMessage = "❌ لا يمكنك نسخ مجموعتك الخاصة!";
-    
-    if (err.response?.data?.message) {
-      // الرسالة من الباك (مثل: 'You cannot copy your own collection')
-      errorMessage = err.response.data.message;
-    } else if (err.response?.data?.title) {
-      errorMessage = err.response.data.title;
-    } else if (err.message) {
-      errorMessage = err.message;
-    }
-    
-    // ✅ ترجمة الرسالة إذا كانت موجودة في ملف الترجمة
-    // إذا كانت الرسالة "You cannot copy your own collection" نعرضها مترجمة
-    if (errorMessage === "You cannot copy your own collection") {
-      errorMessage = t("collection.cannotCopyOwn") || "لا يمكنك نسخ مجموعتك الخاصة";
-    }
-    
-    console.log("📢 Final error message to show:", errorMessage);
-    
-    // ✅ عرض الرسالة للمستخدم
-    if (showMessage) {
-      showMessage(errorMessage, "error");
-    } else {
-      alert(errorMessage);
-    }
-  } finally {
-    setCopyingId(null);
-  }
-};
+  };
+
   const handleRenameStart = (collection, e) => {
     e.stopPropagation();
     setEditingCollection(collection);
@@ -486,33 +483,130 @@ const handleCopyCollection = async (collectionId, e) => {
         )}
       </div>
 
-      {editingCollection && (
+      {/* ✅ مودال التعديل - باستخدام React Portal */}
+      {editingCollection && ReactDOM.createPortal(
         <div
           className="edit-modal-overlay"
           onClick={() => setEditingCollection(null)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999999,
+          }}
         >
-          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>{t("collection.editCollection")}</h3>
+          <div
+            className="edit-modal"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "var(--bg-card)",
+              borderRadius: "16px",
+              padding: "1.5rem",
+              width: "400px",
+              maxWidth: "90%",
+              border: "1px solid var(--card-border)",
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)",
+              animation: "slideUp 0.3s ease",
+            }}
+          >
+            <h3 style={{ margin: "0 0 1rem 0", color: "var(--text-main)" }}>
+              {t("collection.editCollection") || "تعديل المجموعة"}
+            </h3>
             <input
               type="text"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              placeholder={t("collection.collectionName")}
+              placeholder={t("collection.collectionName") || "اسم المجموعة"}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                marginBottom: "0.75rem",
+                border: "1px solid var(--card-border)",
+                borderRadius: "8px",
+                fontSize: "0.9rem",
+                background: "var(--input-bg)",
+                color: "var(--text-main)",
+                boxSizing: "border-box",
+              }}
+              autoFocus
             />
             <textarea
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
-              placeholder={t("collection.description")}
+              placeholder={t("collection.description") || "الوصف (اختياري)"}
               rows="3"
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                marginBottom: "0.75rem",
+                border: "1px solid var(--card-border)",
+                borderRadius: "8px",
+                fontSize: "0.9rem",
+                background: "var(--input-bg)",
+                color: "var(--text-main)",
+                boxSizing: "border-box",
+                resize: "vertical",
+                fontFamily: "inherit",
+              }}
             />
-            <div className="modal-buttons">
-              <button onClick={() => setEditingCollection(null)}>
-                {t("collection.cancel")}
+            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setEditingCollection(null)}
+                style={{
+                  padding: "0.5rem 1rem",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  background: "var(--bg-secondary)",
+                  color: "var(--text-secondary)",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "var(--card-border)";
+                  e.currentTarget.style.color = "var(--text-main)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "var(--bg-secondary)";
+                  e.currentTarget.style.color = "var(--text-secondary)";
+                }}
+              >
+                {t("collection.cancel") || "إلغاء"}
               </button>
-              <button onClick={handleRenameSave}>{t("collection.save")}</button>
+              <button
+                onClick={handleRenameSave}
+                style={{
+                  padding: "0.5rem 1rem",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  background: "var(--primary)",
+                  color: "white",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = "0.9";
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = "1";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                {t("collection.save") || "حفظ"}
+              </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <CreateCollectionModal

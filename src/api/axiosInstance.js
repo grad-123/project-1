@@ -1,8 +1,9 @@
+// axiosInstance.js
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const axiosInstance = axios.create({
-  baseURL:"https://verdict-prevent-very.ngrok-free.dev" 
+  baseURL: "https://verdict-prevent-very.ngrok-free.dev" 
 });
 
 let isRefreshing = false;
@@ -81,60 +82,52 @@ const clearTokens = () => {
   localStorage.removeItem("role");
 };
 
-// ✅ دالة تحديد是否需要 توكن - المبسطة
 const requiresAuth = (url, method) => {
   if (!url) return false;
   
-  // مسارات المصادقة - لا تحتاج توكن أبداً
   if (url.includes('/api/v1/Authentication/')) return false;
   if (url.includes('/RefreshToken')) return false;
   
-  // طرق POST, PUT, DELETE التي تعدل بيانات - تحتاج توكن دائماً
   if (method === 'post' || method === 'put' || method === 'delete') {
     return true;
   }
   
-  // طرق GET - لا نمنعها أبداً، لكننا سنحاول إضافة توكن إذا وجد
   return false;
 };
 
-// Request interceptor
+// ✅ Request interceptor - محسّن لدعم responseType: 'blob'
 axiosInstance.interceptors.request.use(
   async (config) => {
-    // لا نريد إضافة أي شيء لطلبات الـ RefreshToken أبداً
+    // لا نتدخل في طلبات RefreshToken أبداً
     if (config.url?.includes("/RefreshToken")) {
       return config;
     }
 
     let token = localStorage.getItem("token");
-    
-    // التحقق إذا كان هذا الطلب يتطلب توكن (POST/PUT/DELETE فقط)
     const needsAuth = requiresAuth(config.url, config.method?.toLowerCase());
     
-    // إذا كان الطلب يتطلب توكن ولا يوجد توكن، نرفضه فوراً
     if (needsAuth && !token) {
       return Promise.reject({
         response: { status: 401, data: { message: "Authentication required" } }
       });
     }
     
-    // إذا كان الطلب لا يحتاج توكن (GET بشكل عام)
-    if (!needsAuth) {
-      // نحاول إضافة التوكن إذا كان موجوداً ولم ينته صلاحيته
+    // ✅ مهم: لا نعدل headers إذا كان responseType هو blob
+    // لأن blob يتطلب إعدادات محددة
+    const isBlobRequest = config.responseType === 'blob';
+    
+    if (!needsAuth && !isBlobRequest) {
       if (token && !isTokenExpiredFast()) {
         config.headers.Authorization = `Bearer ${token}`;
       }
       
-      // إضافة الهيدرز العامة
       const language = localStorage.getItem("lang") || "ar";
       config.headers["Accept-Language"] = language === "ar" ? "ar-EG" : "en-US";
       config.headers["ngrok-skip-browser-warning"] = "true";
       return config;
     }
     
-    // --- من هنا فصاعداً، الكود خاص بالطلبات POST/PUT/DELETE فقط ---
-    
-    // التحقق من صلاحية التوكن وتجديده إذا لزم الأمر
+    // معالجة الطلبات التي تحتاج توكن (POST/PUT/DELETE) أو طلبات التحميل (blob)
     if (token && isTokenExpiredFast()) {
       try {
         token = await refreshTokenRequest();
@@ -144,28 +137,35 @@ axiosInstance.interceptors.request.use(
       }
     }
     
-    // إضافة التوكن إلى الهيدر
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // إضافة الهيدرز العامة
+    // ✅ لطلبات التحميل (blob)، نحتاج headers محددة
+    if (isBlobRequest) {
+      config.headers['Accept'] = '*/*';
+      config.headers['ngrok-skip-browser-warning'] = '69420';
+    }
+
     const language = localStorage.getItem("lang") || "ar";
     config.headers["Accept-Language"] = language === "ar" ? "ar-EG" : "en-US";
-    config.headers["ngrok-skip-browser-warning"] = "true";
+    
+    // ✅ نضيف ngrok header فقط إذا لم يكن موجوداً مسبقاً
+    if (!config.headers['ngrok-skip-browser-warning']) {
+      config.headers['ngrok-skip-browser-warning'] = "true";
+    }
     
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// Response interceptor (نفس الكود بدون تغيير)
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config || {};
     
-    // نتأكد أن هذا الطلب كان يحتاج توكن أصلاً قبل محاولة إعادة المحاولة
     const needsAuth = requiresAuth(originalRequest.url, originalRequest.method?.toLowerCase());
     
     if (needsAuth && error.response?.status === 401 && !originalRequest._retry) {

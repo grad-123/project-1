@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
-import axiosLib from "axios";
 import { useTranslation } from "react-i18next";
 import { FaArrowLeft, FaPlay, FaStop, FaDownload, FaVideo, FaArrowRight, FaCheck, FaUser } from "react-icons/fa";
 import "./CollectionFilesView.css";
@@ -318,36 +317,34 @@ function CollectionFilesView({
     setDraggedIndex(null);
   };
 
-  const handleDownload = async (file, e) => {
-    e.stopPropagation();
-    if (!file || !file.id) {
-      if (showMessage) showMessage(t("collection.fileIdNotAvailable") || "File ID not available", "error");
-      return;
-    }
+ const handleDownload = async (file, e) => {
+  e.stopPropagation();
+  if (!file || !file.id) {
+    if (showMessage) showMessage(t("collection.fileIdNotAvailable") || "File ID not available", "error");
+    return;
+  }
+  
+  try {
+    const response = await axios.get(`/Api/EduFile/Download/${file.id}`, {
+      responseType: "blob",
+    });
+
+    const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    const fileName = file.filePath?.split("/").pop() || file.title || 'download';
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(fileUrl);
     
-    try {
-      const downloadUrl = `${serverUrl}/Api/EduFile/Download/${file.id}`;
-      const response = await axiosLib.get(downloadUrl, {
-        responseType: "blob",
-      });
-
-      const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      const fileName = file.filePath?.split("/").pop() || file.title || 'download';
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(fileUrl);
-      
-      if (showMessage) showMessage(t("collection.downloadStarted") || "Download started!", "success");
-    } catch (err) {
-      console.log("Download error:", err);
-      if (showMessage) showMessage(t("collection.downloadError") || "Error downloading file", "error");
-    }
-  };
-
+    if (showMessage) showMessage(t("collection.downloadStarted") || "Download started!", "success");
+  } catch (err) {
+    console.log("Download error:", err);
+    if (showMessage) showMessage(t("collection.downloadError") || "Error downloading file", "error");
+  }
+};
   const handleWatchVideo = (file, e) => {
     e.stopPropagation();
     if (!file || !file.filePath) {
