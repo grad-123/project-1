@@ -1,0 +1,217 @@
+.ai-chat {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* رأس الصفحة */
+.chat-header {
+  margin-bottom: 2rem;
+}
+
+.chat-header h2 {
+  font-size: 1.5rem;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+.chat-header p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* أزرار الوضع */
+.mode-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0;
+}
+
+.mode-tab {
+  background: none;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mode-tab span {
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: #999;
+}
+
+.mode-tab.active {
+  color: #4a6cf7;
+}
+
+.mode-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #4a6cf7;
+}
+
+.mode-tab:hover:not(.active) {
+  color: #333;
+}
+
+/* منطقة الإدخال */
+.chat-input-area {
+  margin-bottom: 2rem;
+}
+
+.chat-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.3s;
+  background: white;
+}
+
+.chat-textarea:focus {
+  outline: none;
+  border-color: #4a6cf7;
+  box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+}
+
+.send-button {
+  margin-top: 1rem;
+  padding: 0.75rem 2rem;
+  background: #4a6cf7;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.send-button:hover:not(:disabled) {
+  background: #3a5ce0;
+  transform: translateY(-2px);
+}
+
+.send-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* منطقة التلخيص */
+.summary-area {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.generate-summary-btn {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.generate-summary-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.generate-summary-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* الإجابة */
+.answer-container {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.answer-header {
+  font-weight: 600;
+  color: #4a6cf7;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.answer-content {
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+/* رسالة الترحيب */
+.welcome-message {
+  background: #e8f0fe;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.welcome-message p {
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 0.75rem;
+}
+
+.welcome-message ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.welcome-message li {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+/* حالة التحميل */
+.loading-state {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ai-chat {
+    padding: 1rem;
+  }
+  
+  .mode-tab {
+    padding: 0.75rem 1rem;
+  }
+  
+  .mode-tab span {
+    display: none;
+  }
+}

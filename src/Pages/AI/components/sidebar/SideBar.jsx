@@ -187,22 +187,66 @@ function Sidebar() {
     }
   };
 
-  // Back to search results
   const backToResults = () => {
     setShowCollectionFiles(false);
     setSelectedCollection(null);
     setCollectionFiles([]);
   };
 
-  // Handle file click - navigate to chat page
+  // ✅ IMPROVED: Handle file click with better error handling and logging
   const handleFileClick = (file) => {
-    const fileId = file.id || file.eduFileId;
-    if (fileId) {
-      navigate(`/ai/file/${fileId}`);
+    // التحقق من صحة بيانات الملف
+    if (!file) {
+      console.error("❌ No file data provided");
+      setMessage(t("browse.errorNoFileData") || "خطأ: لا توجد بيانات للملف");
+      setMessageType("error");
+      setTimeout(() => setMessage(""), 3000);
+      return;
     }
+    
+    const fileId = file.id || file.eduFileId;
+    
+    if (!fileId) {
+      console.error("❌ File has no ID:", file);
+      setMessage(t("browse.errorNoFileId") || "خطأ: الملف لا يحتوي على معرف صالح");
+      setMessageType("error");
+      setTimeout(() => setMessage(""), 3000);
+      return;
+    }
+    
+    // تسجيل معلومات الملف للتأكد
+    console.log("📁 Opening file in chat:", {
+      id: fileId,
+      title: file.title,
+      type: file.fileType,
+      hasDescription: !!file.description,
+      courseName: file.courseName,
+      categoryName: file.categoryName,
+      downloadCount: file.downloadCount,
+      uploadedAt: file.uploadedAt,
+      uploadedByUserName: file.uploadedByUserName
+    });
+    
+    // تمرير كامل بيانات الملف عبر state
+    navigate(`/ai/file/${fileId}`, { 
+      state: { 
+        file: {
+          id: fileId,
+          title: file.title,
+          fileType: file.fileType,
+          description: file.description,
+          courseName: file.courseName,
+          categoryName: file.categoryName,
+          filePath: file.filePath,
+          downloadCount: file.downloadCount,
+          uploadedAt: file.uploadedAt,
+          uploadedByUserName: file.uploadedByUserName,
+          uploadedByUserId: file.uploadedByUserId
+        }
+      } 
+    });
   };
 
-  // Handle uploader click
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
     
@@ -328,7 +372,6 @@ function Sidebar() {
               <option value="6">{t("browse.types.other") || "أخرى"}</option>
             </select>
 
-            {/* ✅ فقط قائمة الترتيب - بدون Descending/Ascending */}
             <select className="ai-filter-select" value={orderBy} onChange={(e) => setOrderBy(e.target.value)}>
               <option value="0">{t("browse.order.mostDownloaded") || "الأكثر تحميلاً"}</option>
               <option value="1">{t("browse.order.newest") || "الأحدث"}</option>
@@ -338,7 +381,15 @@ function Sidebar() {
 
         {/* Message */}
         {message && (
-          <div className="ai-message">
+          <div className={`ai-message ${messageType === "error" ? "error" : "success"}`} style={{
+            padding: "10px",
+            margin: "10px 0",
+            borderRadius: "8px",
+            backgroundColor: messageType === "error" ? "#ffebee" : "#e8f5e9",
+            color: messageType === "error" ? "#c62828" : "#2e7d32",
+            fontSize: "14px",
+            textAlign: "center"
+          }}>
             {message}
           </div>
         )}
@@ -354,7 +405,7 @@ function Sidebar() {
         {showCollectionFiles && selectedCollection && (
           <>
             <button className="ai-back-button" onClick={backToResults}>
-              ← {t("browse.backToResults") || "العودة إلى النتائج"}
+               {t("browse.backToResults") || "العودة إلى النتائج"}
             </button>
             
             <div className="ai-collection-header">
@@ -497,7 +548,7 @@ function Sidebar() {
         {/* Initial State */}
         {!showResults && (
           <div className="ai-empty-state">
-            <p>🔍 {t("sidebar.searchPrompt") || "أدخل كلمة بحث أعلاه"}</p>
+            <p>{t("sidebar.searchPrompt") || "أدخل كلمة بحث أعلاه"}</p>
             <p style={{ fontSize: "12px", marginTop: "8px" }}>{t("sidebar.searchFiles") || "ابحث عن ملفات أو مجموعات"}</p>
           </div>
         )}

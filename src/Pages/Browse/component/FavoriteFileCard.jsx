@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Browse.css";
 import { useTranslation } from "react-i18next";
-import axiosInstance from "../../../api/axiosInstance"; // ✅ استيراد axiosInstance المعدل
+import axiosInstance from "../../../api/axiosInstance";
 
 const fileTypeText = {
   0: "Lecture",
@@ -47,12 +47,9 @@ export default function FavoriteFileCard({
         setIsDownloading(false);
         return;
       }
-      
-      // ✅ استخدام axiosInstance بدلاً من axios العادي
-      // ✅ المسار النسبي لأن baseURL موجود في axiosInstance
+     
       const response = await axiosInstance.get(`/Api/EduFile/Download/${fileId}`, {
         responseType: "blob",
-        // ✅ axiosInstance سيتولى إضافة التوكن والـ headers تلقائياً
       });
 
       if (!response.data || response.data.size === 0) {
@@ -61,7 +58,6 @@ export default function FavoriteFileCard({
 
       console.log("✅ Download successful, file size:", response.data.size, "bytes");
 
-      // استخراج اسم الملف من Content-Disposition
       let fileName = `file_${fileId}`;
       const contentDisposition = response.headers['content-disposition'];
       if (contentDisposition) {
@@ -76,7 +72,6 @@ export default function FavoriteFileCard({
         if (file.fileType === 2 && !fileName.includes('.docx')) fileName += '.docx';
       }
 
-      // إنشاء رابط التحميل
       const blob = new Blob([response.data]);
       const fileUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -98,7 +93,6 @@ export default function FavoriteFileCard({
       let errorMessage = t("browse.downloadError") || "Download failed";
       
       if (err.response?.status === 400) {
-        // ✅ حل بديل: فتح الرابط في تبويب جديد
         const directUrl = `${serverUrl}/Api/EduFile/Download/${file.id || file.eduFileId}`;
         console.log("Trying direct URL in new tab:", directUrl);
         window.open(directUrl, "_blank");

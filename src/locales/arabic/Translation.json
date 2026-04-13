@@ -876,5 +876,30 @@
     "searchPrompt": "🔍 أدخل كلمة بحث أعلاه",
     "searchFiles": "ابحث عن ملفات أو مجموعات...",
     "backToResults": "← العودة إلى النتائج"
+  },
+    "aiChat": {
+    "ask": "اسأل",
+    "summary": "ملخص",
+    "askSubtitle": "اطرح سؤالاً",
+    "summarySubtitle": "احصل على ملخص",
+    "questionPlaceholder": "اكتب سؤالك هنا... مثال: ما هي أهم المفاهيم في هذا الملف؟",
+    "send": "إرسال ✨",
+    "processing": "⏳ جاري المعالجة...",
+    "generateSummary": "📝 إنشاء ملخص",
+    "summarizing": "⏳ جاري التلخيص...",
+    "answer": "🤖 الإجابة:",
+    "summaryLabel": "📋 الملخص:",
+    "summarySoon": "📝 ميزة التلخيص ستكون متاحة قريباً...",
+    "welcomeTitle": "💡 اسألني عن:",
+    "welcomeItems": {
+      "concepts": "المفاهيم الرئيسية في هذا الملف",
+      "differences": "الفرق بين المصطلحات المختلفة",
+      "explain": "شرح جزء معين من المحتوى",
+      "examples": "أمثلة توضيحية"
+    },
+    "headerSubtitle": "اسأل عن محتوى هذا الملف أو اطلب تلخيصاً",
+    "loadingFile": "⏳ جاري تحميل الملف...",
+    "errorOccurred": "حدث خطأ في الاتصال بالخادم",
+    "fileNotFound": "الملف غير موجود"
   }
 }

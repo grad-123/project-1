@@ -95,7 +95,7 @@ const requiresAuth = (url, method) => {
   return false;
 };
 
-// ✅ Request interceptor - محسّن لدعم responseType: 'blob'
+// ✅ Request interceptor - مع إضافة تسجيل لطلبات AI
 axiosInstance.interceptors.request.use(
   async (config) => {
     // لا نتدخل في طلبات RefreshToken أبداً
@@ -113,7 +113,6 @@ axiosInstance.interceptors.request.use(
     }
     
     // ✅ مهم: لا نعدل headers إذا كان responseType هو blob
-    // لأن blob يتطلب إعدادات محددة
     const isBlobRequest = config.responseType === 'blob';
     
     if (!needsAuth && !isBlobRequest) {
@@ -124,6 +123,17 @@ axiosInstance.interceptors.request.use(
       const language = localStorage.getItem("lang") || "ar";
       config.headers["Accept-Language"] = language === "ar" ? "ar-EG" : "en-US";
       config.headers["ngrok-skip-browser-warning"] = "true";
+      
+      // ✅ تسجيل طلبات AI
+      if (config.url && (config.url.includes("/Ask") || config.url.includes("/Summary"))) {
+        console.log("🚀 REQUEST:", {
+          method: config.method,
+          url: config.url,
+          data: config.data,
+          headers: { ...config.headers, Authorization: "Bearer [HIDDEN]" }
+        });
+      }
+      
       return config;
     }
     
@@ -155,15 +165,45 @@ axiosInstance.interceptors.request.use(
       config.headers['ngrok-skip-browser-warning'] = "true";
     }
     
+    // ✅ تسجيل طلبات AI
+    if (config.url && (config.url.includes("/Ask") || config.url.includes("/Summary"))) {
+      console.log("🚀 REQUEST (with auth):", {
+        method: config.method,
+        url: config.url,
+        data: config.data,
+        headers: { ...config.headers, Authorization: "Bearer [HIDDEN]" }
+      });
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor (نفس الكود بدون تغيير)
+// ✅ Response interceptor - مع إضافة تسجيل لردود AI
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // تسجيل ردود AI
+    if (response.config.url && (response.config.url.includes("/Ask") || response.config.url.includes("/Summary"))) {
+      console.log("✅ RESPONSE:", {
+        url: response.config.url,
+        status: response.status,
+        data: response.data
+      });
+    }
+    return response;
+  },
   async (error) => {
+    // تسجيل أخطاء AI
+    if (error.config?.url && (error.config.url.includes("/Ask") || error.config.url.includes("/Summary"))) {
+      console.error("❌ ERROR RESPONSE:", {
+        url: error.config.url,
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
+    }
+    
     const originalRequest = error.config || {};
     
     const needsAuth = requiresAuth(originalRequest.url, originalRequest.method?.toLowerCase());

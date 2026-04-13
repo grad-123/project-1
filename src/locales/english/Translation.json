@@ -874,5 +874,30 @@
     "searchPrompt": "🔍 Enter a search term above",
     "searchFiles": "Search for files or collections...",
     "backToResults": "← Back to results"
+  },
+   "aiChat": {
+    "ask": "Ask",
+    "summary": "Summary",
+    "askSubtitle": "Ask a question",
+    "summarySubtitle": "Get a summary",
+    "questionPlaceholder": "Type your question here... Example: What are the main concepts in this file?",
+    "send": "Send ✨",
+    "processing": "⏳ Processing...",
+    "generateSummary": "📝 Generate Summary",
+    "summarizing": "⏳ Summarizing...",
+    "answer": "🤖 Answer:",
+    "summaryLabel": "📋 Summary:",
+    "summarySoon": "📝 Summary feature will be available soon...",
+    "welcomeTitle": "💡 Ask me about:",
+    "welcomeItems": {
+      "concepts": "Key concepts in this file",
+      "differences": "Differences between terms",
+      "explain": "Explanation of specific content",
+      "examples": "Illustrative examples"
+    },
+    "headerSubtitle": "Ask about this file's content or request a summary",
+    "loadingFile": "⏳ Loading file...",
+    "errorOccurred": "An error occurred connecting to the server",
+    "fileNotFound": "File not found"
   }
 }
