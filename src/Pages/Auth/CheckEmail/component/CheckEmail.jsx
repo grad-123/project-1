@@ -22,8 +22,7 @@ function CheckEmail() {
   const email = location.state?.email;
   useEffect(() => {
     if (!email) {
-      navigate("/auth/register");
-    }
+navigate("/auth/register", { replace: true });    }
   }, [email, navigate]);
 
   return (
@@ -36,8 +35,7 @@ function CheckEmail() {
       </p>
       {/*<button onClick={handleResend}>Resend Verification Email</button> */}
       {message && <p>{message}</p>}
-      <button onClick={() => navigate("/auth/login")} className="register-btn">
-        {t("checkEmail.goToLogin")}{" "}
+<button onClick={() => navigate("/auth/login", { replace: true })} className="register-btn">        {t("checkEmail.goToLogin")}{" "}
       </button>
     </div>
   );

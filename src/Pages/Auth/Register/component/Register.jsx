@@ -109,9 +109,10 @@ function Register() {
       );
 
       if (response.data?.succeeded === true) {
-        navigate("/auth/checkemail", {
-          state: { email: user.email },
-        });
+       navigate("/auth/checkemail", {
+  state: { email: user.email },
+  replace: true,
+});
         return;
       }
 

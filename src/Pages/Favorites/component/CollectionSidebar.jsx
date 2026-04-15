@@ -26,7 +26,6 @@ function CollectionSidebar({
   const [newDescription, setNewDescription] = useState("");
   const [copyingId, setCopyingId] = useState(null);
 
-  // ✅ هذه الدالة سيتم استخدامها فقط في Favorite Collections (لن تظهر في My Collections)
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -35,14 +34,14 @@ function CollectionSidebar({
     
     const token = localStorage.getItem("token");
     if (!token) {
-      if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      if (showMessage) showMessage(t("collection.loginRequired"), "warning");
       return;
     }
     if (userId && userId !== 0) {
       navigate(`/PublicProfile/${userId}`);
     } else {
       console.log("⚠️ No valid userId provided");
-      if (showMessage) showMessage("لا يمكن عرض الملف الشخصي", "warning");
+      if (showMessage) showMessage(t("collection.cannotViewProfile"), "warning");
     }
   };
 
@@ -119,10 +118,9 @@ function CollectionSidebar({
   const handleDeleteCollection = async (id, e) => {
     e.stopPropagation();
     
-    // ✅ تحقق من وجود توكن
     const token = localStorage.getItem("token");
     if (!token) {
-      if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      if (showMessage) showMessage(t("collection.loginRequired"), "warning");
       return;
     }
     
@@ -187,7 +185,7 @@ function CollectionSidebar({
     
     const token = localStorage.getItem("token");
     if (!token) {
-      if (showMessage) showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      if (showMessage) showMessage(t("collection.loginRequired"), "warning");
       return;
     }
     
@@ -423,6 +421,7 @@ function CollectionSidebar({
             ) : (
               safeFavoriteCollections.map((collection) => {
                 const collectionId = collection.collectionId || collection.id;
+                
                 return (
                   <div
                     key={collectionId}
@@ -441,14 +440,15 @@ function CollectionSidebar({
                             📚 {collection.courseName}
                           </span>
                         )}
-                        <span 
-                          className="uploader-name-clickable"
-                          onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
-                          title="انقر لعرض الملف الشخصي لصاحب المجموعة"
-                          style={{ cursor: 'pointer', color: '#007bff' }}
-                        >
-                          👤 {collection.uploaderName || t("collection.unknown")}
-                        </span>
+                        {collection.uploaderName && (
+                          <span 
+                            className="uploader-name-clickable"
+                            onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
+                            title={t("collection.clickToViewProfile")}
+                          >
+                            👤 {collection.uploaderName || t("collection.unknown")}
+                          </span>
+                        )}
                         <span className="collection-date">
                           📅 {formatDate(collection.addedAt || collection.createdAt)}
                         </span>
@@ -459,18 +459,18 @@ function CollectionSidebar({
                         className="copy-collection-btn"
                         onClick={(e) => handleCopyCollection(collectionId, e)}
                         disabled={copyingId === collectionId}
-                        title={t("collection.copyToMyCollections") || "Copy to my collections"}
+                        title={t("collection.copyToMyCollections")}
                       >
                         {copyingId === collectionId ? (
                           <span className="copy-spinner">⏳</span>
                         ) : (
-                          <span className="copy-text">{t("collection.copy") || "Copy"}</span>
+                          <span className="copy-text">{t("collection.copy")}</span>
                         )}
                       </button>
                       <button
                         className="remove-favorite-btn"
                         onClick={(e) => handleRemoveFromFavorites(collectionId, e)}
-                        title={t("collection.removeFromFavorites") || "Remove from favorites"}
+                        title={t("collection.removeFromFavorites")}
                       >
                         ❤️
                       </button>
@@ -483,7 +483,6 @@ function CollectionSidebar({
         )}
       </div>
 
-      {/* ✅ مودال التعديل - باستخدام React Portal */}
       {editingCollection && ReactDOM.createPortal(
         <div
           className="edit-modal-overlay"
@@ -519,13 +518,13 @@ function CollectionSidebar({
             }}
           >
             <h3 style={{ margin: "0 0 1rem 0", color: "var(--text-main)" }}>
-              {t("collection.editCollection") || "تعديل المجموعة"}
+              {t("collection.editCollection")}
             </h3>
             <input
               type="text"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              placeholder={t("collection.collectionName") || "اسم المجموعة"}
+              placeholder={t("collection.collectionName")}
               style={{
                 width: "100%",
                 padding: "0.75rem",
@@ -542,7 +541,7 @@ function CollectionSidebar({
             <textarea
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
-              placeholder={t("collection.description") || "الوصف (اختياري)"}
+              placeholder={t("collection.description")}
               rows="3"
               style={{
                 width: "100%",
@@ -579,7 +578,7 @@ function CollectionSidebar({
                   e.currentTarget.style.color = "var(--text-secondary)";
                 }}
               >
-                {t("collection.cancel") || "إلغاء"}
+                {t("collection.cancel")}
               </button>
               <button
                 onClick={handleRenameSave}
@@ -601,7 +600,7 @@ function CollectionSidebar({
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
               >
-                {t("collection.save") || "حفظ"}
+                {t("collection.save")}
               </button>
             </div>
           </div>

@@ -51,8 +51,7 @@ function ForgotPassword() {
       return;
     }
 
-    navigate(`/auth/check?email=${encodeURIComponent(Email)}`);
-
+navigate(`/auth/check?email=${encodeURIComponent(Email)}`, { replace: true });
   } catch (err) {
     console.error(err);
 

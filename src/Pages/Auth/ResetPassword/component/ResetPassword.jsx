@@ -65,8 +65,7 @@ function ResetPassword() {
       setMessage(t("reset.success"));
 
       setTimeout(() => {
-        navigate("/auth/login");
-      }, 2000);
+navigate("/auth/login", { replace: true });      }, 2000);
     } catch (err) {
       console.error(err);
       setError(err?.response?.data?.message || t("reset.failed"));

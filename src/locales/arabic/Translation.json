@@ -596,6 +596,7 @@
     "dragHint": "اسحب أيقونة ⋮⋮ لإعادة ترتيب الملفات",
     "dragToReorder": "اسحب لاعادة الترتيب",
     "copy": "نسخ",
+        "clickToViewProfile": "انقر لعرض الملف الشخصي لصاحب المجموعة",
     "learningProgress": "تقدم التعلم",
     "remaining": "متبقي",
     "done": "تم",
@@ -669,6 +670,14 @@
     "filesSaved": "ملف محفوظ",
     "selected": "محدد",
     "clear": "مسح",
+    "deleted": "محذوفة",
+    "collectionDeletedByOwner": "هذه المجموعة تم حذفها من قبل صاحبها",
+    "collectionNotAccessible": "لا يمكن الوصول إلى هذه المجموعة",
+    "cannotViewProfile": "لا يمكن عرض الملف الشخصي لمجموعة محذوفة",
+    "cannotOpenDeletedCollection": "لا يمكن فتح مجموعة تم حذفها",
+    "remove": "إزالة",
+    "removeFromFavorites": "إزالة من المفضلة"
+,
     "addToCollection": "إضافة إلى المجموعة",
     "cancel": "إلغاء",
     "selectMultiple": "تحديد متعدد",
@@ -794,6 +803,7 @@
       "edit": "✏️ تعديل",
       "publish": "🌐 نشر",
       "publishedBtn": "منشور ✓",
+      
       "viewFiles": "👁️ عرض الملفات",
       "delete": "🗑️",
       "confirmDelete": "هل أنت متأكد من حذف هذه المجموعة؟"

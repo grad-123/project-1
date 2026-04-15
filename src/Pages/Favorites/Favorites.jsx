@@ -29,7 +29,6 @@ function Favorites() {
   const [activeTab, setActiveTab] = useState("all");
   const [sidebarActiveTab, setSidebarActiveTab] = useState("my");
   
-  // ✅ Ref للتمرير التلقائي عند اختيار مجموعة
   const collectionFilesRef = useRef(null);
 
   const fileTypes = [
@@ -43,7 +42,6 @@ function Favorites() {
     { id: 6, name: t("fileTypes.other"), icon: "📁" },
   ];
 
-  // ✅ دالة للتمرير التلقائي إلى عرض ملفات المجموعة
   const scrollToCollectionFiles = () => {
     setTimeout(() => {
       if (collectionFilesRef.current) {
@@ -55,23 +53,21 @@ function Favorites() {
     }, 150);
   };
 
-  // ✅ دالة للتنقل إلى صفحة البروفايل عند النقر على اسم المستخدم (معدلة إلى PublicProfile)
   const handleUserClick = (userId) => {
     console.log("🔵 handleUserClick called with userId:", userId);
     const token = localStorage.getItem("token");
     if (!token) {
-      showMessage("الرجاء تسجيل الدخول أولاً", "warning");
+      showMessage(t("favorites.loginRequired"), "warning");
       return;
     }
     if (userId && userId !== 0) {
       navigate(`/PublicProfile/${userId}`);
     } else {
       console.log("⚠️ No valid userId provided");
-      showMessage("لا يمكن عرض الملف الشخصي", "warning");
+      showMessage(t("favorites.cannotViewProfile"), "warning");
     }
   };
 
-  // ✅ Fetch Favorites
   const fetchFavorites = useCallback(async () => {
     try {
       const res = await axios.get("/Favorite/GetList");
@@ -125,63 +121,26 @@ function Favorites() {
       const res = await axios.get("/Favorite/GetCollections");
       console.log("Raw favorite collections response:", res.data);
 
-      let validFavorites = [];
+      let favorites = [];
 
       if (res.data && res.data.succeeded && res.data.data && Array.isArray(res.data.data)) {
-        for (const item of res.data.data) {
-          try {
-            const checkRes = await axios.get(`/api/v1/Collection/GetById/${item.collectionId}`);
-            if (checkRes.data && checkRes.data.succeeded && checkRes.data.data) {
-              validFavorites.push({
-                id: item.collectionId,
-                collectionId: item.collectionId,
-                name: item.name,
-                description: item.description || "",
-                filesCount: checkRes.data.data.files?.length || 0,
-                files: checkRes.data.data.files || [],
-                uploaderId: checkRes.data.data.uploaderId,
-                uploaderName: checkRes.data.data.uploaderName,
-                courseName: checkRes.data.data.courseName,
-                addedAt: item.addedAt,
-                isFavorite: true,
-              });
-            } else {
-              console.log(`⚠️ Collection ${item.collectionId} (${item.name}) is invalid`);
-              validFavorites.push({
-                id: item.collectionId,
-                collectionId: item.collectionId,
-                name: item.name,
-                description: item.description || "",
-                filesCount: 0,
-                files: [],
-                uploaderId: item.uploaderId,
-                uploaderName: item.uploaderName,
-                addedAt: item.addedAt,
-                isFavorite: true,
-                isInvalid: true,
-              });
-            }
-          } catch (err) {
-            console.log(`⚠️ Error fetching collection ${item.collectionId}:`, err.message);
-            validFavorites.push({
-              id: item.collectionId,
-              collectionId: item.collectionId,
-              name: item.name,
-              description: item.description || "",
-              filesCount: 0,
-              files: [],
-                uploaderId: item.uploaderId,
-                uploaderName: item.uploaderName,
-              addedAt: item.addedAt,
-              isFavorite: true,
-              isInvalid: true,
-            });
-          }
-        }
+        favorites = res.data.data.map((item) => ({
+          id: item.collectionId,
+          collectionId: item.collectionId,
+          name: item.name,
+          description: item.description || "",
+          filesCount: item.filesCount || 0,
+          files: item.files || [],
+          uploaderId: item.uploaderId,
+          uploaderName: item.uploaderName,
+          courseName: item.courseName || "",
+          addedAt: item.addedAt,
+          isFavorite: true,
+        }));
       }
 
-      console.log("✅ Final favorite collections:", validFavorites.length);
-      setFavoriteCollections(validFavorites);
+      console.log("✅ Final favorite collections:", favorites.length);
+      setFavoriteCollections(favorites);
     } catch (err) {
       console.log("Error fetching favorite collections:", err);
       setFavoriteCollections([]);
@@ -461,7 +420,6 @@ function Favorites() {
     setShowAddModal(true);
   };
 
-  // ✅ دالة اختيار المجموعة مع التمرير التلقائي للشاشات المتوسطة والصغيرة
   const handleSelectCollection = (collection) => {
     console.log("Collection selected:", collection);
     if (collection && collection.files) {
@@ -470,7 +428,6 @@ function Favorites() {
     const isFavorite = collection.isFavorite || sidebarActiveTab === "favorite";
     setSelectedCollection({ ...collection, isFavorite });
     
-    // ✅ إضافة التمرير التلقائي للشاشات المتوسطة والصغيرة (≤ 1024px)
     const isMobileOrTablet = window.innerWidth <= 1024;
     if (isMobileOrTablet) {
       scrollToCollectionFiles();

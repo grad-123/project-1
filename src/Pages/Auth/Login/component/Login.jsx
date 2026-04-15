@@ -27,6 +27,19 @@ function Login() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   useEffect(() => {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  if (token) {
+    const isAdmin = role && JSON.parse(role) === "Admin";
+    if (isAdmin) {
+      navigate("/admin", { replace: true });
+    } else {
+      navigate("/", { replace: true });
+    }
+  }
+}, []);
+
+  useEffect(() => {
     document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
   }, [i18n.language]);
 
@@ -144,11 +157,11 @@ function Login() {
 
       localStorage.removeItem("refreshAttempts");
 
-      if (isAdmin) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+    if (isAdmin) {
+  navigate("/admin", { replace: true });
+} else {
+  navigate("/", { replace: true });
+}
     } catch (error) {
       console.error("Login Error:", error.response?.data);
 
@@ -216,11 +229,11 @@ function Login() {
 
       localStorage.setItem("role", JSON.stringify(role));
 
-      if (isAdmin) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+if (isAdmin) {
+  navigate("/admin", { replace: true });
+} else {
+  navigate("/", { replace: true });
+}
     } catch (error) {
       console.error("Google Login Error:", error);
       setLoginError(t("login.googleLoginFailed"));
@@ -294,8 +307,7 @@ function Login() {
             size="large"
             shape="rectangular"
             text="signin_with"
-            locale={i18n.language === "ar" ? "ar" : "en"}
-          />
+locale={i18n.language.startsWith("ar") ? "ar" : "en"}          />
         </div>
       </div>
 

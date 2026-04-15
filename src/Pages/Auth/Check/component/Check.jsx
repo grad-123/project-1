@@ -42,8 +42,8 @@ function Check() {
       if (response.data?.succeeded) {
         setMessage(response.data.message);
         setTimeout(() => {
-          navigate(`/auth/reset?email=${encodeURIComponent(Email)}`);
-        }, 1000);
+  navigate(`/auth/reset?email=${encodeURIComponent(Email)}`, { replace: true });
+}, 1000);
       } else {
         setError(response.data?.message);
       }
