@@ -2,32 +2,26 @@
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   min-height: 100vh;
-}
-
-/* رأس الصفحة */
-.chat-header {
-  margin-bottom: 2rem;
 }
 
 .chat-header h2 {
   font-size: 1.5rem;
-  color: #1a1a2e;
+  color: var(--text-main);
   margin-bottom: 0.5rem;
 }
 
 .chat-header p {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
-/* أزرار الوضع */
 .mode-tabs {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 2px solid var(--card-border);
   padding-bottom: 0;
 }
 
@@ -38,7 +32,7 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  color: #666;
+  color: var(--text-secondary);
   transition: all 0.3s ease;
   position: relative;
   display: flex;
@@ -50,11 +44,11 @@
 .mode-tab span {
   font-size: 0.75rem;
   font-weight: normal;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .mode-tab.active {
-  color: #4a6cf7;
+  color: var(--primary);
 }
 
 .mode-tab.active::after {
@@ -64,40 +58,36 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: #4a6cf7;
+  background: var(--primary);
 }
 
 .mode-tab:hover:not(.active) {
-  color: #333;
-}
-
-/* منطقة الإدخال */
-.chat-input-area {
-  margin-bottom: 2rem;
+  color: var(--text-main);
 }
 
 .chat-textarea {
   width: 100%;
   padding: 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--input-border);
   border-radius: 12px;
   font-size: 1rem;
   font-family: inherit;
   resize: vertical;
   transition: border-color 0.3s;
-  background: white;
+  background: var(--input-bg);
+  color: var(--text-main);
 }
 
 .chat-textarea:focus {
   outline: none;
-  border-color: #4a6cf7;
-  box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .send-button {
   margin-top: 1rem;
   padding: 0.75rem 2rem;
-  background: #4a6cf7;
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: 10px;
@@ -117,7 +107,6 @@
   cursor: not-allowed;
 }
 
-/* منطقة التلخيص */
 .summary-area {
   margin-bottom: 2rem;
   text-align: center;
@@ -146,33 +135,31 @@
   transform: none;
 }
 
-/* الإجابة */
 .answer-container {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   padding: 1.5rem;
   margin-top: 1rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--card-border);
 }
 
 .answer-header {
   font-weight: 600;
-  color: #4a6cf7;
+  color: var(--primary);
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--card-border);
 }
 
 .answer-content {
   line-height: 1.6;
-  color: #333;
+  color: var(--text-main);
   white-space: pre-wrap;
 }
 
-/* رسالة الترحيب */
 .welcome-message {
-  background: #e8f0fe;
+  background: var(--badge-bg);
   border-radius: 16px;
   padding: 1.5rem;
   margin-top: 2rem;
@@ -180,7 +167,7 @@
 
 .welcome-message p {
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--text-main);
   margin-bottom: 0.75rem;
 }
 
@@ -191,17 +178,15 @@
 
 .welcome-message li {
   margin: 0.5rem 0;
-  color: #555;
+  color: var(--text-secondary);
 }
 
-/* حالة التحميل */
 .loading-state {
   text-align: center;
   padding: 3rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .ai-chat {
     padding: 1rem;

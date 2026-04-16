@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 import { useTranslation } from "react-i18next";
-import { FaArrowLeft, FaPlay, FaStop, FaDownload, FaVideo, FaArrowRight, FaCheck, FaUser } from "react-icons/fa";
+import { FaArrowLeft, FaPlay, FaStop, FaDownload, FaVideo, FaArrowRight, FaCheck, FaUser, FaCommentDots } from "react-icons/fa";
 import "./CollectionFilesView.css";
 
 function CollectionFilesView({ 
@@ -317,34 +317,35 @@ function CollectionFilesView({
     setDraggedIndex(null);
   };
 
- const handleDownload = async (file, e) => {
-  e.stopPropagation();
-  if (!file || !file.id) {
-    if (showMessage) showMessage(t("collection.fileIdNotAvailable") || "File ID not available", "error");
-    return;
-  }
-  
-  try {
-    const response = await axios.get(`/Api/EduFile/Download/${file.id}`, {
-      responseType: "blob",
-    });
-
-    const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    const fileName = file.filePath?.split("/").pop() || file.title || 'download';
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(fileUrl);
+  const handleDownload = async (file, e) => {
+    e.stopPropagation();
+    if (!file || !file.id) {
+      if (showMessage) showMessage(t("collection.fileIdNotAvailable") || "File ID not available", "error");
+      return;
+    }
     
-    if (showMessage) showMessage(t("collection.downloadStarted") || "Download started!", "success");
-  } catch (err) {
-    console.log("Download error:", err);
-    if (showMessage) showMessage(t("collection.downloadError") || "Error downloading file", "error");
-  }
-};
+    try {
+      const response = await axios.get(`/Api/EduFile/Download/${file.id}`, {
+        responseType: "blob",
+      });
+
+      const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      const fileName = file.filePath?.split("/").pop() || file.title || 'download';
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(fileUrl);
+      
+      if (showMessage) showMessage(t("collection.downloadStarted") || "Download started!", "success");
+    } catch (err) {
+      console.log("Download error:", err);
+      if (showMessage) showMessage(t("collection.downloadError") || "Error downloading file", "error");
+    }
+  };
+
   const handleWatchVideo = (file, e) => {
     e.stopPropagation();
     if (!file || !file.filePath) {
@@ -354,6 +355,37 @@ function CollectionFilesView({
     const fileUrl = `${serverUrl}${file.filePath}`;
     window.open(fileUrl, "_blank");
     if (showMessage) showMessage(t("collection.watchingVideo") || "Opening video...", "info");
+  };
+
+  // ✅ دالة جديدة للذهاب إلى صفحة الشات
+  const handleChatClick = (file, e) => {
+    e.stopPropagation();
+    
+    const fileId = file.id || file.eduFileId;
+    if (!fileId) {
+      if (showMessage) showMessage(t("collection.fileIdNotAvailable") || "File ID not available", "error");
+      return;
+    }
+    
+    console.log("💬 Opening file in chat:", { fileId, title: file.title });
+    
+    navigate(`/ai/file/${fileId}`, {
+      state: {
+        file: {
+          id: fileId,
+          title: file.title,
+          fileType: file.fileType,
+          description: file.description,
+          courseName: file.courseName,
+          categoryName: file.categoryName,
+          filePath: file.filePath,
+          downloadCount: file.downloadCount,
+          uploadedAt: file.uploadedAt,
+          uploadedByUserName: file.uploadedByUserName,
+          uploadedByUserId: file.uploadedByUserId
+        }
+      }
+    });
   };
 
   const handleRemoveFile = async (fileId, e) => {
@@ -580,6 +612,14 @@ function CollectionFilesView({
                         <FaVideo />
                       </button>
                     )}
+                    {/* ✅ الزر الجديد للدردشة مع الذكاء الاصطناعي */}
+                    <button 
+                      className="chat-file-btn-collection" 
+                      onClick={(e) => handleChatClick(file, e)} 
+                      title={t("collection.askAI") || "Ask AI about this file"}
+                    >
+                      <FaCommentDots />
+                    </button>
                     {!isFavoriteCollection && (
                       <button className="remove-file-btn-collection" onClick={(e) => handleRemoveFile(file.id || file.eduFileId, e)} title={t("collection.removeFromCollection") || "Remove from collection"}>
                         ✕

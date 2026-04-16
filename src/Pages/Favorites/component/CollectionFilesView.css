@@ -417,3 +417,23 @@
     justify-content: flex-end;
   }
 }
+
+.chat-file-btn-collection {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  color: #6c5ce7;
+}
+
+.chat-file-btn-collection:hover {
+  background-color: rgba(108, 92, 231, 0.1);
+  transform: scale(1.05);
+}
+
+.chat-file-btn-collection:active {
+  transform: scale(0.95);
+}
