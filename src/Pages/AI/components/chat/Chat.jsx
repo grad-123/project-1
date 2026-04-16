@@ -131,7 +131,7 @@ function Chat() {
     console.log("📤 Requesting summary for file ID:", fileId);
     
     try {
-      const response = await axios.post("/Api/EduFile/Summary", {
+      const response = await axios.post("/Api/EduFile/Summarize", {
         fileId: parseInt(fileId),
       });
       
