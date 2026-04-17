@@ -127,6 +127,8 @@
     "clickToViewProfile": "Click to view profile",
     "fileNotFound": "File not found or has been deleted",
     "all": "All",
+    "errorNoFilePath": "Cannot open this file",
+
     "order": {
       "mostDownloaded": "Most Downloaded",
       "newest": "Newest"
@@ -591,7 +593,7 @@
     "dragHint": "Drag the ⋮⋮ icon to reorder files",
     "dragToReorder": "Drag to reorder",
     "copy": "Copy",
-        "clickToViewProfile": "Click to view collection owner's profile",
+    "clickToViewProfile": "Click to view collection owner's profile",
 
     "filesInCollection": "Files in this collection",
     "loadingCollectionFiles": "Loading collection files...",
@@ -673,7 +675,7 @@
     "clear": "Clear",
     "addToCollection": "Add to Collection",
     "cancel": "Cancel",
-     "deleted": "Deleted",
+    "deleted": "Deleted",
     "collectionDeletedByOwner": "This collection has been deleted by its owner",
     "collectionNotAccessible": "Cannot access this collection",
     "cannotViewProfile": "Cannot view profile of a deleted collection",
@@ -800,7 +802,7 @@
       "addFiles": "+ Add Files",
       "edit": "✏️ Edit",
       "publish": "🌐 Publish",
-      
+
       "publishedBtn": "Published ✓",
       "viewFiles": "👁️ View Files",
       "delete": "🗑️",
@@ -885,7 +887,7 @@
     "searchFiles": "Search for files or collections...",
     "backToResults": "← Back to results"
   },
-   "aiChat": {
+  "aiChat": {
     "ask": "Ask",
     "summary": "Summary",
     "askSubtitle": "Ask a question",
