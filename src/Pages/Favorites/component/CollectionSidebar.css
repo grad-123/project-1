@@ -1,5 +1,7 @@
 /* CollectionSidebar.css */
 
+/* ========== القواعد الأساسية ========== */
+
 .collection-sidebar {
   background: var(--bg-card);
   display: flex;
@@ -153,7 +155,10 @@
   justify-content: flex-end;
 }
 
-.rename-btn, .delete-btn, .copy-collection-btn, .remove-favorite-btn {
+.rename-btn,
+.delete-btn,
+.copy-collection-btn,
+.remove-favorite-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -197,8 +202,12 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-collections {
@@ -208,26 +217,33 @@
   font-size: 0.85rem;
 }
 
+/* ========== مودال التعديل (نقل من Inline Styles إلى CSS) ========== */
+
 .edit-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--overlay-color);
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999999;
 }
 
 .edit-modal {
-  background: var(--bg-card);
-  border-radius: 12px;
+  background-color: var(--bg-card);
+  border-radius: 16px;
   padding: 1.5rem;
   width: 400px;
   max-width: 90%;
   border: 1px solid var(--card-border);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
 }
 
 .edit-modal h3 {
@@ -235,18 +251,26 @@
   color: var(--text-main);
 }
 
-.edit-modal input, .edit-modal textarea {
+.edit-modal input,
+.edit-modal textarea {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.75rem;
   margin-bottom: 0.75rem;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
   font-size: 0.9rem;
   background: var(--input-bg);
   color: var(--text-main);
+  box-sizing: border-box;
 }
 
-.edit-modal input:focus, .edit-modal textarea:focus {
+.edit-modal textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.edit-modal input:focus,
+.edit-modal textarea:focus {
   outline: none;
   border-color: var(--primary);
 }
@@ -260,23 +284,40 @@
 .modal-buttons button {
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .modal-buttons button:first-child {
   background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.modal-buttons button:first-child:hover {
+  background: var(--card-border);
   color: var(--text-main);
 }
 
 .modal-buttons button:last-child {
   background: var(--primary);
-  color: var(--text-light);
+  color: white;
 }
 
 .modal-buttons button:last-child:hover {
-  background: #2563eb;
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ========== شاشات كبيرة (ديسكتوب) ========== */
@@ -291,13 +332,13 @@
     display: flex;
     flex-direction: column;
   }
-  
+
   .collections-list {
     overflow-y: visible;
     flex: none;
     max-height: none;
   }
-  
+
   .collection-sidebar * {
     overflow-y: visible !important;
   }
@@ -314,12 +355,12 @@
     overflow-y: visible;
     max-height: none;
   }
-  
+
   .collections-list {
     overflow-y: visible;
     max-height: none;
   }
-  
+
   .collection-item:hover {
     transform: translateX(0);
   }
@@ -329,33 +370,36 @@
   .sidebar-header {
     padding: 0.75rem;
   }
-  
+
   .sidebar-header h3 {
     font-size: 1rem;
   }
-  
+
   .sidebar-tab {
     padding: 0.6rem;
     font-size: 0.8rem;
   }
-  
+
   .collection-item {
     padding: 0.6rem;
   }
-  
+
   .collection-info h4 {
     font-size: 0.9rem;
   }
-  
+
   .collection-info p {
     font-size: 0.75rem;
   }
-  
+
   .collection-actions {
     gap: 0.3rem;
   }
-  
-  .rename-btn, .delete-btn, .copy-collection-btn, .remove-favorite-btn {
+
+  .rename-btn,
+  .delete-btn,
+  .copy-collection-btn,
+  .remove-favorite-btn {
     font-size: 0.8rem;
     padding: 0.2rem 0.4rem;
   }
@@ -365,12 +409,12 @@
   .sidebar-header {
     padding: 0.6rem;
   }
-  
+
   .sidebar-tab {
     padding: 0.5rem;
     font-size: 0.75rem;
   }
-  
+
   .collection-meta-details {
     gap: 4px;
     font-size: 9px;
@@ -424,4 +468,3 @@
   border-color: var(--card-border);
   color: var(--text-main);
 }
-

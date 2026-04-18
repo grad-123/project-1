@@ -29,9 +29,12 @@ function CollectionSidebar({
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
     e.preventDefault();
-    
-    console.log("🔵 CollectionSidebar - Clicked on uploader:", { userId, userName });
-    
+
+    console.log("🔵 CollectionSidebar - Clicked on uploader:", {
+      userId,
+      userName,
+    });
+
     const token = localStorage.getItem("token");
     if (!token) {
       if (showMessage) showMessage(t("collection.loginRequired"), "warning");
@@ -41,7 +44,8 @@ function CollectionSidebar({
       navigate(`/PublicProfile/${userId}`);
     } else {
       console.log("⚠️ No valid userId provided");
-      if (showMessage) showMessage(t("collection.cannotViewProfile"), "warning");
+      if (showMessage)
+        showMessage(t("collection.cannotViewProfile"), "warning");
     }
   };
 
@@ -117,13 +121,13 @@ function CollectionSidebar({
 
   const handleDeleteCollection = async (id, e) => {
     e.stopPropagation();
-    
+
     const token = localStorage.getItem("token");
     if (!token) {
       if (showMessage) showMessage(t("collection.loginRequired"), "warning");
       return;
     }
-    
+
     if (window.confirm(t("collection.deleteConfirm"))) {
       try {
         await axios.delete(`/api/v1/collection/Delete/${id}`);
@@ -134,9 +138,9 @@ function CollectionSidebar({
         if (showMessage) showMessage(t("collection.deleted"), "success");
       } catch (err) {
         console.log("Delete error:", err);
-        
+
         let errorMsg = t("collection.deleteError") || "فشل حذف المجموعة";
-        
+
         if (err.response?.data?.message) {
           errorMsg = err.response.data.message;
         } else if (err.response?.status === 401) {
@@ -144,7 +148,7 @@ function CollectionSidebar({
         } else if (err.response?.status === 403) {
           errorMsg = "ليس لديك صلاحية حذف هذه المجموعة";
         }
-        
+
         if (showMessage) showMessage(errorMsg, "error");
       }
     }
@@ -168,13 +172,14 @@ function CollectionSidebar({
           showMessage(t("collection.removedFromFavorites"), "success");
       } catch (err) {
         console.log("Error removing from favorites:", err);
-        
-        let errorMsg = t("collection.removeError") || "فشل إزالة المجموعة من المفضلة";
-        
+
+        let errorMsg =
+          t("collection.removeError") || "فشل إزالة المجموعة من المفضلة";
+
         if (err.response?.data?.message) {
           errorMsg = err.response.data.message;
         }
-        
+
         if (showMessage) showMessage(errorMsg, "error");
       }
     }
@@ -182,18 +187,20 @@ function CollectionSidebar({
 
   const handleCopyCollection = async (collectionId, e) => {
     e.stopPropagation();
-    
+
     const token = localStorage.getItem("token");
     if (!token) {
       if (showMessage) showMessage(t("collection.loginRequired"), "warning");
       return;
     }
-    
+
     setCopyingId(collectionId);
 
     try {
       console.log("📦 Copying collection via API:", collectionId);
-      const response = await axios.post(`/api/v1/collection/Copy/${collectionId}`);
+      const response = await axios.post(
+        `/api/v1/collection/Copy/${collectionId}`,
+      );
 
       if (
         response.status === 200 ||
@@ -206,6 +213,7 @@ function CollectionSidebar({
           "✨ Collection copied successfully!";
         if (showMessage) showMessage(successMessage, "success");
 
+        // ✅ فقط تحديث القوائم، لا تفتح المجموعة المنسوخة
         if (onCollectionUpdate) {
           await onCollectionUpdate();
         }
@@ -214,43 +222,13 @@ function CollectionSidebar({
           await onFavoriteCollectionsUpdate();
         }
 
+        // ✅ تغيير التاب إلى "My Collections" لكن بدون فتح المجموعة
         if (onTabChange && activeTab !== "my") {
           onTabChange("my");
         }
 
-        setTimeout(async () => {
-          try {
-            const collectionsRes = await axios.get(
-              "/api/v1/Collection/GetLibraryCollections",
-            );
-            if (collectionsRes.data?.data?.length > 0) {
-              const copiedCollection = collectionsRes.data.data.find(
-                (c) => c.name?.endsWith("(Copy)") || c.name?.includes("Copy"),
-              );
-              const newCollection =
-                copiedCollection ||
-                collectionsRes.data.data[collectionsRes.data.data.length - 1];
-
-              if (newCollection && onSelectCollection) {
-                const detailsRes = await axios.get(
-                  `/api/v1/Collection/GetById/${newCollection.id}`,
-                );
-                if (detailsRes.data?.data) {
-                  const fullCollection = {
-                    ...detailsRes.data.data,
-                    id: newCollection.id,
-                    source: "my",
-                    isFavorite: false,
-                    files: detailsRes.data.data.files || [],
-                  };
-                  onSelectCollection(fullCollection);
-                }
-              }
-            }
-          } catch (err) {
-            console.log("Could not auto-open new collection:", err);
-          }
-        }, 1000);
+        // ✅ إزالة الكود الذي كان يفتح المجموعة تلقائياً
+        // تم حذف setTimeout الذي كان يبحث عن المجموعة المنسوخة ويفتحها
       } else {
         throw new Error("Copy failed");
       }
@@ -258,9 +236,9 @@ function CollectionSidebar({
       console.error("🔴 Copy error:", err);
       console.error("🔴 Response data:", err.response?.data);
       console.error("🔴 Response status:", err.response?.status);
-      
+
       let errorMessage = "❌ لا يمكنك نسخ مجموعتك الخاصة!";
-      
+
       if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err.response?.data?.title) {
@@ -268,13 +246,14 @@ function CollectionSidebar({
       } else if (err.message) {
         errorMessage = err.message;
       }
-      
+
       if (errorMessage === "You cannot copy your own collection") {
-        errorMessage = t("collection.cannotCopyOwn") || "لا يمكنك نسخ مجموعتك الخاصة";
+        errorMessage =
+          t("collection.cannotCopyOwn") || "لا يمكنك نسخ مجموعتك الخاصة";
       }
-      
+
       console.log("📢 Final error message to show:", errorMessage);
-      
+
       if (showMessage) {
         showMessage(errorMessage, "error");
       } else {
@@ -305,12 +284,12 @@ function CollectionSidebar({
       if (showMessage) showMessage(t("collection.updated"), "success");
     } catch (err) {
       console.log(err);
-      
+
       let errorMsg = t("collection.updateError") || "فشل تحديث المجموعة";
       if (err.response?.data?.message) {
         errorMsg = err.response.data.message;
       }
-      
+
       if (showMessage) showMessage(errorMsg, "error");
     }
   };
@@ -381,7 +360,9 @@ function CollectionSidebar({
                 >
                   <div className="collection-info">
                     <h4>{collection.name}</h4>
-                    <p>{collection.description || t("collection.noDescription")}</p>
+                    <p>
+                      {collection.description || t("collection.noDescription")}
+                    </p>
                     <div className="collection-meta-details">
                       <span className="collection-meta">
                         📄 {collection.filesCount || 0} {t("collection.files")}
@@ -421,7 +402,7 @@ function CollectionSidebar({
             ) : (
               safeFavoriteCollections.map((collection) => {
                 const collectionId = collection.collectionId || collection.id;
-                
+
                 return (
                   <div
                     key={collectionId}
@@ -430,10 +411,14 @@ function CollectionSidebar({
                   >
                     <div className="collection-info">
                       <h4>{collection.name}</h4>
-                      <p>{collection.description || t("collection.noDescription")}</p>
+                      <p>
+                        {collection.description ||
+                          t("collection.noDescription")}
+                      </p>
                       <div className="collection-meta-details">
                         <span className="collection-meta">
-                          📄 {collection.filesCount || 0} {t("collection.files")}
+                          📄 {collection.filesCount || 0}{" "}
+                          {t("collection.files")}
                         </span>
                         {collection.courseName && (
                           <span className="course-name-badge">
@@ -441,16 +426,26 @@ function CollectionSidebar({
                           </span>
                         )}
                         {collection.uploaderName && (
-                          <span 
+                          <span
                             className="uploader-name-clickable"
-                            onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
+                            onClick={(e) =>
+                              handleUploaderClick(
+                                collection.uploaderId,
+                                collection.uploaderName,
+                                e,
+                              )
+                            }
                             title={t("collection.clickToViewProfile")}
                           >
-                            👤 {collection.uploaderName || t("collection.unknown")}
+                            👤{" "}
+                            {collection.uploaderName || t("collection.unknown")}
                           </span>
                         )}
                         <span className="collection-date">
-                          📅 {formatDate(collection.addedAt || collection.createdAt)}
+                          📅{" "}
+                          {formatDate(
+                            collection.addedAt || collection.createdAt,
+                          )}
                         </span>
                       </div>
                     </div>
@@ -464,12 +459,16 @@ function CollectionSidebar({
                         {copyingId === collectionId ? (
                           <span className="copy-spinner">⏳</span>
                         ) : (
-                          <span className="copy-text">{t("collection.copy")}</span>
+                          <span className="copy-text">
+                            {t("collection.copy")}
+                          </span>
                         )}
                       </button>
                       <button
                         className="remove-favorite-btn"
-                        onClick={(e) => handleRemoveFromFavorites(collectionId, e)}
+                        onClick={(e) =>
+                          handleRemoveFromFavorites(collectionId, e)
+                        }
                         title={t("collection.removeFromFavorites")}
                       >
                         ❤️
@@ -483,130 +482,42 @@ function CollectionSidebar({
         )}
       </div>
 
-      {editingCollection && ReactDOM.createPortal(
-        <div
-          className="edit-modal-overlay"
-          onClick={() => setEditingCollection(null)}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
-            backdropFilter: "blur(4px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999999,
-          }}
-        >
+      {editingCollection &&
+        ReactDOM.createPortal(
           <div
-            className="edit-modal"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: "var(--bg-card)",
-              borderRadius: "16px",
-              padding: "1.5rem",
-              width: "400px",
-              maxWidth: "90%",
-              border: "1px solid var(--card-border)",
-              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)",
-              animation: "slideUp 0.3s ease",
-            }}
+            className="edit-modal-overlay"
+            onClick={() => setEditingCollection(null)}
           >
-            <h3 style={{ margin: "0 0 1rem 0", color: "var(--text-main)" }}>
-              {t("collection.editCollection")}
-            </h3>
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder={t("collection.collectionName")}
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                marginBottom: "0.75rem",
-                border: "1px solid var(--card-border)",
-                borderRadius: "8px",
-                fontSize: "0.9rem",
-                background: "var(--input-bg)",
-                color: "var(--text-main)",
-                boxSizing: "border-box",
-              }}
-              autoFocus
-            />
-            <textarea
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
-              placeholder={t("collection.description")}
-              rows="3"
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                marginBottom: "0.75rem",
-                border: "1px solid var(--card-border)",
-                borderRadius: "8px",
-                fontSize: "0.9rem",
-                background: "var(--input-bg)",
-                color: "var(--text-main)",
-                boxSizing: "border-box",
-                resize: "vertical",
-                fontFamily: "inherit",
-              }}
-            />
-            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-              <button
-                onClick={() => setEditingCollection(null)}
-                style={{
-                  padding: "0.5rem 1rem",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  background: "var(--bg-secondary)",
-                  color: "var(--text-secondary)",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "var(--card-border)";
-                  e.currentTarget.style.color = "var(--text-main)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "var(--bg-secondary)";
-                  e.currentTarget.style.color = "var(--text-secondary)";
-                }}
-              >
-                {t("collection.cancel")}
-              </button>
-              <button
-                onClick={handleRenameSave}
-                style={{
-                  padding: "0.5rem 1rem",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  background: "var(--primary)",
-                  color: "white",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = "0.9";
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = "1";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                {t("collection.save")}
-              </button>
+            <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+              <h3>{t("collection.editCollection")}</h3>
+
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder={t("collection.collectionName")}
+                autoFocus
+              />
+
+              <textarea
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                placeholder={t("collection.description")}
+                rows="3"
+              />
+
+              <div className="modal-buttons">
+                <button onClick={() => setEditingCollection(null)}>
+                  {t("collection.cancel")}
+                </button>
+                <button onClick={handleRenameSave}>
+                  {t("collection.save")}
+                </button>
+              </div>
             </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body,
+        )}
 
       <CreateCollectionModal
         isOpen={showCreateModal}
