@@ -27,17 +27,17 @@ function Login() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
-  if (token) {
-    const isAdmin = role && JSON.parse(role) === "Admin";
-    if (isAdmin) {
-      navigate("/admin", { replace: true });
-    } else {
-      navigate("/", { replace: true });
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    if (token) {
+      const isAdmin = role && JSON.parse(role) === "Admin";
+      if (isAdmin) {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     }
-  }
-}, []);
+  }, []);
 
   useEffect(() => {
     document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
@@ -45,15 +45,16 @@ function Login() {
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+      const currentTheme =
+        document.documentElement.getAttribute("data-theme") || "light";
       setTheme(currentTheme);
     });
-    
+
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["data-theme"]
+      attributeFilter: ["data-theme"],
     });
-    
+
     return () => observer.disconnect();
   }, []);
 
@@ -147,7 +148,8 @@ function Login() {
       }
 
       const decoded = jwtDecode(data.data.accessToken);
-      const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      const role =
+        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
       const isAdmin = Array.isArray(role)
         ? role.includes("Admin")
@@ -157,11 +159,11 @@ function Login() {
 
       localStorage.removeItem("refreshAttempts");
 
-    if (isAdmin) {
-  navigate("/admin", { replace: true });
-} else {
-  navigate("/", { replace: true });
-}
+      if (isAdmin) {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       console.error("Login Error:", error.response?.data);
 
@@ -190,9 +192,9 @@ function Login() {
         idToken: idToken,
       });
       const data = response.data;
-      
+
       console.log("📦 Google login response:", JSON.stringify(data, null, 2));
-      
+
       if (!data.succeeded) {
         setLoginError(data.message || t("login.googleLoginFailed"));
         return;
@@ -221,7 +223,8 @@ function Login() {
       }
 
       const decoded = jwtDecode(data.data.accessToken);
-      const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      const role =
+        decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
       const isAdmin = Array.isArray(role)
         ? role.includes("Admin")
@@ -229,11 +232,11 @@ function Login() {
 
       localStorage.setItem("role", JSON.stringify(role));
 
-if (isAdmin) {
-  navigate("/admin", { replace: true });
-} else {
-  navigate("/", { replace: true });
-}
+      if (isAdmin) {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       console.error("Google Login Error:", error);
       setLoginError(t("login.googleLoginFailed"));
@@ -295,10 +298,10 @@ if (isAdmin) {
         </button>
       </form>
 
-      {/* Google Sign-In Button - Rectangular Shape with Text */}
       <div className="google-btn-wrapper">
         <div className="google-btn-container">
           <GoogleLogin
+            key={i18n.language}
             onSuccess={handleGoogleLogin}
             onError={() => {
               setLoginError(t("login.googleLoginFailed"));
@@ -307,7 +310,8 @@ if (isAdmin) {
             size="large"
             shape="rectangular"
             text="signin_with"
-locale={i18n.language.startsWith("ar") ? "ar" : "en"}          />
+            locale={i18n.language.startsWith("ar") ? "ar" : "en"}
+          />
         </div>
       </div>
 

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import CollectionSidebar from "./component/CollectionSidebar";
 import AddToCollectionModal from "./component/AddToCollectionModal";
 import CollectionFilesView from "./component/CollectionFilesView";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaFilter } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 function Favorites() {
@@ -15,6 +15,8 @@ function Favorites() {
   const serverUrl = "https://verdict-prevent-very.ngrok-free.dev";
   const [files, setFiles] = useState([]);
   const [filteredFiles, setFilteredFiles] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -25,10 +27,16 @@ function Favorites() {
   const [loading, setLoading] = useState(true);
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [sidebarActiveTab, setSidebarActiveTab] = useState("my");
-  
+  const [showFilters, setShowFilters] = useState(false);
+  const [categoryId, setCategoryId] = useState("");
+  const [courseId, setCourseId] = useState("");
+  const [fileType, setFileType] = useState("");
+  const [orderBy, setOrderBy] = useState("0");
+  const [isDescending] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [courses, setCourses] = useState([]);  
   const collectionFilesRef = useRef(null);
 
   const fileTypes = [
@@ -41,6 +49,32 @@ function Favorites() {
     { id: 5, name: t("fileTypes.books"), icon: "📚" },
     { id: 6, name: t("fileTypes.other"), icon: "📁" },
   ];
+
+  useEffect(() => {
+    axios
+      .get("/api/v1/Category/GetList")
+      .then((res) => {
+        setCategories(res.data.data || []);
+      })
+      .catch((err) => console.error("Error fetching categories:", err));
+  }, []);
+
+  useEffect(() => {
+    if (!categoryId) {
+      setCourses([]);
+      setCourseId("");
+      return;
+    }
+    setCourseId("");
+    axios
+      .get(`/Api/Course/GetList/${categoryId}`)
+      .then((res) => {
+        setCourses(res.data.data || []);
+      })
+      .catch((err) => {
+        console.error("Error fetching courses:", err);
+      });
+  }, [categoryId]);
 
   const scrollToCollectionFiles = () => {
     setTimeout(() => {
@@ -83,11 +117,12 @@ function Favorites() {
           uploadedByUserName: file.uploadedByUserName,
           courseName: file.courseName,
           categoryName: file.categoryName,
+          categoryId: file.categoryId,
+          courseId: file.courseId,
           photoUrl: file.photoUrl,
         }));
 
         setFiles(filesData);
-        setFilteredFiles(filesData);
       }
     } catch (err) {
       console.log("Error fetching favorites:", err);
@@ -162,39 +197,138 @@ function Favorites() {
     fetchFavoriteCollections();
   }, [fetchFavorites, fetchCollections, fetchFavoriteCollections]);
 
+  // دالة البحث باستخدام API (تشتغل فقط على المفضلات)
+  const searchInFavorites = useCallback(async () => {
+    if (!searchTerm && !categoryId && !courseId && !fileType) {
+      setIsSearching(false);
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    setLoading(true);
+    
+    try {
+      let orderByValue = undefined;
+      if (orderBy === "0") {
+        orderByValue = "DownloadCount";
+      } else if (orderBy === "1") {
+        orderByValue = "UploadedAt";
+      }
+
+      const params = {
+        Keyword: searchTerm || undefined,
+        CategoryId: categoryId || undefined,
+        CourseId: courseId || undefined,
+        FileType: fileType || undefined,
+        OrderBy: orderByValue,
+        IsDescending: isDescending,
+      };
+
+      console.log("🔍 Searching in favorites:", params);
+
+      const res = await axios.get("/Api/EduFile/Search", { params });
+      
+      const allFiles = res.data.data?.files || [];
+      
+      const favoriteFilesIds = new Set(files.map(f => f.eduFileId || f.id));
+      const filteredFavorites = allFiles.filter(file => 
+        favoriteFilesIds.has(file.id || file.eduFileId)
+      );
+      
+      setSearchResults(filteredFavorites);
+    } catch (err) {
+      console.error("Search error:", err);
+      setSearchResults([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, categoryId, courseId, fileType, orderBy, isDescending, files]);
+
+  // لما يتغير السيرش أو الفلاتر، ابحث
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
+      if (searchTerm || categoryId || courseId || fileType) {
+        searchInFavorites();
+      } else {
+        setIsSearching(false);
+        setSearchResults([]);
+      }
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, categoryId, courseId, fileType, orderBy, searchInFavorites]);
 
   useEffect(() => {
     if (selectedCollection) return;
 
-    let result = [...files];
+    if (isSearching) {
+      let result = [...searchResults];
 
-    if (debouncedSearch) {
-      result = result.filter(
-        (file) =>
-          file.title?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-          file.description?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-          file.courseName?.toLowerCase().includes(debouncedSearch.toLowerCase()),
-      );
+      if (activeTab !== "all" && !fileType) {
+        result = result.filter((file) => Number(file.fileType) === Number(activeTab));
+      }
+
+      if (orderBy === "0") {
+        result.sort((a, b) => (b.downloadCount || 0) - (a.downloadCount || 0));
+      } else if (orderBy === "1") {
+        result.sort((a, b) => {
+          const dateA = new Date(a.uploadedAt);
+          const dateB = new Date(b.uploadedAt);
+          
+          if (isNaN(dateA) && isNaN(dateB)) return 0;
+          if (isNaN(dateA)) return 1;
+          if (isNaN(dateB)) return -1;
+          
+          return dateB - dateA;
+        });
+      }
+
+      setFilteredFiles(result);
+    } else {
+      let result = [...files];
+
+      if (activeTab !== "all" && !fileType) {
+        result = result.filter((file) => Number(file.fileType) === Number(activeTab));
+      }
+
+      if (orderBy === "0") {
+        result.sort((a, b) => (b.downloadCount || 0) - (a.downloadCount || 0));
+      } else if (orderBy === "1") {
+        result.sort((a, b) => {
+          const dateA = new Date(a.uploadedAt);
+          const dateB = new Date(b.uploadedAt);
+          
+          if (isNaN(dateA) && isNaN(dateB)) return 0;
+          if (isNaN(dateA)) return 1;
+          if (isNaN(dateB)) return -1;
+          
+          return dateB - dateA;
+        });
+      }
+
+      setFilteredFiles(result);
     }
+  }, [files, searchResults, isSearching, activeTab, fileType, orderBy, selectedCollection]);
 
-    if (activeTab !== "all") {
-      result = result.filter((file) => Number(file.fileType) === Number(activeTab));
-    }
-
-    setFilteredFiles(result);
-  }, [files, debouncedSearch, activeTab, selectedCollection]);
+  const resetFilters = () => {
+    setCategoryId("");
+    setCourseId("");
+    setFileType("");
+    setOrderBy("0");
+    setActiveTab("all");
+    setSearchTerm("");
+    setIsSearching(false);
+    setSearchResults([]);
+    setShowFilters(false);
+  };
 
   useEffect(() => {
     const handleFavoriteRemoved = (event) => {
       const { fileId } = event.detail;
       setFiles((prev) => prev.filter((f) => (f.eduFileId || f.id) !== fileId));
-      setFilteredFiles((prev) => prev.filter((f) => (f.eduFileId || f.id) !== fileId));
+      if (isSearching) {
+        setSearchResults((prev) => prev.filter((f) => (f.eduFileId || f.id) !== fileId));
+      }
     };
 
     const handleFavoriteAdded = (event) => {
@@ -209,7 +343,7 @@ function Favorites() {
       window.removeEventListener("favoriteRemoved", handleFavoriteRemoved);
       window.removeEventListener("favoriteAdded", handleFavoriteAdded);
     };
-  }, [fetchFavorites, fetchFavoriteCollections]);
+  }, [fetchFavorites, fetchFavoriteCollections, isSearching]);
 
   const removeFileFromMyCollections = async (fileId) => {
     try {
@@ -263,6 +397,9 @@ function Favorites() {
       await axios.delete(`/Favorite/Delete/${fileId}`);
 
       setFiles((prev) => prev.filter((f) => (f.eduFileId || f.id) !== fileId));
+      if (isSearching) {
+        setSearchResults((prev) => prev.filter((f) => (f.eduFileId || f.id) !== fileId));
+      }
       if (isSelectMode) {
         setSelectedFiles((prev) => prev.filter((id) => id !== fileId));
       }
@@ -438,20 +575,14 @@ function Favorites() {
     setSelectedCollection(null);
     setSearchTerm("");
     setActiveTab("all");
+    resetFilters();
   };
 
-  if (loading) {
+  const activeFiltersCount = [categoryId, courseId, fileType !== "", orderBy !== "0", searchTerm].filter(Boolean).length;
+
+  if (loading && !isSearching) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          fontSize: "1.2rem",
-          color: "var(--text-secondary)",
-        }}
-      >
+      <div className="favorites-loading">
         {t("favorites.loading")}
       </div>
     );
@@ -499,35 +630,116 @@ function Favorites() {
               <p>{t("favorites.subtitle")}</p>
             </div>
 
-            <div className="search-wrapper">
-              <div className="search-input-wrapper">
-                <FaSearch className="search-icon" />
-                <input
-                  type="text"
-                  placeholder={t("browse.searchPlaceholder")}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="search-input"
-                />
+            <div className="search-filter-wrapper">
+              <div className="search-wrapper">
+                <div className="search-input-wrapper">
+                  <FaSearch className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder={t("browse.searchPlaceholder")}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-input"
+                  />
+                </div>
+                {searchTerm && (
+                  <button className="clear-search-btn" onClick={() => setSearchTerm("")}>
+                    ✕
+                  </button>
+                )}
               </div>
-              {searchTerm && (
-                <button className="clear-search-btn" onClick={() => setSearchTerm("")}>
-                  ✕
-                </button>
-              )}
+
+              <button 
+                className={`filter-toggle-btn ${showFilters ? "active" : ""} ${activeFiltersCount > 0 ? "has-filters" : ""}`}
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <FaFilter /> 
+                {t("browse.filters")}
+                {activeFiltersCount > 0 && <span className="filters-badge">{activeFiltersCount}</span>}
+              </button>
             </div>
+
+            {showFilters && (
+              <div className="filters-panel">
+                <div className="filters-grid">
+                  <select 
+                    className="filter-select"
+                    value={categoryId} 
+                    onChange={(e) => setCategoryId(e.target.value)}
+                  >
+                    <option value="">{t("browse.allCategories")}</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  <select
+                    className="filter-select"
+                    value={courseId}
+                    onChange={(e) => setCourseId(e.target.value)}
+                    disabled={!categoryId}
+                  >
+                    <option value="">{t("browse.courses")}</option>
+                    {courses.map((course) => (
+                      <option key={course.id} value={course.id}>
+                        {course.name}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  <select
+                    className="filter-select"
+                    value={fileType}
+                    onChange={(e) => setFileType(e.target.value)}
+                  >
+                    <option value="">{t("browse.allTypes")}</option>
+                    <option value="0">{t("browse.types.lecture")}</option>
+                    <option value="1">{t("browse.types.slides")}</option>
+                    <option value="2">{t("browse.types.summary")}</option>
+                    <option value="3">{t("browse.types.exam")}</option>
+                    <option value="4">{t("browse.types.assignment")}</option>
+                    <option value="5">{t("browse.types.book")}</option>
+                    <option value="6">{t("browse.types.other")}</option>
+                  </select>
+                  
+                  <select
+                    className="filter-select"
+                    value={orderBy}
+                    onChange={(e) => setOrderBy(e.target.value)}
+                  >
+                    <option value="0">{t("browse.order.mostDownloaded")}</option>
+                    <option value="1">{t("browse.order.newest")}</option>
+                  </select>
+                </div>
+                
+                {(categoryId || courseId || fileType || orderBy !== "0" || searchTerm) && (
+                  <button className="reset-filters-btn" onClick={resetFilters}>
+                    {t("browse.resetFilters")}
+                  </button>
+                )}
+              </div>
+            )}
 
             <div className="tabs-container">
               {fileTypes.map((type) => (
                 <button
                   key={type.id}
-                  className={`tab-btn ${activeTab === type.id ? "active" : ""}`}
-                  onClick={() => setActiveTab(type.id)}
+                  className={`tab-btn ${activeTab === type.id && !fileType ? "active" : ""}`}
+                  onClick={() => {
+                    setActiveTab(type.id);
+                    if (type.id !== "all") {
+                      setFileType(type.id === "all" ? "" : String(type.id));
+                    } else {
+                      setFileType("");
+                    }
+                  }}
                 >
                   {type.icon} {type.name}
                   <span className="tab-count">
                     {
-                      files.filter(
+                      (isSearching ? searchResults : files).filter(
                         (f) => type.id === "all" || Number(f.fileType) === Number(type.id),
                       ).length
                     }
@@ -579,56 +791,27 @@ function Favorites() {
             </div>
 
             {message && (
-              <div
-                className="message-success"
-                style={{
-                  padding: "0.75rem",
-                  borderRadius: "8px",
-                  marginBottom: "1rem",
-                  textAlign: "center",
-                  backgroundColor:
-                    messageType === "success"
-                      ? "#d4edda"
-                      : messageType === "warning"
-                      ? "#fff3cd"
-                      : "#f8d7da",
-                  color:
-                    messageType === "success"
-                      ? "#155724"
-                      : messageType === "warning"
-                      ? "#856404"
-                      : "#721c24",
-                  border: messageType === "warning" ? "1px solid #ffeeba" : "none",
-                }}
-              >
+              <div className={`message-success message-${messageType}`}>
                 {message}
               </div>
             )}
 
             <div className="files-grid">
               {filteredFiles.length === 0 ? (
-                <div
-                  style={{
-                    textAlign: "center",
-                    padding: "3rem",
-                    backgroundColor: "var(--bg-card)",
-                    borderRadius: "12px",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                    border: "1px solid var(--card-border)",
-                  }}
-                >
-                  <p
-                    style={{
-                      fontSize: "1.1rem",
-                      color: "var(--text-main)",
-                      marginBottom: "1rem",
-                    }}
-                  >
+                <div className="empty-files-container">
+                  <p className="empty-title">
                     {t("favorites.noFilesFound")}
                   </p>
-                  <p style={{ color: "var(--text-secondary)" }}>
-                    {searchTerm ? t("favorites.tryChangingSearch") : t("favorites.addFilesFromBrowse")}
+                  <p className="empty-subtitle">
+                    {searchTerm || categoryId || courseId || fileType 
+                      ? t("favorites.tryChangingFilters") 
+                      : t("favorites.addFilesFromBrowse")}
                   </p>
+                  {(searchTerm || categoryId || courseId || fileType) && (
+                    <button className="reset-filters-btn empty-reset-btn" onClick={resetFilters}>
+                      {t("browse.resetFilters")}
+                    </button>
+                  )}
                 </div>
               ) : (
                 filteredFiles.map((file) => {

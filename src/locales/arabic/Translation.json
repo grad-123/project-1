@@ -126,6 +126,9 @@
     "sessionExpired": "انتهت الجلسة. الرجاء تسجيل الدخول مرة أخرى",
     "fileNotFound": "الملف غير موجود أو تم حذفه",
     "all": "الكل",
+    "filters": "الفلاتر",
+    "resetFilters": "إعادة تعيين",
+    "tryChangingFilters": "حاول تغيير الفلاتر",
     "errorNoFilePath": "لا يمكن فتح هذا الملف",
 
     "order": {
@@ -681,6 +684,9 @@
     "removeFromFavorites": "إزالة من المفضلة",
     "addToCollection": "إضافة إلى المجموعة",
     "cancel": "إلغاء",
+    "tryChangingFilters": "حاول تغيير الفلاتر",
+    "loginRequired": "الرجاء تسجيل الدخول أولاً",
+    "cannotViewProfile": "لا يمكن عرض الملف الشخصي",
     "selectMultiple": "تحديد متعدد",
     "loading": "جاري تحميل المفضلة...",
     "noFilesFound": "📁 لم يتم العثور على ملفات مفضلة",
