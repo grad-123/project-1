@@ -126,6 +126,11 @@
     "sessionExpired": "انتهت الجلسة. الرجاء تسجيل الدخول مرة أخرى",
     "fileNotFound": "الملف غير موجود أو تم حذفه",
     "all": "الكل",
+    "filters": "الفلاتر",
+    "resetFilters": "إعادة تعيين",
+    "tryChangingFilters": "حاول تغيير الفلاتر",
+    "errorNoFilePath": "لا يمكن فتح هذا الملف",
+
     "order": {
       "mostDownloaded": "الأكثر تحميلاً",
       "newest": "الأحدث"
@@ -596,7 +601,7 @@
     "dragHint": "اسحب أيقونة ⋮⋮ لإعادة ترتيب الملفات",
     "dragToReorder": "اسحب لاعادة الترتيب",
     "copy": "نسخ",
-        "clickToViewProfile": "انقر لعرض الملف الشخصي لصاحب المجموعة",
+    "clickToViewProfile": "انقر لعرض الملف الشخصي لصاحب المجموعة",
     "learningProgress": "تقدم التعلم",
     "remaining": "متبقي",
     "done": "تم",
@@ -676,10 +681,12 @@
     "cannotViewProfile": "لا يمكن عرض الملف الشخصي لمجموعة محذوفة",
     "cannotOpenDeletedCollection": "لا يمكن فتح مجموعة تم حذفها",
     "remove": "إزالة",
-    "removeFromFavorites": "إزالة من المفضلة"
-,
+    "removeFromFavorites": "إزالة من المفضلة",
     "addToCollection": "إضافة إلى المجموعة",
     "cancel": "إلغاء",
+    "tryChangingFilters": "حاول تغيير الفلاتر",
+    "loginRequired": "الرجاء تسجيل الدخول أولاً",
+    "cannotViewProfile": "لا يمكن عرض الملف الشخصي",
     "selectMultiple": "تحديد متعدد",
     "loading": "جاري تحميل المفضلة...",
     "noFilesFound": "📁 لم يتم العثور على ملفات مفضلة",
@@ -803,7 +810,7 @@
       "edit": "✏️ تعديل",
       "publish": "🌐 نشر",
       "publishedBtn": "منشور ✓",
-      
+
       "viewFiles": "👁️ عرض الملفات",
       "delete": "🗑️",
       "confirmDelete": "هل أنت متأكد من حذف هذه المجموعة؟"
@@ -878,7 +885,7 @@
       "errorReorder": "خطأ في تحديث ترتيب الملفات. حاول مجدداً."
     }
   },
-   "sidebar": {
+  "sidebar": {
     "title": "ملفات الدراسة",
     "AI Assistant": "المساعد الذكي",
     "files": "ملفات",
@@ -887,7 +894,7 @@
     "searchFiles": "ابحث عن ملفات أو مجموعات...",
     "backToResults": "← العودة إلى النتائج"
   },
-    "aiChat": {
+  "aiChat": {
     "ask": "اسأل",
     "summary": "ملخص",
     "askSubtitle": "اطرح سؤالاً",
