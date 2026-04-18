@@ -61,7 +61,7 @@ console.log(currentUser);
 
 function Admin() {
   const { t } = useTranslation();
-  const serverUrl = "https://verdict-prevent-very.ngrok-free.dev";
+  const serverUrl = import.meta.env.VITE_API_URL;
   const [activeTab, setActiveTab] = useState("Pending");
   const [activeSection, setActiveSection] = useState("dashboard");
   const [files, setFiles] = useState([ ]);
@@ -89,30 +89,12 @@ const [stats, setStats] = useState(null);
   const [bannedUsers, setBannedUsers] = useState([]);
   const [selectedFileId, setSelectedFileId] = useState(null);
   const [allCourses, setAllCourses] = useState([]);
-
+  const [currentUser, setCurrentUser] = useState({ permissions: {} });
   const statusMap = {
   Pending: "pending",
   Approved: "approved",
   Rejected: "rejected"
 };
-const token = localStorage.getItem("token");
-
-let currentUser = { permissions: {} };
-
-if (token) {
-  const decoded = jwtDecode(token);
- console.log("Decoded token:", decoded);
-
-  currentUser = {
-  permissions: {
-    ManageCategories: decoded.ManageCategories?.toLowerCase() === "true",
-    ManageCourses: decoded.ManageCourses?.toLowerCase() === "true",
-    ManageFiles: decoded.ManageFiles?.toLowerCase() === "true",
-    ManageUsers: decoded.ManageUsers?.toLowerCase() === "true",
-    SuperAdmin: decoded.SuperAdmin?.toLowerCase() === "true",
-  }
-};
-}
   const fetchFiles = async () => {
   if (!statusMap[activeTab]) return; 
   try {
@@ -140,6 +122,30 @@ const fetchStats = async () => {
 useEffect(() => {
   fetchFiles();
 }, [activeTab]);
+useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+
+      console.log("Decoded token:", decoded);
+
+      setCurrentUser({
+        permissions: {
+          ManageCategories: decoded.ManageCategories?.toLowerCase() === "true",
+          ManageCourses: decoded.ManageCourses?.toLowerCase() === "true",
+          ManageFiles: decoded.ManageFiles?.toLowerCase() === "true",
+          ManageUsers: decoded.ManageUsers?.toLowerCase() === "true",
+          SuperAdmin: decoded.SuperAdmin?.toLowerCase() === "true",
+        }
+      });
+
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
+  }
+}, []);
 const approveFile = async (id) => {
   try {
     await axios.put(`/Api/EduFile/Approve/${id}`);

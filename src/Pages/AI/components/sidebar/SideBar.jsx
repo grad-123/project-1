@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 function Sidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const serverUrl = "https://verdict-prevent-very.ngrok-free.dev";
+  const serverUrl = import.meta.env.VITE_API_URL;
   
   // State
   const [files, setFiles] = useState([]);

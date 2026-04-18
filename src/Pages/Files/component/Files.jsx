@@ -14,7 +14,7 @@ function Files() {
   const { t } = useTranslation();
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const serverUrl = "https://verdict-prevent-very.ngrok-free.dev";
+  const serverUrl = import.meta.env.VITE_API_URL;
   const [files, setFiles] = useState([]);
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState(null);

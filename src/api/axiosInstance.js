@@ -3,7 +3,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const axiosInstance = axios.create({
-  baseURL: "https://verdict-prevent-very.ngrok-free.dev" 
+  baseURL: import.meta.env.VITE_API_URL
 });
 
 let isRefreshing = false;

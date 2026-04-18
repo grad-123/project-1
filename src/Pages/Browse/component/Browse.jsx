@@ -33,7 +33,7 @@ function Browse() {
   const [collectionFileType, setCollectionFileType] = useState("all");
   
   const navigate = useNavigate();
-  const serverUrl = "https://verdict-prevent-very.ngrok-free.dev";
+  const serverUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     axios
