@@ -112,7 +112,6 @@ const handleDrop = async (e, targetCollectionId, targetFileIndex) => {
     ...prev, 
     [sourceCollectionId]: [...newFiles] 
   }));
-  
   // تجهيز البيانات للإرسال إلى الخادم
   const reorderData = {
     collectionId: sourceCollectionId,
@@ -619,9 +618,11 @@ const openViewFiles = async (collectionId) => {
     const res = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
     if (res.data.succeeded) {
       const files = res.data.data.files || [];
-      setViewFilesList(files);
+      const sorted = [...files].sort((a, b) => a.order - b.order);
+
+setViewFilesList(sorted);
       // ✅ خزنهم بالـ collectionFiles كمان
-      setCollectionFiles(prev => ({ ...prev, [collectionId]: files }));
+      setCollectionFiles(prev => ({ ...prev, [collectionId]: sorted}));
       setViewFilesModalOpen(true);
     }
   } catch (err) {
