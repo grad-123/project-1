@@ -1,7 +1,7 @@
 // FavoriteFileCard.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Browse.css";
+import "./FavoriteFileCard.css";
 import { useTranslation } from "react-i18next";
 import axiosInstance from "../../../api/axiosInstance";
 

@@ -97,8 +97,9 @@ html[dir="rtl"] .navbar {
 }
 
 .signin-btn:hover {
-  background: var(--primary-dark);
-  color: white;
+  background: var(--primary);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+  transition: all 0.3s ease;
 }
 
 /* ========== Responsive Styles ========== */

@@ -4,6 +4,7 @@ import "./ResetPassword.css";
 import axios from "../../../../api/axiosInstance";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
 function ResetPassword() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -65,7 +66,8 @@ function ResetPassword() {
       setMessage(t("reset.success"));
 
       setTimeout(() => {
-navigate("/auth/login", { replace: true });      }, 2000);
+        navigate("/auth/login", { replace: true });
+      }, 2000);
     } catch (err) {
       console.error(err);
       setError(err?.response?.data?.message || t("reset.failed"));
@@ -74,49 +76,57 @@ navigate("/auth/login", { replace: true });      }, 2000);
     }
   };
 
-useEffect(() => {
-  if (message || error) {
-    const timer = setTimeout(() => {
-      setMessage("");
-      setError("");
-    }, 3000);
-    return () => clearTimeout(timer);
-  }
-}, [message, error]);
+  useEffect(() => {
+    if (message || error) {
+      const timer = setTimeout(() => {
+        setMessage("");
+        setError("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message, error]);
 
   return (
     <div className="reset-container">
-      <h2>{t("reset.title")}</h2>
+      <div className="reset-card">
+        <h2>{t("reset.title")}</h2>
 
-      {message && <div className="message success">{message}</div>}
-      {error && <div className="message error">{error}</div>}
+        {message && <div className="message success">{message}</div>}
+        {error && <div className="message error">{error}</div>}
 
-      <input
-        className="reset-input"
-        value={Email}
-        disabled
-        placeholder={t("reset.email")}
-      />
+        <input
+          className="reset-input"
+          value={Email}
+          disabled
+          placeholder={t("reset.email")}
+        />
 
-      <input
-        className="reset-input"
-        type="text"
-        placeholder={t("reset.new_password")}
-        value={Password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          className="reset-input"
+          type="text"
+          placeholder={t("reset.new_password")}
+          value={Password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      <input
-        className="reset-input"
-        type="text"
-        placeholder={t("reset.confirm_password")}
-        value={ConfirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-      />
-      <p className="password-note">{t("reset.message")}</p>
-      <button className="reset-button" onClick={handleReset} disabled={loading}>
-        {loading ? t("reset.processing") : t("reset.button")}
-      </button>
+        <input
+          className="reset-input"
+          type="text"
+          placeholder={t("reset.confirm_password")}
+          value={ConfirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+        
+        <p className="password-note">{t("reset.message")}</p>
+        
+        <button 
+          className="reset-button" 
+          onClick={handleReset} 
+          disabled={loading}
+        >
+          {loading ? t("reset.processing") : t("reset.button")}
+        </button>
+      </div>
     </div>
   );
 }
