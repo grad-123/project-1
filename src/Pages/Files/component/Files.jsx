@@ -116,36 +116,29 @@ function Files() {
   }, []);
 
   // 5. جلب المجموعات المفضلة
-  const fetchFavoriteCollections = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    try {
-      const res = await axios.get("/Favorite/GetCollections");
-      console.log("Favorite collections response:", res.data);
+ const fetchFavoriteCollections = useCallback(async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+  
+  try {
+    const res = await axios.get("/Favorite/GetCollections");
+    console.log("Favorite collections response:", res.data);
+    
+    // فقط نستخرج المعرفات ونحفظها - بدون GetById إضافي!
+    if (res.data && res.data.succeeded && res.data.data) {
+      const favoriteIds = res.data.data.map(item => item.collectionId);
+      setFavoriteCollections(favoriteIds);
       
-      if (res.data && res.data.succeeded && res.data.data) {
-        const validFavorites = [];
-        for (const item of res.data.data) {
-          try {
-            const checkRes = await axios.get(`/api/v1/Collection/GetById/${item.collectionId}`);
-            if (checkRes.data && checkRes.data.succeeded && checkRes.data.data) {
-              validFavorites.push(item.collectionId);
-            } else {
-              validFavorites.push(item.collectionId);
-            }
-          } catch (err) {
-            validFavorites.push(item.collectionId);
-          }
-        }
-        setFavoriteCollections(validFavorites);
-      } else if (Array.isArray(res.data)) {
-        const favoriteIds = res.data.map((item) => item.collectionId || item.id);
-        setFavoriteCollections(favoriteIds);
-      }
-    } catch (err) {
-      console.log("Error fetching favorite collections:", err);
+    } else if (Array.isArray(res.data)) {
+      const favoriteIds = res.data.map(item => item.collectionId || item.id);
+      setFavoriteCollections(favoriteIds);
     }
-  }, []);
+    
+  } catch (err) {
+    console.log("Error fetching favorite collections:", err);
+    setFavoriteCollections([]); // في حالة الخطأ، نفضي المصفوفة
+  }
+}, []);
 
   useEffect(() => {
     fetchFavoriteCollections();
