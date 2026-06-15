@@ -1,0 +1,486 @@
+/* ========== Search Results Page ========== */
+.search-results-page {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: var(--bg-secondary);
+  min-height: calc(100vh - 70px);
+}
+
+.search-results-page h1 {
+  font-size: 32px;
+  color: var(--primary);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.search-keyword {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* ========== Search Filters - صغيرة وجنب بعض ========== */
+.search-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.filter-select {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color, #ddd);
+  background: var(--bg-main, #fff);
+  color: var(--text-main, #333);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: auto;
+}
+
+.filter-select:hover,
+.filter-select:focus {
+  border-color: var(--primary, #007bff);
+  outline: none;
+}
+
+.filter-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========== File Type Badge on File Card ========== */
+.file-type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 500;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  margin-left: 8px;
+}
+
+/* ========== Files & Collections Sections ========== */
+.files-section,
+.collections-section {
+  margin-bottom: 40px;
+}
+
+.files-section h2,
+.collections-section h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--text-main);
+  border-bottom: 2px solid var(--primary);
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.files-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.collections-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ========== Collection Card ========== */
+.collection-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid var(--card-border);
+}
+
+.collection-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary);
+}
+
+.collection-icon {
+  font-size: 48px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.collection-info {
+  flex: 1;
+}
+
+.collection-title {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.collection-description {
+  margin: 0 0 12px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.collection-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.collection-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.collection-favorite-btn {
+  background: var(--bg-main);
+  border: 1px solid var(--card-border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.collection-favorite-btn:hover:not(:disabled) {
+  transform: scale(1.1);
+}
+
+.collection-favorite-btn.active {
+  color: #ff4757;
+  border-color: #ff4757;
+  background: rgba(255, 71, 87, 0.1);
+}
+
+.collection-favorite-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.view-collection-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.view-collection-btn:hover {
+  background: var(--primary-dark, #2563eb);
+  transform: translateY(-1px);
+}
+
+/* ========== Back Header (Collection View) ========== */
+.back-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  color: var(--primary-dark, #2563eb);
+  transform: translateX(-4px);
+}
+
+.collection-title-header {
+  font-size: 24px;
+  margin: 8px 0 4px;
+  color: var(--text-main);
+}
+
+.collection-desc-header {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* ========== Collection View Tabs (فلتر Types داخل المجموعة) ========== */
+.collection-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 30px;
+  flex-wrap: wrap;
+}
+
+.collection-tab {
+  padding: 6px 14px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-main);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  color: var(--text-main);
+}
+
+.collection-tab:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.collection-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* ========== No Results ========== */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.no-results h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+/* ========== Message ========== */
+.message {
+  background: #fff3cd;
+  color: #856404;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* ========== Loading ========== */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #e0e0e0;
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ========== Uploader Name Clickable ========== */
+.uploader-name-clickable {
+  cursor: pointer;
+  color: #007bff;
+  transition: opacity 0.2s;
+}
+
+.uploader-name-clickable:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .search-results-page {
+    padding: 30px 16px;
+  }
+  
+  .search-results-page h1 {
+    font-size: 28px;
+  }
+  
+  .search-filters {
+    gap: 8px;
+  }
+  
+  .filter-select {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+  
+  .collection-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .collection-actions {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 12px;
+  }
+  
+  .collection-icon {
+    font-size: 40px;
+    min-width: 50px;
+  }
+  
+  .collection-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 8px;
+  }
+  
+  .collection-tab {
+    white-space: nowrap;
+    padding: 5px 12px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-results-page {
+    padding: 20px 12px;
+  }
+  
+  .search-results-page h1 {
+    font-size: 24px;
+  }
+  
+  .search-keyword {
+    font-size: 14px;
+  }
+  
+  .search-filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .filter-select {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  
+  .files-section h2,
+  .collections-section h2 {
+    font-size: 20px;
+  }
+  
+  .collection-card {
+    padding: 15px;
+  }
+  
+  .collection-icon {
+    font-size: 32px;
+    min-width: 45px;
+  }
+  
+  .collection-title {
+    font-size: 16px;
+  }
+  
+  .collection-description {
+    font-size: 12px;
+  }
+  
+  .collection-meta {
+    gap: 10px;
+    font-size: 10px;
+  }
+  
+  .collection-favorite-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .view-collection-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  
+  .back-btn {
+    font-size: 12px;
+  }
+  
+  .collection-title-header {
+    font-size: 20px;
+  }
+}
+
+/* ========== RTL Support ========== */
+html[dir="rtl"] .back-btn:hover {
+  transform: translateX(4px);
+}
+
+html[dir="rtl"] .collection-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  html[dir="rtl"] .collection-actions {
+    justify-content: flex-start;
+  }
+}
+
+/* ========== Dark Mode ========== */
+[data-theme="dark"] .collection-card {
+  background: var(--bg-card);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .collection-favorite-btn {
+  background: var(--bg-card);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .collection-favorite-btn.active {
+  background: rgba(255, 71, 87, 0.15);
+}
+
+[data-theme="dark"] .collection-tab {
+  background: var(--bg-card);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .collection-tab:hover,
+[data-theme="dark"] .collection-tab.active {
+  background: var(--primary);
+  color: white;
+}
+
+[data-theme="dark"] .filter-select {
+  background: var(--bg-main);
+  border-color: var(--card-border);
+  color: var(--text-main);
+}
