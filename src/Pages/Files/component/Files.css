@@ -294,6 +294,8 @@
   box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
+
+
 [data-theme="dark"] .collection-card {
   background: var(--bg-card);
   border-color: var(--input-border);
@@ -406,6 +408,42 @@
 
 [dir="rtl"] .back-btn:hover {
   transform: translateX(2px);
+}
+
+
+
+
+/* Breadcrumbs styling */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.breadcrumb-link {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.breadcrumb-current {
+  color: #888;
+  font-weight: 500;
+}
+
+.breadcrumb-separator {
+  color: #666;
+  font-size: 16px;
 }
 
 @media (min-width: 1025px) {

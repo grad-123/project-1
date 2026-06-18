@@ -14,13 +14,11 @@
   box-sizing: border-box;
 }
 
-/* تأكد من أن الجسم ليس عنده padding-top يمنع الـ sticky */
 body {
   margin: 0;
   padding: 0;
 }
 
-/* لإصلاح مشكلة الـ sticky مع الـ RTL */
 html[dir="rtl"] .navbar {
   right: 0;
   left: auto;
@@ -99,21 +97,91 @@ html[dir="rtl"] .navbar {
 .signin-btn:hover {
   background: var(--primary);
   box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
-  transition: all 0.3s ease;
 }
 
-/* ========== Responsive Styles ========== */
+/* ===== Navbar Search ===== */
+.navbar-search-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 300px;
+  margin: 0 12px;
+}
+
+.navbar-search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary, #f5f5f5);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 20px;
+  overflow: hidden;
+  height: 36px;
+}
+
+.navbar-search-icon {
+  padding: 0 8px 0 12px;
+  color: #888;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.navbar-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: var(--text-main, #333);
+  padding: 0;
+}
+
+.navbar-search-btn {
+  background: var(--primary, #007bff);
+  color: white;
+  border: none;
+  padding: 0 14px;
+  height: 100%;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: background 0.2s;
+  border-radius: 0 20px 20px 0;
+}
+
+.navbar-search-btn:hover {
+  opacity: 0.9;
+}
+
+/* Message */
+.navbar-message-search {
+  padding: 8px 12px;
+  background: #fff3cd;
+  color: #856404;
+  font-size: 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  text-align: center;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+/* Responsive */
 @media (max-width: 992px) {
   .navbar {
     padding: 12px 20px;
   }
-  
   .nav-link {
     gap: 15px;
   }
-  
   .nav-link a {
     font-size: 14px;
+  }
+  .navbar-search-wrapper {
+    max-width: 250px;
   }
 }
 
@@ -122,11 +190,9 @@ html[dir="rtl"] .navbar {
     flex-wrap: wrap;
     padding: 10px 15px;
   }
-  
   .logo {
     font-size: 18px;
   }
-  
   .nav-link {
     order: 3;
     width: 100%;
@@ -135,27 +201,25 @@ html[dir="rtl"] .navbar {
     margin-top: 10px;
     flex-wrap: wrap;
   }
-  
-  .nav-link li {
-    margin: 0;
-  }
-  
   .nav-link a {
     font-size: 13px;
     padding: 6px 12px;
     border-radius: 20px;
     background: var(--bg-card);
   }
-  
+  .navbar-search-wrapper {
+    order: 4;
+    width: 100%;
+    max-width: 100%;
+    margin: 8px 0 0;
+  }
   .nav-right {
     gap: 8px;
   }
-  
   .icon-btn {
     padding: 6px;
     font-size: 18px;
   }
-  
   .signin-btn {
     padding: 6px 14px;
     font-size: 13px;
@@ -166,28 +230,24 @@ html[dir="rtl"] .navbar {
   .navbar {
     padding: 8px 12px;
   }
-  
   .logo {
     font-size: 16px;
   }
-  
   .nav-link a {
     font-size: 11px;
     padding: 4px 10px;
   }
-  
   .icon-btn {
     padding: 5px;
     font-size: 16px;
   }
-  
   .signin-btn {
     padding: 5px 10px;
     font-size: 12px;
   }
 }
 
-/* ========== Dark Mode Support ========== */
+/* Dark Mode */
 [data-theme="dark"] .navbar {
   background-color: var(--navbar-bg);
   border-bottom-color: var(--border-color);
@@ -195,4 +255,14 @@ html[dir="rtl"] .navbar {
 
 [data-theme="dark"] .icon-btn:hover {
   background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .navbar-search-bar {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .navbar-search-input {
+  color: var(--text-main);
+  background: transparent;
 }

@@ -6,14 +6,16 @@ import {
   MdCategory,
   MdDownload,
 } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Home.css";
 import axios from "../../../api/axiosInstance";
+
 function Home() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const { t } = useTranslation();
+  
   const [stats, setStats] = useState({
     studentsCount: 0,
     filesCount: 0,
@@ -22,6 +24,11 @@ function Home() {
     totalDownloads: 0,
   });
 
+  // State للكاتاجوريات
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+
+  // جلب الإحصائيات
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -31,9 +38,23 @@ function Home() {
         console.error("Error fetching stats:", error);
       }
     };
-
     fetchStats();
   }, []);
+
+  // جلب الكاتاجوريات
+  useEffect(() => {
+    axios
+      .get("/api/v1/Category/GetList")
+      .then((res) => {
+        setCategories(res.data.data || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching categories:", err);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <>
       <div className="hero">
@@ -53,12 +74,7 @@ function Home() {
           <p className="description">{t("home.description")}</p>
 
           <div className="home-buttons">
-            <button
-              className="btn browse-btn"
-              onClick={() => navigate("/Browse")}
-            >
-              {t("home.browseBtn")} <span className="arrow">→</span>
-            </button>
+           
             {!token && (
               <button
                 className="btn get-started-btn"
@@ -87,39 +103,63 @@ function Home() {
             </div> 
             <p>{t("home.filesCount")}</p>
             <h2>{stats.filesCount}+</h2>
-           
           </div>
 
           <div className="stat-card">
             <div className="stat-icon">
-              {" "}
-              <MdLibraryBooks size={50} color="#6BCB77" />{" "}
+              <MdLibraryBooks size={50} color="#6BCB77" />
             </div>
             <p>{t("home.coursesCount")}</p>
             <h2>{stats.coursesCount}+</h2>
-            
           </div>
 
           <div className="stat-card">
             <div className="stat-icon">
-              {" "}
               <MdCategory size={50} color="#4D96FF" />
             </div>
             <p>{t("home.categoriesCount")}</p>
             <h2>{stats.categoriesCount}+</h2>
-            
           </div>
 
           <div className="stat-card">
             <div className="stat-icon">
-              {" "}
-              <MdDownload size={50} color="#ff6efa" />{" "}
+              <MdDownload size={50} color="#ff6efa" />
             </div> 
             <p>{t("home.totalDownloads")}</p>
             <h2>{stats.totalDownloads}+</h2>
-           
           </div>
         </div>
+      </div>
+
+      {/* ========== قسم الكاتاجوريات ========== */}
+      <div className="home-categories-section">
+        <h2 className="home-categories-title">{t("browse.categories")}</h2>
+        <p className="home-categories-description">{t("browse.description")}</p>
+
+        {loading ? (
+          <div className="loading">
+            <div className="spinner"></div>
+          </div>
+        ) : (
+          <div className="home-categories-container">
+            {categories.map((cat) => (
+              <Link
+                key={cat.id}
+                to={`/courses/${cat.id}`}
+                state={{ categoryName: cat.name }}
+                className="home-category-link"
+              >
+                <div className="home-category-card">
+                  <div className="home-card-content">
+                    <h3>{cat.name}</h3>
+                    <p>{cat.description}</p>
+                  </div>
+                  <div className="home-card-arrow">›</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="features-section">

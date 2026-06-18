@@ -1,9 +1,10 @@
 import "./Theme.css";
 import React from "react";
+import SearchResults from "./Pages/SearchResults/SearchResults";
 import Profile from "./Pages/profile/component/Profile";
 import AI from "./Pages/AI/component/AI";
-import AIHome from "./Pages/AI/components/homeAI/HomeAI";  // ✅ المسار الصحيح
-import Chat from "./Pages/AI/components/chat/Chat";        // ✅ المسار الصحيح
+import AIHome from "./Pages/AI/components/homeAI/HomeAI";
+import Chat from "./Pages/AI/components/chat/Chat";
 import AuthPage from "./Pages/Auth/AuthPage/component/AuthPage";
 import Admin from "./Pages/Admin/component/Admin";
 import {
@@ -13,7 +14,6 @@ import {
 } from "react-router-dom";
 import Root from "./routes/Root";
 import Home from "./Pages/Home/component/Home";
-import Browse from "./Pages/Browse/component/Browse";
 import Favorites from "./Pages/Favorites/Favorites";
 import Upload from "./Pages/Upload/component/Upload";
 import Courses from "./Pages/Courses/component/Courses";
@@ -41,7 +41,8 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { index: true, element: <Home /> },
-      { path: "browse", element: <Browse /> },
+      { path: "search-results", element: <SearchResults /> },
+      // تم حذف Route Browse
       { path: "courses/:categoryId", element: <Courses /> },
       { path: "files/:courseId", element: <Files /> },
       {

@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "../../../api/axiosInstance";
 import { useTranslation } from "react-i18next";
 import "./Files.css";
 import { FaHeart } from "react-icons/fa";
-
 import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
 
 function Files() {
@@ -14,6 +13,7 @@ function Files() {
   const { t } = useTranslation();
   const { courseId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const serverUrl = import.meta.env.VITE_API_URL;
   const [files, setFiles] = useState([]);
   const [collections, setCollections] = useState([]);
@@ -25,6 +25,39 @@ function Files() {
   const [loadingCollections, setLoadingCollections] = useState(false);
   const [loadingCollectionFiles, setLoadingCollectionFiles] = useState(false);
   const [togglingCollectionId, setTogglingCollectionId] = useState(null);
+  
+  // بيانات الـ Breadcrumbs
+  const [category, setCategory] = useState(null);
+  const [course, setCourse] = useState(null);
+  const categoryName = location.state?.categoryName;
+  const categoryId = location.state?.categoryId;
+
+  // جلب معلومات الكاتاجوري والكورس للـ Breadcrumbs
+  useEffect(() => {
+    if (categoryId) {
+      axios
+        .get(`/api/v1/Category/GetById/${categoryId}`)
+        .then((res) => {
+          if (res.data && res.data.succeeded) {
+            setCategory(res.data.data);
+          }
+        })
+        .catch((err) => console.error("Error fetching category:", err));
+    }
+  }, [categoryId]);
+
+  useEffect(() => {
+    if (courseId) {
+      axios
+        .get(`/Api/Course/GetById/${courseId}`)
+        .then((res) => {
+          if (res.data && res.data.succeeded) {
+            setCourse(res.data.data);
+          }
+        })
+        .catch((err) => console.error("Error fetching course:", err));
+    }
+  }, [courseId]);
 
   // 1. الاستماع لأحداث المفضلة من أي مكان
   useEffect(() => {
@@ -116,29 +149,26 @@ function Files() {
   }, []);
 
   // 5. جلب المجموعات المفضلة
- const fetchFavoriteCollections = useCallback(async () => {
-  const token = localStorage.getItem("token");
-  if (!token) return;
-  
-  try {
-    const res = await axios.get("/Favorite/GetCollections");
-    console.log("Favorite collections response:", res.data);
+  const fetchFavoriteCollections = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
     
-    // فقط نستخرج المعرفات ونحفظها - بدون GetById إضافي!
-    if (res.data && res.data.succeeded && res.data.data) {
-      const favoriteIds = res.data.data.map(item => item.collectionId);
-      setFavoriteCollections(favoriteIds);
+    try {
+      const res = await axios.get("/Favorite/GetCollections");
+      console.log("Favorite collections response:", res.data);
       
-    } else if (Array.isArray(res.data)) {
-      const favoriteIds = res.data.map(item => item.collectionId || item.id);
-      setFavoriteCollections(favoriteIds);
+      if (res.data && res.data.succeeded && res.data.data) {
+        const favoriteIds = res.data.data.map(item => item.collectionId);
+        setFavoriteCollections(favoriteIds);
+      } else if (Array.isArray(res.data)) {
+        const favoriteIds = res.data.map(item => item.collectionId || item.id);
+        setFavoriteCollections(favoriteIds);
+      }
+    } catch (err) {
+      console.log("Error fetching favorite collections:", err);
+      setFavoriteCollections([]);
     }
-    
-  } catch (err) {
-    console.log("Error fetching favorite collections:", err);
-    setFavoriteCollections([]); // في حالة الخطأ، نفضي المصفوفة
-  }
-}, []);
+  }, []);
 
   useEffect(() => {
     fetchFavoriteCollections();
@@ -455,6 +485,45 @@ function Files() {
 
   return (
     <div className="files-container">
+      {/* Breadcrumbs */}
+      <div className="breadcrumbs">
+        <Link to="/" className="breadcrumb-link"> {t("navbar.home")}</Link>
+        <span className="breadcrumb-separator">›</span>
+        
+        {/* رابط الكاتاجوري */}
+        {(category?.id || categoryId) && (
+          <>
+            <Link 
+              to={`/courses/${category?.id || categoryId}`} 
+              state={{ categoryName: category?.name || categoryName, categoryId: category?.id || categoryId }}
+              className="breadcrumb-link"
+            >
+              {category?.name || categoryName || t("course.course")}
+            </Link>
+            <span className="breadcrumb-separator">›</span>
+          </>
+        )}
+        
+        {/* رابط الكورس الحالي */}
+        {course && (
+          <Link 
+            to={`/files/${courseId}`}
+            state={{ categoryName: category?.name || categoryName, categoryId: category?.id || categoryId }}
+            className="breadcrumb-link"
+          >
+            {course.name}
+          </Link>
+        )}
+        
+        {/* اسم المجموعة إذا كانت مفتوحة */}
+        {selectedCollection && (
+          <>
+            <span className="breadcrumb-separator">›</span>
+            <span className="breadcrumb-current">{selectedCollection.name}</span>
+          </>
+        )}
+      </div>
+
       <h2 className="files-title">{t("files.title")}</h2>
       <p className="files-description">{t("files.description")}</p>
 

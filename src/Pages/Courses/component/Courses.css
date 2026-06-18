@@ -3,19 +3,58 @@
   background-color: var(--bg-secondary);
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Breadcrumbs styling */
+.breadcrumbs {
+  display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.breadcrumb-link {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.breadcrumb-current {
+  color: #888;
+  font-weight: 500;
+}
+
+.breadcrumb-separator {
+  color: #666;
+  font-size: 16px;
 }
 
 .courses-title {
   font-size: 28px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: var(--primary);
+  width: 100%;
 }
+
 .course-description {
   font-size: 20px;
   color: var(--primary);
   margin-bottom: 30px;
+  width: 100%;
 }
+
 .courses-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -78,6 +117,30 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   background-color: #c0e0ff;
 }
+
+/* Loading spinner */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e0e9f5;
+  border-top: 4px solid #004a99;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .courses-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -88,22 +151,23 @@
   .courses-grid {
     grid-template-columns: 1fr;
   }
-}
-@media (max-width: 480px) {
+  
   .courses-title {
     font-size: 22px;
   }
+  
   .course-description {
     font-size: 16px;
   }
+  
   .course-info h3 {
     font-size: 16px;
   }
+  
   .course-info p {
     font-size: 12px;
   }
-}
-@media (max-width: 480px) {
+  
   .course-box {
     height: auto;
     padding: 15px;
