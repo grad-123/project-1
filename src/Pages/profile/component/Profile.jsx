@@ -38,6 +38,7 @@ const [selectedCollectionCourse, setSelectedCollectionCourse] = useState("");
 const [isReordering, setIsReordering] = useState(false);
 const [draggedFileIndex, setDraggedFileIndex] = useState(null);
 const [draggedCollectionId, setDraggedCollectionId] = useState(null);
+const [selectedCollection, setSelectedCollection] = useState(null);
 
 // بدء السحب
 const handleDragStart = (e, collectionId, fileIndex) => {
@@ -617,9 +618,12 @@ const openViewFiles = async (collectionId) => {
   try {
     const res = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
     if (res.data.succeeded) {
-      const files = res.data.data.files || [];
-      const sorted = [...files].sort((a, b) => a.order - b.order);
+      const collection = res.data.data;
 
+const files = collection.files || [];
+const sorted = [...files].sort((a, b) => a.order - b.order);
+
+setSelectedCollection(collection);   // <-- خزني بيانات الكولكشن كاملة
 setViewFilesList(sorted);
       // ✅ خزنهم بالـ collectionFiles كمان
       setCollectionFiles(prev => ({ ...prev, [collectionId]: sorted}));
@@ -1101,6 +1105,9 @@ setViewFilesList(sorted);
   <div className="modal">
     <div className="modal-content files-reorder-modal">
       <h3>{t("profile.viewFiles.title")}</h3>
+      <p className="collection-description">
+  {selectedCollection?.description || "No description"}
+</p>
       <p className="reorder-hint">
         {t("profile.viewFiles.hint")}
       </p>
@@ -1144,6 +1151,9 @@ setViewFilesList(sorted);
                       <span className="file-order">{index + 1}.</span> {file.title}
                     </div>
                     <div className="file-meta">{file.courseName}</div>
+                     {file.description && (
+    <div className="file-description">{file.description}</div>
+  )}
                   </div>
                 </div>
 
