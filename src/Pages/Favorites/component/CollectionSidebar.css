@@ -34,7 +34,8 @@
 }
 
 .create-collection-btn:hover {
-  background: #2563eb;
+  background: var(--primary);
+  opacity: 0.85;
 }
 
 .sidebar-tabs {
@@ -86,7 +87,7 @@
 }
 
 .collection-item.active {
-  background: var(--badge-bg);
+  background: var(--babyblue);
   border-color: var(--primary);
 }
 
@@ -141,7 +142,7 @@
 }
 
 .course-name-badge {
-  background: var(--badge-bg);
+  background: var(--babyblue);
   padding: 2px 6px;
   border-radius: 12px;
   font-size: 10px;
@@ -169,7 +170,7 @@
 }
 
 .rename-btn:hover {
-  background: var(--badge-bg);
+  background: var(--babyblue);
 }
 
 .delete-btn:hover {
@@ -184,7 +185,8 @@
 }
 
 .copy-collection-btn:hover:not(:disabled) {
-  background: #2563eb;
+  background: var(--primary);
+  opacity: 0.85;
 }
 
 .copy-collection-btn:disabled {
@@ -217,7 +219,7 @@
   font-size: 0.85rem;
 }
 
-/* ========== مودال التعديل (نقل من Inline Styles إلى CSS) ========== */
+/* ========== مودال التعديل ========== */
 
 .edit-modal-overlay {
   position: fixed;
@@ -419,52 +421,4 @@
     gap: 4px;
     font-size: 9px;
   }
-}
-
-/* ========== أنماط Dark Mode ========== */
-[data-theme="dark"] .collection-sidebar {
-  background: var(--bg-card);
-}
-
-[data-theme="dark"] .collection-item {
-  background: var(--bg-card);
-  border-color: var(--card-border);
-}
-
-[data-theme="dark"] .collection-item:hover {
-  background: var(--bg-secondary);
-}
-
-[data-theme="dark"] .collection-item.active {
-  background: var(--badge-bg);
-  border-color: var(--primary);
-}
-
-[data-theme="dark"] .sidebar-tab {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .sidebar-tab.active {
-  color: var(--primary);
-}
-
-[data-theme="dark"] .sidebar-tab:hover:not(.active) {
-  background: var(--bg-secondary);
-  color: var(--text-main);
-}
-
-[data-theme="dark"] .create-collection-btn {
-  background: var(--primary);
-}
-
-[data-theme="dark"] .edit-modal {
-  background: var(--bg-card);
-  border-color: var(--card-border);
-}
-
-[data-theme="dark"] .edit-modal input,
-[data-theme="dark"] .edit-modal textarea {
-  background: var(--input-bg);
-  border-color: var(--card-border);
-  color: var(--text-main);
 }

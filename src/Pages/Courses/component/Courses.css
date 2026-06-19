@@ -7,7 +7,6 @@
   width: 100%;
 }
 
-/* Breadcrumbs styling */
 .breadcrumbs {
   display: flex;
   align-items: center;
@@ -17,27 +16,28 @@
   margin-bottom: 15px;
   padding-bottom: 10px;
   font-size: 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .breadcrumb-link {
-  color: #007bff;
+  color: var(--primary);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .breadcrumb-link:hover {
-  color: #0056b3;
+  color: var(--primary);
+  opacity: 0.8;
   text-decoration: underline;
 }
 
 .breadcrumb-current {
-  color: #888;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .breadcrumb-separator {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 16px;
 }
 
@@ -71,7 +71,8 @@
   padding: 20px;
   border-radius: 14px;
   cursor: pointer;
-  background-color: #e0e9f5;
+  background-color:var(--babyblue);
+  border: 1px solid var(--primary);
   transition:
     transform 0.25s,
     box-shadow 0.25s,
@@ -89,7 +90,7 @@
 
 .course-info h3 {
   font-size: 18px;
-  color: #004a99;
+  color: var(--primary);
   margin-bottom: 8px;
   white-space: nowrap;
   overflow: hidden;
@@ -109,16 +110,16 @@
 .course-arrow {
   align-self: flex-end;
   font-size: 22px;
-  color: #004a99;
+  color: var(--primary);
 }
 
 .course-box:hover {
-  transform: translateY(-6px);
+  transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  background-color: #c0e0ff;
+  background-color: var(--bg-secondary);
+  border-color: var(--primary);
 }
 
-/* Loading spinner */
 .loading {
   display: flex;
   justify-content: center;
@@ -129,18 +130,21 @@
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #e0e9f5;
-  border-top: 4px solid #004a99;
+  border: 4px solid var(--card-border);
+  border-top: 4px solid var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .courses-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -151,23 +155,23 @@
   .courses-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .courses-title {
     font-size: 22px;
   }
-  
+
   .course-description {
     font-size: 16px;
   }
-  
+
   .course-info h3 {
     font-size: 16px;
   }
-  
+
   .course-info p {
     font-size: 12px;
   }
-  
+
   .course-box {
     height: auto;
     padding: 15px;

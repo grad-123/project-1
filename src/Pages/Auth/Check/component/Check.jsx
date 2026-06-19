@@ -23,7 +23,7 @@ function Check() {
 
       setMessage(t("checkReset.resendSuccess"));
     } catch (err) {
-      setMessage(err?.response?.data?.message || t("checkReset.resendFail"));
+      setError(err?.response?.data?.message || t("checkReset.resendFail"));
     }
   };
 
@@ -81,7 +81,6 @@ function Check() {
             className="check-btn secondary"
             onClick={handleResend}
           >
-            {" "}
             {t("checkReset.resend")}
           </button>
           <button

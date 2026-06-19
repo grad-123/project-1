@@ -357,7 +357,6 @@ function CollectionFilesView({
     if (showMessage) showMessage(t("collection.watchingVideo") || "Opening video...", "info");
   };
 
-  // ✅ دالة جديدة للذهاب إلى صفحة الشات
   const handleChatClick = (file, e) => {
     e.stopPropagation();
     
@@ -612,7 +611,7 @@ function CollectionFilesView({
                         <FaVideo />
                       </button>
                     )}
-                    {/* ✅ الزر الجديد للدردشة مع الذكاء الاصطناعي */}
+                   
                     <button 
                       className="chat-file-btn-collection" 
                       onClick={(e) => handleChatClick(file, e)} 

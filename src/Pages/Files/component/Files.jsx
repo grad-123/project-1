@@ -8,6 +8,7 @@ import FavoriteFileCard from "../../Browse/component/FavoriteFileCard";
 
 function Files() {
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // "success", "warning", "error"
   const [activeTab, setActiveTab] = useState("files");
   const [activeType, setActiveType] = useState("all");
   const { t } = useTranslation();
@@ -25,14 +26,12 @@ function Files() {
   const [loadingCollections, setLoadingCollections] = useState(false);
   const [loadingCollectionFiles, setLoadingCollectionFiles] = useState(false);
   const [togglingCollectionId, setTogglingCollectionId] = useState(null);
-  
-  // بيانات الـ Breadcrumbs
+
   const [category, setCategory] = useState(null);
   const [course, setCourse] = useState(null);
   const categoryName = location.state?.categoryName;
   const categoryId = location.state?.categoryId;
 
-  // جلب معلومات الكاتاجوري والكورس للـ Breadcrumbs
   useEffect(() => {
     if (categoryId) {
       axios
@@ -59,28 +58,26 @@ function Files() {
     }
   }, [courseId]);
 
-  // 1. الاستماع لأحداث المفضلة من أي مكان
   useEffect(() => {
     const handleFavoriteRemoved = (event) => {
       const { fileId } = event.detail;
-      setFavorites(prev => prev.filter(id => id !== fileId));
+      setFavorites((prev) => prev.filter((id) => id !== fileId));
     };
-    
+
     const handleFavoriteAdded = (event) => {
       const { fileId } = event.detail;
-      setFavorites(prev => [...prev, fileId]);
+      setFavorites((prev) => [...prev, fileId]);
     };
-    
-    window.addEventListener('favoriteRemoved', handleFavoriteRemoved);
-    window.addEventListener('favoriteAdded', handleFavoriteAdded);
-    
+
+    window.addEventListener("favoriteRemoved", handleFavoriteRemoved);
+    window.addEventListener("favoriteAdded", handleFavoriteAdded);
+
     return () => {
-      window.removeEventListener('favoriteRemoved', handleFavoriteRemoved);
-      window.removeEventListener('favoriteAdded', handleFavoriteAdded);
+      window.removeEventListener("favoriteRemoved", handleFavoriteRemoved);
+      window.removeEventListener("favoriteAdded", handleFavoriteAdded);
     };
   }, []);
 
-  // 2. جلب ملفات الكورس مع تنسيق البيانات
   useEffect(() => {
     axios
       .get(`/Api/EduFile/GetByCourseId/${courseId}`)
@@ -89,39 +86,39 @@ function Files() {
           ...file,
           eduFileId: file.eduFileId || file.id,
           id: file.id || file.eduFileId,
-          fileType: file.fileType !== undefined ? Number(file.fileType) : file.type,
+          fileType:
+            file.fileType !== undefined ? Number(file.fileType) : file.type,
           uploadedAt: file.uploadedAt || file.createdAt || file.upload_date,
           downloadCount: file.downloadCount || file.download_count || 0,
           uploadedByUserId: file.uploadedByUserId,
-          uploadedByUserName: file.uploadedByUserName
+          uploadedByUserName: file.uploadedByUserName,
         }));
         setFiles(filesWithId);
       })
       .catch((err) => console.log(err));
   }, [courseId]);
 
-  // 3. جلب المجموعات الخاصة بالكورس
   useEffect(() => {
     const fetchCollections = async () => {
       setLoadingCollections(true);
       try {
-        console.log("🔄 Fetching collections for course:", courseId);
-        const res = await axios.get(`/api/v1/Collection/GetByCourseId/${courseId}`);
-        console.log("📦 Collections response:", res.data);
-        
+        const res = await axios.get(
+          `/api/v1/Collection/GetByCourseId/${courseId}`,
+        );
         let allCollections = [];
         if (res.data && res.data.succeeded && res.data.data) {
-          allCollections = res.data.data.filter(col => col && col.id);
+          allCollections = res.data.data.filter((col) => col && col.id);
         } else if (res.data && Array.isArray(res.data)) {
-          allCollections = res.data.filter(col => col && col.id);
+          allCollections = res.data.filter((col) => col && col.id);
         }
-        
-        console.log(`✅ Found ${allCollections.length} collections`);
+
         setCollections(allCollections);
       } catch (err) {
         console.error("❌ Error fetching collections:", err);
         if (err.response?.status === 401) {
-          console.log("⚠️ User not logged in, collections may require authentication");
+          console.log(
+            "⚠️ User not logged in, collections may require authentication",
+          );
           setCollections([]);
         } else {
           setCollections([]);
@@ -130,11 +127,10 @@ function Files() {
         setLoadingCollections(false);
       }
     };
-    
+
     fetchCollections();
   }, [courseId]);
 
-  // 4. جلب الملفات المفضلة
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -148,20 +144,21 @@ function Files() {
       .catch((err) => console.log(err));
   }, []);
 
-  // 5. جلب المجموعات المفضلة
   const fetchFavoriteCollections = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    
+
     try {
       const res = await axios.get("/Favorite/GetCollections");
       console.log("Favorite collections response:", res.data);
-      
+
       if (res.data && res.data.succeeded && res.data.data) {
-        const favoriteIds = res.data.data.map(item => item.collectionId);
+        const favoriteIds = res.data.data.map((item) => item.collectionId);
         setFavoriteCollections(favoriteIds);
       } else if (Array.isArray(res.data)) {
-        const favoriteIds = res.data.map(item => item.collectionId || item.id);
+        const favoriteIds = res.data.map(
+          (item) => item.collectionId || item.id,
+        );
         setFavoriteCollections(favoriteIds);
       }
     } catch (err) {
@@ -174,36 +171,44 @@ function Files() {
     fetchFavoriteCollections();
   }, [fetchFavoriteCollections]);
 
-  // 6. حذف الملف من مجموعات المستخدم
   const removeFileFromMyCollections = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return 0;
-    
+
     try {
-      const collectionsRes = await axios.get("/api/v1/Collection/GetLibraryCollections");
+      const collectionsRes = await axios.get(
+        "/api/v1/Collection/GetLibraryCollections",
+      );
       const myCollections = collectionsRes.data?.data || [];
-      
+
       let removedCount = 0;
       for (const collection of myCollections) {
         const collectionId = collection.id;
         if (!collectionId) continue;
-        
+
         try {
-          const collectionDetails = await axios.get(`/api/v1/Collection/GetById/${collectionId}`);
+          const collectionDetails = await axios.get(
+            `/api/v1/Collection/GetById/${collectionId}`,
+          );
           const filesInCollection = collectionDetails.data?.data?.files || [];
-          const fileExists = filesInCollection.some(f => (f.eduFileId || f.id) === fileId);
-          
+          const fileExists = filesInCollection.some(
+            (f) => (f.eduFileId || f.id) === fileId,
+          );
+
           if (fileExists) {
             await axios.delete("/api/v1/collection/RemoveFile", {
               data: {
                 collectionId: collectionId,
-                eduFileId: fileId
-              }
+                eduFileId: fileId,
+              },
             });
             removedCount++;
           }
         } catch (err) {
-          console.log(`Error checking/removing from My Collection ${collectionId}:`, err);
+          console.log(
+            `Error checking/removing from My Collection ${collectionId}:`,
+            err,
+          );
         }
       }
       return removedCount;
@@ -213,12 +218,15 @@ function Files() {
     }
   };
 
-  // 7. إضافة مجموعة إلى المفضلة
   const addFavoriteCollection = async (collectionId) => {
     const token = localStorage.getItem("token");
     if (!token) {
+      setMessageType("warning");
       setMessage(t("files.loginMessage") || "Please login first");
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
       return;
     }
 
@@ -226,18 +234,28 @@ function Files() {
     try {
       await axios.post(`/Favorite/AddCollection/${collectionId}`);
       setFavoriteCollections((prev) => [...prev, collectionId]);
-      setMessage(t("files.collectionAddedToFavorites") || "✨ Collection added to favorites!");
-      setTimeout(() => setMessage(""), 3000);
+      setMessageType("success");
+      setMessage(
+        t("files.collectionAddedToFavorites") ||
+          "✨ Collection added to favorites!",
+      );
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
     } catch (err) {
       console.log("Error adding collection to favorites:", err);
+      setMessageType("error");
       setMessage(t("files.error") || "❌ Error adding collection to favorites");
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
     } finally {
       setTogglingCollectionId(null);
     }
   };
 
-  // 8. إزالة مجموعة من المفضلة
   const removeFavoriteCollection = async (collectionId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -245,25 +263,43 @@ function Files() {
     setTogglingCollectionId(collectionId);
     try {
       await axios.delete(`/Favorite/RemoveCollection/${collectionId}`);
-      setFavoriteCollections((prev) => prev.filter((id) => id !== collectionId));
-      setMessage(t("files.collectionRemovedFromFavorites") || "💔 Collection removed from favorites");
-      setTimeout(() => setMessage(""), 3000);
+      setFavoriteCollections((prev) =>
+        prev.filter((id) => id !== collectionId),
+      );
+      setMessageType("success");
+      setMessage(
+        t("files.collectionRemovedFromFavorites") ||
+          "💔 Collection removed from favorites",
+      );
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
     } catch (err) {
       console.log("Error removing collection from favorites:", err);
-      setMessage(t("files.error") || "❌ Error removing collection from favorites");
-      setTimeout(() => setMessage(""), 3000);
+      setMessageType("error");
+      setMessage(
+        t("files.error") || "❌ Error removing collection from favorites",
+      );
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
     } finally {
       setTogglingCollectionId(null);
     }
   };
 
-  // 9. تبديل حالة مفضلة المجموعة
   const toggleFavoriteCollection = async (collectionId, e) => {
     e.stopPropagation();
     const token = localStorage.getItem("token");
     if (!token) {
+      setMessageType("warning");
       setMessage(t("files.loginMessage") || "Please login first");
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
       return;
     }
 
@@ -274,12 +310,15 @@ function Files() {
     }
   };
 
-  // 10. فتح مجموعة وعرض ملفاتها
   const openCollection = async (collection) => {
     if (!collection || !collection.id) {
       console.error("Invalid collection:", collection);
+      setMessageType("error");
       setMessage(t("files.invalidCollection") || "❌ Invalid collection");
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
       return;
     }
 
@@ -289,12 +328,14 @@ function Files() {
 
     try {
       console.log("Fetching collection with ID:", collection.id);
-      const res = await axios.get(`/api/v1/Collection/GetById/${collection.id}`);
+      const res = await axios.get(
+        `/api/v1/Collection/GetById/${collection.id}`,
+      );
       console.log("Collection files response:", res.data);
-      
+
       if (res.data && res.data.succeeded && res.data.data) {
         const collectionData = res.data.data;
-        
+
         if (collectionData.files && Array.isArray(collectionData.files)) {
           const formattedFiles = collectionData.files.map((file) => ({
             ...file,
@@ -310,7 +351,7 @@ function Files() {
             uploadedByUserName: collectionData.uploaderName,
             uploadedAt: collectionData.createdAt,
           }));
-          
+
           setCollectionFiles(formattedFiles);
           console.log("Loaded files with uploader info:", formattedFiles);
         } else {
@@ -328,72 +369,96 @@ function Files() {
     }
   };
 
-  // 11. العودة إلى قائمة المجموعات
   const backToCollections = () => {
     setSelectedCollection(null);
     setCollectionFiles([]);
     setActiveType("all");
   };
 
-  // 12. إضافة ملف إلى المفضلة
   const addFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
       await axios.post(`/Favorite/Add/${fileId}`);
       setFavorites((prev) => [...prev, fileId]);
+      setMessageType("success");
       setMessage(t("files.addedToFavorites") || "✨ Added to favorites");
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
     } catch (err) {
       console.log(err);
+      setMessageType("error");
       setMessage(t("files.error") || "❌ Error adding to favorites");
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
     }
   };
 
-  // 13. إزالة ملف من المفضلة
   const removeFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    
+
     try {
-      const removedFromMyCollections = await removeFileFromMyCollections(fileId);
-      
+      const removedFromMyCollections =
+        await removeFileFromMyCollections(fileId);
+
       await axios.delete(`/Favorite/Delete/${fileId}`);
-      
+
       setFavorites((prev) => prev.filter((id) => id !== fileId));
-      
+
+      setMessageType("success");
       if (removedFromMyCollections > 0) {
-        setMessage(`${t("files.removedFromFavorites") || "💔 Removed from favorites"} ${t("files.removedFromMyCollections", { count: removedFromMyCollections })}`);
+        setMessage(
+          `${t("files.removedFromFavorites")} ${t("files.removedFromMyCollections", { count: removedFromMyCollections })}`,
+        );
       } else {
-        setMessage(t("files.removedFromFavorites") || "💔 Removed from favorites");
+        setMessage(t("files.removedFromFavorites"));
       }
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
     } catch (err) {
       console.log(err);
+      setMessageType("error");
       setMessage(t("files.error") || "❌ Error removing from favorites");
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
     }
   };
 
-  // 14. تبديل حالة مفضلة الملف
   const toggleFavorite = (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) {
+      setMessageType("warning");
       setMessage(t("files.loginMessage") || "Please login first");
-      setTimeout(() => setMessage(""), 3000);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
       return;
     }
     favorites.includes(fileId) ? removeFavorite(fileId) : addFavorite(fileId);
   };
 
-  // 15. النقر على اسم المستخدم
   const handleUploaderClick = (userId, userName, e) => {
     e.stopPropagation();
     const token = localStorage.getItem("token");
     if (!token) {
-      setMessage(t("files.loginToViewProfile") || "Please login to view profile");
-      setTimeout(() => setMessage(""), 3000);
+      setMessageType("warning");
+      setMessage(
+        t("files.loginToViewProfile") || "Please login to view profile",
+      );
+      setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
       return;
     }
     if (userId) {
@@ -401,7 +466,6 @@ function Files() {
     }
   };
 
-  // أنواع الملفات لعرض أزرار الفلتر
   const fileTypes = [
     { id: "all", name: t("files.all"), icon: "📂" },
     { id: 0, name: t("files.lectures"), icon: "🎥" },
@@ -413,7 +477,6 @@ function Files() {
     { id: 6, name: t("files.other"), icon: "📁" },
   ];
 
-  // فلترة الملفات حسب النوع
   const displayedFiles = [...files].filter(
     (f) => activeType === "all" || Number(f.fileType) === activeType,
   );
@@ -422,7 +485,6 @@ function Files() {
     (f) => activeType === "all" || Number(f.fileType) === activeType,
   );
 
-  // مكون بطاقة المجموعة
   const CollectionCard = ({ collection }) => {
     const isFav = favoriteCollections.includes(collection.id);
     const isToggling = togglingCollectionId === collection.id;
@@ -436,20 +498,31 @@ function Files() {
         <div className="collection-info">
           <h3 className="collection-title">{collection.name}</h3>
           <p className="collection-description">
-            {collection.description || t("files.noDescription") || "No description"}
+            {collection.description ||
+              t("files.noDescription") ||
+              "No description"}
           </p>
           <div className="collection-meta">
             <span>
-              📚 {collection.courseName || t("files.unknownCourse") || "Unknown Course"}
+              📚{" "}
+              {collection.courseName ||
+                t("files.unknownCourse") ||
+                "Unknown Course"}
             </span>
             <span>
               📄 {collection.filesCount || 0} {t("files.files") || "files"}
             </span>
-            <span 
+            <span
               className="uploader-name-clickable"
-              onClick={(e) => handleUploaderClick(collection.uploaderId, collection.uploaderName, e)}
+              onClick={(e) =>
+                handleUploaderClick(
+                  collection.uploaderId,
+                  collection.uploaderName,
+                  e,
+                )
+              }
               title={t("files.clickToViewProfile") || "Click to view profile"}
-              style={{ cursor: 'pointer', color: '#007bff' }}
+              style={{ cursor: "pointer", color: "#007bff" }}
             >
               👤 {collection.uploaderName || t("files.unknown") || "Unknown"}
             </span>
@@ -464,9 +537,21 @@ function Files() {
               await toggleFavoriteCollection(collection.id, e);
             }}
             disabled={isToggling}
-            title={isFav ? (t("files.removeFromFavorites") || "Remove from favorites") : (t("files.addToFavorites") || "Add to favorites")}
+            title={
+              isFav
+                ? t("files.removeFromFavorites") || "Remove from favorites"
+                : t("files.addToFavorites") || "Add to favorites"
+            }
           >
-            {isToggling ? "⏳" : isFav ? "❤️" : <FaHeart style={{ color: "white", stroke: "black", strokeWidth: "40px" }} />}
+            {isToggling ? (
+              "⏳"
+            ) : isFav ? (
+              "❤️"
+            ) : (
+              <FaHeart
+                style={{ color: "white", stroke: "black", strokeWidth: "40px" }}
+              />
+            )}
           </button>
 
           <button
@@ -485,17 +570,20 @@ function Files() {
 
   return (
     <div className="files-container">
-      {/* Breadcrumbs */}
       <div className="breadcrumbs">
-        <Link to="/" className="breadcrumb-link"> {t("navbar.home")}</Link>
+        <Link to="/" className="breadcrumb-link">
+          {t("navbar.home")}
+        </Link>
         <span className="breadcrumb-separator">›</span>
-        
-        {/* رابط الكاتاجوري */}
+
         {(category?.id || categoryId) && (
           <>
-            <Link 
-              to={`/courses/${category?.id || categoryId}`} 
-              state={{ categoryName: category?.name || categoryName, categoryId: category?.id || categoryId }}
+            <Link
+              to={`/courses/${category?.id || categoryId}`}
+              state={{
+                categoryName: category?.name || categoryName,
+                categoryId: category?.id || categoryId,
+              }}
               className="breadcrumb-link"
             >
               {category?.name || categoryName || t("course.course")}
@@ -503,23 +591,26 @@ function Files() {
             <span className="breadcrumb-separator">›</span>
           </>
         )}
-        
-        {/* رابط الكورس الحالي */}
+
         {course && (
-          <Link 
+          <Link
             to={`/files/${courseId}`}
-            state={{ categoryName: category?.name || categoryName, categoryId: category?.id || categoryId }}
+            state={{
+              categoryName: category?.name || categoryName,
+              categoryId: category?.id || categoryId,
+            }}
             className="breadcrumb-link"
           >
             {course.name}
           </Link>
         )}
-        
-        {/* اسم المجموعة إذا كانت مفتوحة */}
+
         {selectedCollection && (
           <>
             <span className="breadcrumb-separator">›</span>
-            <span className="breadcrumb-current">{selectedCollection.name}</span>
+            <span className="breadcrumb-current">
+              {selectedCollection.name}
+            </span>
           </>
         )}
       </div>
@@ -549,16 +640,16 @@ function Files() {
           <button className="back-btn" onClick={backToCollections}>
             ← {t("files.backToCollections") || "Back to Collections"}
           </button>
-          <h3 className="collection-title-header">📦 {selectedCollection.name}</h3>
-          <p className="collection-desc-header">{selectedCollection.description}</p>
+          <h3 className="collection-title-header">
+            📦 {selectedCollection.name}
+          </h3>
+          <p className="collection-desc-header">
+            {selectedCollection.description}
+          </p>
         </div>
       )}
 
-      {message && (
-        <div className="message">
-          {message}
-        </div>
-      )}
+      {message && <div className={`messageee ${messageType}`}>{message}</div>}
 
       {!selectedCollection && activeTab === "files" && (
         <>
@@ -599,11 +690,13 @@ function Files() {
       {!selectedCollection && activeTab === "collections" && (
         <>
           {loadingCollections ? (
-            <div className="loading-spinner">
-              {t("files.loadingCollections") || "Loading collections..."}
+            <div className="loading">
+              <div className="spinner"></div>
             </div>
           ) : collections.length === 0 ? (
-            <p className="no-items">{t("files.noCollections") || "No collections found"}</p>
+            <p className="no-items">
+              {t("files.noCollections") || "No collections found"}
+            </p>
           ) : (
             <div className="collections-grid">
               {collections.map((collection) => (
@@ -626,19 +719,24 @@ function Files() {
                 {type.icon} {type.name} (
                 {type.id === "all"
                   ? collectionFiles.length
-                  : collectionFiles.filter((f) => f.fileType === type.id).length}
+                  : collectionFiles.filter((f) => f.fileType === type.id)
+                      .length}
                 )
               </button>
             ))}
           </div>
 
           {loadingCollectionFiles ? (
-            <div className="loading-spinner">
-              {t("files.loadingFiles") || "Loading files..."}
+            <div className="loading">
+              <div className="spinner"></div>
             </div>
           ) : displayedCollectionFiles.length === 0 ? (
             <div className="no-items">
-              <p>📭 {t("files.noFilesInCollection") || "No files found in this collection"}</p>
+              <p>
+                📭{" "}
+                {t("files.noFilesInCollection") ||
+                  "No files found in this collection"}
+              </p>
             </div>
           ) : (
             displayedCollectionFiles.map((file) => (

@@ -1,5 +1,3 @@
-/* ========== Files.css ========== */
-
 .files-container {
   width: 80%;
   margin: auto;
@@ -19,10 +17,11 @@
   margin-bottom: 30px;
 }
 
-.message {
+/* ========== الرسائل ========== */
+.messageee {
   background-color: var(--bg-main);
-  color: var(--error, #d8000c);
-  border: 1px solid var(--error, #d8000c);
+  color: var(--color-reject);
+  border: 1px solid var(--color-reject);
   padding: 10px 15px;
   border-radius: 5px;
   margin: 10px 0;
@@ -30,18 +29,25 @@
   text-align: center;
 }
 
-.message.success {
-  background-color: #d4edda;
-  color: var(--success, #155724);
-  border: 1px solid #c3e6cb;
+.messageee.success {
+  background-color: var(--color-approve);
+  color: var(--text-light);
+  border: 1px solid var(--color-approve);
 }
 
-.message.warning {
-  background-color: #fff3cd;
-  color: var(--warning, #856404);
-  border: 1px solid #ffeeba;
+.messageee.warning {
+  background-color: var(--color-edit);
+  color: var(--text-light);
+  border: 1px solid var(--color-edit);
 }
 
+.messageee.error {
+  background-color: var(--color-reject);
+  color: var(--text-light);
+  border: 1px solid var(--color-reject);
+}
+
+/* ========== الأزرار الرئيسية ========== */
 .tabs-main {
   display: flex;
   gap: 1rem;
@@ -73,6 +79,7 @@
   background-color: var(--bg-secondary);
 }
 
+/* ========== رأس العودة ========== */
 .back-header {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
@@ -95,7 +102,8 @@
 }
 
 .back-btn:hover {
-  color: var(--primary-dark, #2563eb);
+  color: var(--primary);
+  opacity: 0.8;
   transform: translateX(-2px);
 }
 
@@ -111,6 +119,7 @@
   font-size: 0.9rem;
 }
 
+/* ========== أزرار الفلترة ========== */
 .tabs {
   display: flex;
   gap: 10px;
@@ -142,6 +151,7 @@
   border-color: var(--primary);
 }
 
+/* ========== حالة عدم وجود عناصر ========== */
 .no-items {
   text-align: center;
   padding: 3rem;
@@ -149,12 +159,34 @@
   font-size: 1rem;
 }
 
-.loading-spinner {
-  text-align: center;
-  padding: 3rem;
-  color: var(--text-secondary);
+/* ========== Spinner ========== */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  width: 100%;
 }
 
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--card-border);
+  border-top: 5px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========== شبكة المجموعات ========== */
 .collections-grid {
   display: flex;
   flex-direction: column;
@@ -163,6 +195,7 @@
   padding: 0;
 }
 
+/* ========== بطاقة المجموعة ========== */
 .collection-card {
   display: flex;
   align-items: flex-start;
@@ -172,7 +205,7 @@
   padding: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid var(--input-border);
+  border: 1px solid var(--card-border);
   position: relative;
   margin-bottom: 0;
 }
@@ -221,6 +254,7 @@
   gap: 4px;
 }
 
+/* ========== أزرار المجموعة ========== */
 .collection-actions {
   display: flex;
   flex-direction: row;
@@ -228,18 +262,16 @@
   align-items: center;
   justify-content: flex-end;
   flex-shrink: 0;
-  opacity: 1 !important;
-  visibility: visible !important;
 }
 
 .collection-favorite-btn {
   background: var(--bg-main);
-  border: 1px solid var(--input-border);
+  border: 1px solid var(--card-border);
   border-radius: 50%;
   width: 40px;
   height: 40px;
   cursor: pointer;
-  display: flex !important;
+  display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
@@ -248,21 +280,19 @@
   font-size: 20px;
   color: var(--text-secondary);
   flex-shrink: 0;
-  opacity: 1 !important;
-  visibility: visible !important;
 }
 
 .collection-favorite-btn:hover:not(:disabled) {
   transform: scale(1.1);
-  border-color: var(--favorite, #ff6b6b);
+  border-color: var(--color-reject);
   background: var(--bg-secondary);
-  color: var(--favorite, #ff6b6b);
+  color: var(--color-reject);
 }
 
 .collection-favorite-btn.active {
-  color: var(--favorite, #ff4757);
-  border-color: var(--favorite, #ff4757);
-  background: var(--favorite-bg, #ffebee);
+  color: var(--color-reject);
+  border-color: var(--color-reject);
+  background: rgba(220, 53, 69, 0.1);
 }
 
 .collection-favorite-btn:disabled {
@@ -283,121 +313,51 @@
   white-space: nowrap;
   font-weight: 500;
   flex-shrink: 0;
-  display: inline-flex !important;
-  opacity: 1 !important;
-  visibility: visible !important;
+  display: inline-flex;
 }
 
 .view-collection-btn:hover {
-  background: var(--primary-dark, #357abd);
+  background: var(--primary);
+  opacity: 0.85;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
 }
 
-
-
-[data-theme="dark"] .collection-card {
-  background: var(--bg-card);
-  border-color: var(--input-border);
+/* ========== Breadcrumbs ========== */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--card-border);
 }
 
-[data-theme="dark"] .collection-title {
-  color: var(--text-main);
-}
-
-[data-theme="dark"] .collection-description {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .collection-meta {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .collection-favorite-btn {
-  background: var(--bg-card);
-  border-color: var(--input-border);
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .collection-favorite-btn.active {
-  background: rgba(255, 71, 87, 0.2);
-  border-color: var(--favorite, #ff4757);
-  color: var(--favorite, #ff6b6b);
-}
-
-[data-theme="dark"] .collection-favorite-btn:hover:not(:disabled) {
-  background: rgba(255, 71, 87, 0.15);
-  border-color: var(--favorite, #ff6b6b);
-  color: var(--favorite, #ff8a8a);
-}
-
-[data-theme="dark"] .view-collection-btn {
-  background: var(--primary);
-}
-
-[data-theme="dark"] .view-collection-btn:hover {
-  background: var(--primary-dark, #2563eb);
-}
-
-[data-theme="dark"] .back-header {
-  border-bottom-color: var(--input-border);
-}
-
-[data-theme="dark"] .collection-title-header {
-  color: var(--text-main);
-}
-
-[data-theme="dark"] .collection-desc-header {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .tabs button {
-  background: var(--bg-main);
-  border-color: var(--input-border);
-  color: var(--text-main);
-}
-
-[data-theme="dark"] .tabs button:hover {
-  background: var(--primary);
-  color: var(--text-light);
-}
-
-[data-theme="dark"] .tabs button.active {
-  background: var(--primary);
-  color: var(--text-light);
-}
-
-[data-theme="dark"] .tab-btn {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .tab-btn:hover {
+.breadcrumb-link {
   color: var(--primary);
-  background-color: var(--bg-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-[data-theme="dark"] .tab-btn.active {
+.breadcrumb-link:hover {
   color: var(--primary);
-  border-bottom-color: var(--primary);
-  background-color: var(--bg-secondary);
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
-[data-theme="dark"] .message {
-  background-color: var(--bg-card);
+.breadcrumb-current {
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
-[data-theme="dark"] .message.success {
-  background-color: #155724;
-  color: #d4edda;
-  border-color: #155724;
+.breadcrumb-separator {
+  color: var(--text-secondary);
+  font-size: 16px;
 }
 
-[data-theme="dark"] .message.warning {
-  background-color: #856404;
-  color: #fff3cd;
-  border-color: #856404;
-}
-
+/* ========== RTL Support ========== */
 [dir="rtl"] .collection-actions {
   flex-direction: row-reverse;
 }
@@ -410,59 +370,24 @@
   transform: translateX(2px);
 }
 
-
-
-
-/* Breadcrumbs styling */
-.breadcrumbs {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px 0;
-  margin-bottom: 20px;
-  font-size: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.breadcrumb-link {
-  color: #007bff;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.breadcrumb-link:hover {
-  color: #0056b3;
-  text-decoration: underline;
-}
-
-.breadcrumb-current {
-  color: #888;
-  font-weight: 500;
-}
-
-.breadcrumb-separator {
-  color: #666;
-  font-size: 16px;
-}
-
+/* ========== Responsive ========== */
 @media (min-width: 1025px) {
   .collection-card {
     align-items: center;
   }
-  
+
   .collection-actions {
     min-width: 160px;
     gap: 12px;
   }
-  
+
   .collection-favorite-btn {
     width: 44px;
     height: 44px;
     min-width: 44px;
     font-size: 22px;
   }
-  
+
   .view-collection-btn {
     min-width: 120px;
     padding: 8px 18px;
@@ -476,12 +401,12 @@
     align-items: center;
     flex-wrap: wrap;
   }
-  
+
   .collection-info {
     flex: 2;
     min-width: 200px;
   }
-  
+
   .collection-actions {
     flex-direction: row;
     justify-content: flex-end;
@@ -490,34 +415,34 @@
     margin-top: 0;
     display: flex;
   }
-  
+
   .collection-favorite-btn {
     width: 40px;
     height: 40px;
     font-size: 20px;
     min-width: 40px;
   }
-  
+
   .view-collection-btn {
     padding: 8px 14px;
     font-size: 12px;
     min-width: 100px;
     white-space: nowrap;
   }
-  
+
   .collection-icon {
     font-size: 40px;
     min-width: 50px;
   }
-  
+
   .collection-title {
     font-size: 16px;
   }
-  
+
   .collection-description {
     font-size: 13px;
   }
-  
+
   .collection-meta {
     gap: 10px;
     font-size: 11px;
@@ -548,11 +473,11 @@
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .collection-info {
     width: 100%;
   }
-  
+
   .collection-actions {
     display: flex;
     flex-direction: row;
@@ -561,14 +486,14 @@
     margin-top: 12px;
     min-width: auto;
   }
-  
+
   .collection-favorite-btn {
     width: 44px;
     height: 44px;
     font-size: 22px;
     min-width: 44px;
   }
-  
+
   .view-collection-btn {
     flex: 1;
     text-align: center;
@@ -612,21 +537,21 @@
     font-size: 18px;
     min-width: 38px;
   }
-  
+
   .view-collection-btn {
     padding: 8px 12px;
     font-size: 12px;
   }
-  
+
   .collection-icon {
     font-size: 36px;
     min-width: 45px;
   }
-  
+
   .collection-title {
     font-size: 15px;
   }
-  
+
   .collection-description {
     font-size: 12px;
   }
@@ -642,13 +567,13 @@
     min-width: 180px;
     gap: 15px;
   }
-  
+
   .collection-favorite-btn {
     width: 48px;
     height: 48px;
     font-size: 24px;
   }
-  
+
   .view-collection-btn {
     min-width: 130px;
     padding: 10px 22px;

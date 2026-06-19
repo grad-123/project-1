@@ -18,52 +18,52 @@ function ForgotPassword() {
   }, [i18n.language]);
 
   const handleSend = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!Email) {
-    setError(t("forgot.requiredEmail"));
-    setFieldError(true);
-    return;
-  }
-
-  if (!/\S+@\S+\.\S+/.test(Email)) {
-    setError(t("forgot.invalidEmail"));
-    setFieldError(true);
-    return;
-  }
-
-  setError("");
-  setLoading(true);
-
-  try {
-    const response = await axios.post(
-  "/api/v1/Authentication/SendResetPasswordCode",
-      null,
-      {
-        params: {
-          Email: Email,
-        },
-      }
-    );
-
-    if (!response.data?.succeeded) {
-      setError(response.data?.message);
+    if (!Email) {
+      setError(t("forgot.requiredEmail"));
+      setFieldError(true);
       return;
     }
 
-navigate(`/auth/check?email=${encodeURIComponent(Email)}`, { replace: true });
-  } catch (err) {
-    console.error(err);
+    if (!/\S+@\S+\.\S+/.test(Email)) {
+      setError(t("forgot.invalidEmail"));
+      setFieldError(true);
+      return;
+    }
 
-    const backendMessage = err?.response?.data?.message;
+    setError("");
+    setLoading(true);
 
-    setError(backendMessage || t("forgot.somethingWrong"));
+    try {
+      const response = await axios.post(
+        "/api/v1/Authentication/SendResetPasswordCode",
+        null,
+        {
+          params: {
+            Email: Email,
+          },
+        },
+      );
 
-  } finally {
-    setLoading(false);
-  }
-};
+      if (!response.data?.succeeded) {
+        setError(response.data?.message);
+        return;
+      }
 
+      navigate(`/auth/check?email=${encodeURIComponent(Email)}`, {
+        replace: true,
+      });
+    } catch (err) {
+      console.error(err);
+
+      const backendMessage = err?.response?.data?.message;
+
+      setError(backendMessage || t("forgot.somethingWrong"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="forgot-container">
@@ -73,12 +73,15 @@ navigate(`/auth/check?email=${encodeURIComponent(Email)}`, { replace: true });
 
       <div className="input">
         <label>{t("forgot.Label")}</label>
-<div className={`input-field ${fieldError ? "input-error" : ""}`}>          <FaEnvelope className="icon" />
+        <div className={`input-field ${fieldError ? "input-error" : ""}`}>
+          <FaEnvelope className="icon" />
           <input
             type="email"
             placeholder={t("forgot.Placeholder")}
             value={Email}
-            onChange={(e) => {setEmail(e.target.value);  setFieldError(false);
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setFieldError(false);
             }}
             disabled={loading}
           />
@@ -87,7 +90,7 @@ navigate(`/auth/check?email=${encodeURIComponent(Email)}`, { replace: true });
       </div>
 
       <button className="send-btn" onClick={handleSend} disabled={loading}>
-        {loading ?t("forgot.loading"): t("forgot.btn")}
+        {loading ? t("forgot.loading") : t("forgot.btn")}
       </button>
     </div>
   );

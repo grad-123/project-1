@@ -24,11 +24,9 @@ function Home() {
     totalDownloads: 0,
   });
 
-  // State للكاتاجوريات
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
 
-  // جلب الإحصائيات
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -41,7 +39,6 @@ function Home() {
     fetchStats();
   }, []);
 
-  // جلب الكاتاجوريات
   useEffect(() => {
     axios
       .get("/api/v1/Category/GetList")
@@ -64,14 +61,13 @@ function Home() {
 
           <div className="main">
             <h1 className="main-title">
-              {t("home.master")}{" "}
+              {t("home.master")}
               <span className="word-studies">{t("home.studies")}</span>
             </h1>
           </div>
 
           <h2 className="sub-title">{t("home.subtitle")}</h2>
 
-          <p className="description">{t("home.description")}</p>
 
           <div className="home-buttons">
            
@@ -131,7 +127,6 @@ function Home() {
         </div>
       </div>
 
-      {/* ========== قسم الكاتاجوريات ========== */}
       <div className="home-categories-section">
         <h2 className="home-categories-title">{t("browse.categories")}</h2>
         <p className="home-categories-description">{t("browse.description")}</p>

@@ -101,7 +101,7 @@
   color: var(--text-secondary);
 }
 
-.auth-switch button {
+.auth-switch Link {
   border: none;
   background: none;
   color: var(--primary);
@@ -110,7 +110,7 @@
   margin-left: 6px;
 }
 
-html[dir="rtl"] .auth-switch button {
+html[dir="rtl"] .auth-switch Link {
   margin-left: 0;
   margin-right: 6px;
 }

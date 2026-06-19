@@ -1,6 +1,5 @@
 .verify-message {
   text-align: center;
-  font-size: 16px;
   color: var(--text-secondary);
   margin-top: 20px;
 }
@@ -8,7 +7,6 @@
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
-  padding: 20px;
    box-sizing: border-box;
   padding-left: 10px;
   padding-right: 10px;

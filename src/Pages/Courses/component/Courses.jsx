@@ -14,7 +14,6 @@ function Courses() {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState(null);
 
-  // جلب معلومات الكاتاجوري
   useEffect(() => {
     const actualCategoryId = categoryId || categoryIdFromState;
     if (actualCategoryId) {
@@ -52,9 +51,10 @@ function Courses() {
 
   return (
     <div className="courses-page">
-      {/* Breadcrumbs */}
       <div className="breadcrumbs">
-        <Link to="/" className="breadcrumb-link">{t("navbar.home")}</Link>
+        <Link to="/" className="breadcrumb-link">
+          {t("navbar.home")}
+        </Link>
         <span className="breadcrumb-separator">›</span>
         <span className="breadcrumb-current">
           {category?.name || categoryName || t("course.course")}
@@ -69,7 +69,10 @@ function Courses() {
           <Link
             key={course.id}
             to={`/files/${course.id}`}
-            state={{ categoryName: category?.name || categoryName, categoryId: categoryId }}
+            state={{
+              categoryName: category?.name || categoryName,
+              categoryId: categoryId,
+            }}
             className="course-link"
           >
             <div className="course-box">

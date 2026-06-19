@@ -99,7 +99,6 @@ html[dir="rtl"] .navbar {
   box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
 }
 
-/* ===== Navbar Search ===== */
 .navbar-search-wrapper {
   position: relative;
   display: flex;
@@ -112,7 +111,7 @@ html[dir="rtl"] .navbar {
 .navbar-search-bar {
   display: flex;
   align-items: center;
-  background: var(--bg-secondary, #f5f5f5);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-color, #ddd);
   border-radius: 20px;
   overflow: hidden;
@@ -132,12 +131,12 @@ html[dir="rtl"] .navbar {
   background: transparent;
   outline: none;
   font-size: 14px;
-  color: var(--text-main, #333);
+  color: var(--text-main);
   padding: 0;
 }
 
 .navbar-search-btn {
-  background: var(--primary, #007bff);
+  background: var(--primary);
   color: white;
   border: none;
   padding: 0 14px;
@@ -247,22 +246,3 @@ html[dir="rtl"] .navbar {
   }
 }
 
-/* Dark Mode */
-[data-theme="dark"] .navbar {
-  background-color: var(--navbar-bg);
-  border-bottom-color: var(--border-color);
-}
-
-[data-theme="dark"] .icon-btn:hover {
-  background-color: var(--bg-secondary);
-}
-
-[data-theme="dark"] .navbar-search-bar {
-  background: var(--bg-secondary);
-  border-color: var(--border-color);
-}
-
-[data-theme="dark"] .navbar-search-input {
-  color: var(--text-main);
-  background: transparent;
-}

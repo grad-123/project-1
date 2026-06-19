@@ -85,8 +85,8 @@
 
 .file-type {
   display: inline-block;
-  background-color: #e6f0ff !important;
-  color: #004a99 !important;
+  background-color: var(--babyblue);
+  color: var(--badge-color);
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -190,7 +190,7 @@
 
 .download-btn {
   background: var(--primary);
-  color: white;
+  color: var(--text-light);
   border: none;
   border-radius: 10px;
   padding: 8px 16px;
@@ -202,13 +202,14 @@
 }
 
 .download-btn:hover {
-  background: var(--primary-dark, #2563eb);
+  background: var(--primary);
+  opacity: 0.85;
   transform: translateY(-1px);
 }
 
 .add-to-collection-btn-card {
-  background: #4caf50;
-  color: white;
+  background: var(--color-approve);
+  color: var(--text-light);
   border: none;
   border-radius: 10px;
   padding: 8px 16px;
@@ -220,7 +221,8 @@
 }
 
 .add-to-collection-btn-card:hover {
-  background: #45a049;
+  background: var(--color-approve);
+  opacity: 0.85;
   transform: translateY(-1px);
 }
 
@@ -232,6 +234,7 @@
   gap: 4px;
   padding: 2px 6px;
   border-radius: 4px;
+  color: var(--primary);
 }
 
 .uploader-name-clickable:hover {
@@ -241,56 +244,17 @@
 }
 
 .file-footer .uploader-name-clickable {
-  color: #007bff;
+  color: var(--primary);
   font-weight: 500;
 }
 
 .file-footer .uploader-name-clickable:hover {
-  color: #0056b3;
+  color: var(--badge-color);
 }
 
 html[dir="rtl"] .file-favorite {
   right: auto;
   left: 16px;
-}
-
-[data-theme="dark"] .file-card {
-  background: var(--bg-card);
-  border-color: var(--card-border);
-}
-
-[data-theme="dark"] .file-favorite {
-  background: var(--bg-card);
-  border-color: var(--card-border);
-}
-
-[data-theme="dark"] .file-favorite.active {
-  background: rgba(255, 71, 87, 0.15);
-}
-
-[data-theme="dark"] .file-type {
-  background-color: #1e3a5f !important;
-  color: #7ab3c8 !important;
-}
-
-[data-theme="dark"] .file-title {
-  color: var(--text-main);
-}
-
-[data-theme="dark"] .file-description,
-[data-theme="dark"] .file-meta span,
-[data-theme="dark"] .file-footer span {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .watch-btn {
-  background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
-  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.2);
-}
-
-[data-theme="dark"] .watch-btn:hover {
-  background: linear-gradient(135deg, #e84118 0%, #ff4757 100%);
-  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
 }
 
 @media (max-width: 768px) {

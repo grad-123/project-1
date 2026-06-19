@@ -15,7 +15,6 @@ function Navbar() {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [theme, setTheme] = useState("light");
 
-  // Search states
   const [searchTerm, setSearchTerm] = useState("");
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
@@ -24,7 +23,6 @@ function Navbar() {
   const [orderBy, setOrderBy] = useState("0");
   const [message, setMessage] = useState("");
 
-  // Role check
   let role = [];
   const storedRole = localStorage.getItem("role");
   try {
@@ -76,7 +74,6 @@ function Navbar() {
     document.documentElement.setAttribute("dir", savedLang === "ar" ? "rtl" : "ltr");
   }, []);
 
-  // Fetch categories for filters
   useEffect(() => {
     axios
       .get("/api/v1/Category/GetList")
@@ -91,18 +88,14 @@ function Navbar() {
       return;
     }
     
-    // حفظ كلمة البحث في متغير مؤقت
     const searchKeyword = searchTerm;
     
-    // تفريغ حقل الإدخال
     setSearchTerm("");
     
-    // بناء رابط البحث مع المعاملات
     const params = new URLSearchParams();
     params.append("keyword", searchKeyword);
     const searchUrl = `/search-results?${params.toString()}`;
     
-    // إذا كنا بالفعل في صفحة البحث، استخدم replace لتحديث الصفحة
     if (location.pathname === "/search-results") {
       navigate(searchUrl, { replace: true });
     } else {
@@ -132,7 +125,6 @@ function Navbar() {
         )}
       </ul>
 
-      {/* Search Section */}
       <div className="navbar-search-wrapper">
         <div className="navbar-search-bar">
           <FaSearch className="navbar-search-icon" />

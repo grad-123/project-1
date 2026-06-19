@@ -10,7 +10,6 @@ function CreateCollectionModal({ isOpen, onClose, onSuccess }) {
   const [description, setDescription] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
-  // منع التمرير في الخلفية عند فتح المودال
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -87,7 +86,6 @@ function CreateCollectionModal({ isOpen, onClose, onSuccess }) {
     </div>
   );
 
-  // استخدام React Portal لتصيير المودال في body مباشرة
   return ReactDOM.createPortal(modalContent, document.body);
 }
 

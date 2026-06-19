@@ -1,7 +1,8 @@
 import { Navigate } from "react-router-dom";
 
 function ProtectedAdmin({ children }) {
-  const role = JSON.parse(localStorage.getItem("role"));
+ const storedRole = localStorage.getItem("role");
+const role = storedRole ? JSON.parse(storedRole) : null;
 
   const isAdmin = Array.isArray(role)
     ? role.includes("Admin")

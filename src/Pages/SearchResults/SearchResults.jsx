@@ -23,7 +23,7 @@ function SearchResults() {
   const [collectionFileType, setCollectionFileType] = useState("all");
   const [message, setMessage] = useState("");
 
-  // حالة الفلاتر
+  
   const [categories, setCategories] = useState([]);
   const [courses, setCourses] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
@@ -31,25 +31,21 @@ function SearchResults() {
   const [selectedFileType, setSelectedFileType] = useState("");
   const [selectedOrderBy, setSelectedOrderBy] = useState("0");
 
-  // جلب المعاملات الأولية من الرابط
   const params = new URLSearchParams(location.search);
   const initialKeyword = params.get("keyword") || "";
   const [keyword, setKeyword] = useState(initialKeyword);
 
-  // 🔥 الإستماع لتغيرات الـ URL وتحديث الكلمة المفتاحية
   useEffect(() => {
     const newParams = new URLSearchParams(location.search);
     const newKeyword = newParams.get("keyword") || "";
     if (newKeyword !== keyword) {
       setKeyword(newKeyword);
-      // إعادة تعيين حالة المجموعة المفتوحة عند البحث الجديد
       setSelectedCollection(null);
       setShowCollectionFiles(false);
       setCollectionFiles([]);
     }
   }, [location.search]);
 
-  // جلب الكاتاجوريات
   useEffect(() => {
     axios
       .get("/api/v1/Category/GetList")
@@ -57,7 +53,6 @@ function SearchResults() {
       .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
-  // جلب الكورسات عند تغيير الكاتاجوري
   useEffect(() => {
     if (!selectedCategoryId) {
       setCourses([]);
@@ -71,7 +66,6 @@ function SearchResults() {
       .catch((err) => console.error("Error fetching courses:", err));
   }, [selectedCategoryId]);
 
-  // جلب المفضلة
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -84,7 +78,6 @@ function SearchResults() {
       .catch((err) => console.log(err));
   }, []);
 
-  // جلب المجموعات المفضلة
   const fetchFavoriteCollections = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -110,7 +103,6 @@ function SearchResults() {
     fetchFavoriteCollections();
   }, [fetchFavoriteCollections]);
 
-  // دالة البحث
   const searchFiles = useCallback(async () => {
     setLoading(true);
     try {
@@ -140,12 +132,10 @@ function SearchResults() {
     }
   }, [keyword, selectedCategoryId, selectedCourseId, selectedFileType, selectedOrderBy]);
 
-  // تنفيذ البحث عند التغيير
   useEffect(() => {
     searchFiles();
   }, [searchFiles]);
 
-  // دوال المفضلة للملفات
   const addFavorite = async (fileId) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -182,7 +172,6 @@ function SearchResults() {
     }
   };
 
-  // دوال المفضلة للمجموعات
   const addFavoriteCollection = async (collectionId) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -223,7 +212,6 @@ function SearchResults() {
     }
   };
 
-  // فتح المجموعة
   const openCollection = async (collection) => {
     setSelectedCollection(collection);
     setShowCollectionFiles(true);
@@ -376,7 +364,6 @@ function SearchResults() {
       <h1>{t("browse.searchResults")}</h1>
       {keyword && <p className="search-keyword">{t("browse.searchingFor")}: "{keyword}"</p>}
 
-      {/* الفلاتر */}
       <div className="search-filters">
         <select
           value={selectedCategoryId}
@@ -423,7 +410,6 @@ function SearchResults() {
             <p className="collection-desc-header">{selectedCollection.description}</p>
           </div>
 
-          {/* فلتر Types داخل المجموعة */}
           <div className="collection-tabs">
             {fileTypes.map((type) => (
               <button

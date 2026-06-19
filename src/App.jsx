@@ -31,8 +31,8 @@ import axios from "axios";
 import ProtectedAdmin from "./component/ProtectedAdmin";
 import PublicProfile from "./Pages/PublicProfile/component/PublicProfile";
 import ConfirmEmailChange from "./Pages/Auth/CheckEmail/component/ConfirmEmailChange";
+import PublicRoute from "./component/PublicRoute";
 
-// axios settings
 axios.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 
 const router = createBrowserRouter([
@@ -42,7 +42,6 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "search-results", element: <SearchResults /> },
-      // تم حذف Route Browse
       { path: "courses/:categoryId", element: <Courses /> },
       { path: "files/:courseId", element: <Files /> },
       {
@@ -71,15 +70,24 @@ const router = createBrowserRouter([
       },
       {
         path: "PublicProfile/:userId",
-        element: <PublicProfile />,
+        element:(
+           <ProtectedRoutes>
+        <PublicProfile />
+      </ProtectedRoutes>
+      ) ,
       },
       {
         path: "favorites",
-        element: <Favorites />,
+        element: (
+        <ProtectedRoutes>
+          <Favorites />
+           </ProtectedRoutes>),
       },
       {
         path: "ai",
-        element: <AI />,
+        element: (<ProtectedRoutes>
+        <AI />
+        </ProtectedRoutes>),
         children: [
           { index: true, element: <AIHome /> },
           { path: "file/:fileId", element: <Chat /> },

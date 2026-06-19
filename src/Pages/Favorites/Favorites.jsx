@@ -197,7 +197,6 @@ function Favorites() {
     fetchFavoriteCollections();
   }, [fetchFavorites, fetchCollections, fetchFavoriteCollections]);
 
-  // دالة البحث باستخدام API (تشتغل فقط على المفضلات)
   const searchInFavorites = useCallback(async () => {
     if (!searchTerm && !categoryId && !courseId && !fileType) {
       setIsSearching(false);
@@ -245,7 +244,6 @@ function Favorites() {
     }
   }, [searchTerm, categoryId, courseId, fileType, orderBy, isDescending, files]);
 
-  // لما يتغير السيرش أو الفلاتر، ابحث
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm || categoryId || courseId || fileType) {

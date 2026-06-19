@@ -1,4 +1,3 @@
-/* ========== Search Results Page ========== */
 .search-results-page {
   padding: 40px 20px;
   max-width: 1200px;
@@ -6,22 +5,18 @@
   background-color: var(--bg-secondary);
   min-height: calc(100vh - 70px);
 }
-
 .search-results-page h1 {
   font-size: 32px;
   color: var(--primary);
   margin-bottom: 10px;
   text-align: center;
 }
-
 .search-keyword {
   font-size: 16px;
   color: var(--text-secondary);
   margin-bottom: 30px;
   text-align: center;
 }
-
-/* ========== Search Filters - صغيرة وجنب بعض ========== */
 .search-filters {
   display: flex;
   gap: 10px;
@@ -33,8 +28,8 @@
 .filter-select {
   padding: 6px 12px;
   border-radius: 20px;
-  border: 1px solid var(--border-color, #ddd);
-  background: var(--bg-main, #fff);
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
   color: var(--text-main, #333);
   font-size: 12px;
   cursor: pointer;
@@ -53,8 +48,101 @@
   cursor: not-allowed;
 }
 
-/* ========== File Type Badge on File Card ========== */
-.file-type-badge {
+.message {
+  background: #fff3cd;
+  color: #856404;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.back-header {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  color: var(--primary-dark, #2563eb);
+  transform: translateX(-4px);
+}
+
+.collection-title-header {
+  font-size: 24px;
+  margin: 8px 0 4px;
+  color: var(--text-main);
+}
+
+.collection-desc-header {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.collection-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 30px;
+  flex-wrap: wrap;
+}
+
+.collection-tab {
+  padding: 6px 14px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-card);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  color: var(--text-main);
+}
+
+.collection-tab:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.collection-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.files-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.files-section {
+  margin-bottom: 40px;
+}
+
+.files-section h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: var(--text-main);
+  border-bottom: 2px solid var(--primary);
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.file-type {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 12px;
@@ -65,13 +153,21 @@
   margin-left: 8px;
 }
 
-/* ========== Files & Collections Sections ========== */
-.files-section,
+.uploader-name-clickable {
+  cursor: pointer;
+  color: #007bff;
+  transition: opacity 0.2s;
+}
+
+.uploader-name-clickable:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
 .collections-section {
   margin-bottom: 40px;
 }
 
-.files-section h2,
 .collections-section h2 {
   font-size: 24px;
   margin-bottom: 20px;
@@ -81,19 +177,12 @@
   padding-bottom: 5px;
 }
 
-.files-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .collections-grid {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* ========== Collection Card ========== */
 .collection-card {
   display: flex;
   align-items: center;
@@ -151,7 +240,7 @@
 }
 
 .collection-favorite-btn {
-  background: var(--bg-main);
+  background: var(--bg-card);
   border: 1px solid var(--card-border);
   border-radius: 50%;
   width: 40px;
@@ -196,75 +285,6 @@
   transform: translateY(-1px);
 }
 
-/* ========== Back Header (Collection View) ========== */
-.back-header {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--card-border);
-}
-
-.back-btn {
-  background: none;
-  border: none;
-  color: var(--primary);
-  font-size: 14px;
-  cursor: pointer;
-  margin-bottom: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.back-btn:hover {
-  color: var(--primary-dark, #2563eb);
-  transform: translateX(-4px);
-}
-
-.collection-title-header {
-  font-size: 24px;
-  margin: 8px 0 4px;
-  color: var(--text-main);
-}
-
-.collection-desc-header {
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-
-/* ========== Collection View Tabs (فلتر Types داخل المجموعة) ========== */
-.collection-tabs {
-  display: flex;
-  gap: 8px;
-  margin: 20px 0 30px;
-  flex-wrap: wrap;
-}
-
-.collection-tab {
-  padding: 6px 14px;
-  border: 1px solid var(--card-border);
-  background: var(--bg-main);
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 12px;
-  transition: all 0.2s;
-  color: var(--text-main);
-}
-
-.collection-tab:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-.collection-tab.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-/* ========== No Results ========== */
 .no-results {
   text-align: center;
   padding: 60px 20px;
@@ -276,17 +296,6 @@
   margin-bottom: 10px;
 }
 
-/* ========== Message ========== */
-.message {
-  background: #fff3cd;
-  color: #856404;
-  padding: 12px 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-/* ========== Loading ========== */
 .loading {
   display: flex;
   justify-content: center;
@@ -308,19 +317,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ========== Uploader Name Clickable ========== */
-.uploader-name-clickable {
-  cursor: pointer;
-  color: #007bff;
-  transition: opacity 0.2s;
-}
-
-.uploader-name-clickable:hover {
-  text-decoration: underline;
-  opacity: 0.8;
-}
-
-/* ========== Responsive ========== */
 @media (max-width: 768px) {
   .search-results-page {
     padding: 30px 16px;
@@ -438,7 +434,6 @@
   }
 }
 
-/* ========== RTL Support ========== */
 html[dir="rtl"] .back-btn:hover {
   transform: translateX(4px);
 }
@@ -451,36 +446,4 @@ html[dir="rtl"] .collection-actions {
   html[dir="rtl"] .collection-actions {
     justify-content: flex-start;
   }
-}
-
-/* ========== Dark Mode ========== */
-[data-theme="dark"] .collection-card {
-  background: var(--bg-card);
-  border-color: var(--card-border);
-}
-
-[data-theme="dark"] .collection-favorite-btn {
-  background: var(--bg-card);
-  border-color: var(--card-border);
-}
-
-[data-theme="dark"] .collection-favorite-btn.active {
-  background: rgba(255, 71, 87, 0.15);
-}
-
-[data-theme="dark"] .collection-tab {
-  background: var(--bg-card);
-  border-color: var(--card-border);
-}
-
-[data-theme="dark"] .collection-tab:hover,
-[data-theme="dark"] .collection-tab.active {
-  background: var(--primary);
-  color: white;
-}
-
-[data-theme="dark"] .filter-select {
-  background: var(--bg-main);
-  border-color: var(--card-border);
-  color: var(--text-main);
 }

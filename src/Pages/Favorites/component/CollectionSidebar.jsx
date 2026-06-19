@@ -213,7 +213,6 @@ function CollectionSidebar({
           "✨ Collection copied successfully!";
         if (showMessage) showMessage(successMessage, "success");
 
-        // ✅ فقط تحديث القوائم، لا تفتح المجموعة المنسوخة
         if (onCollectionUpdate) {
           await onCollectionUpdate();
         }
@@ -222,13 +221,10 @@ function CollectionSidebar({
           await onFavoriteCollectionsUpdate();
         }
 
-        // ✅ تغيير التاب إلى "My Collections" لكن بدون فتح المجموعة
         if (onTabChange && activeTab !== "my") {
           onTabChange("my");
         }
 
-        // ✅ إزالة الكود الذي كان يفتح المجموعة تلقائياً
-        // تم حذف setTimeout الذي كان يبحث عن المجموعة المنسوخة ويفتحها
       } else {
         throw new Error("Copy failed");
       }
@@ -437,12 +433,12 @@ function CollectionSidebar({
                             }
                             title={t("collection.clickToViewProfile")}
                           >
-                            👤{" "}
+                            👤
                             {collection.uploaderName || t("collection.unknown")}
                           </span>
                         )}
                         <span className="collection-date">
-                          📅{" "}
+                          📅
                           {formatDate(
                             collection.addedAt || collection.createdAt,
                           )}

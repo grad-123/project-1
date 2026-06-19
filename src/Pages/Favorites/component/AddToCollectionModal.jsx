@@ -114,6 +114,7 @@ function AddToCollectionModal({ isOpen, onClose, collections = [], onAdd, onCrea
         )}
       </div>
     </div>
+    
   );
 
   return ReactDOM.createPortal(modalContent, document.body);

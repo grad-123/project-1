@@ -139,29 +139,18 @@ html[dir="rtl"] .icon {
 
 .google-btn-container {
   width: 100%;
+  background-color: var(--bg-secondary);
   min-height: 44px;
   border-radius: 8px;
   overflow: hidden;
 }
 
-/* Ensure the button takes full width */
 .google-btn-container > div {
   width: 100% !important;
   min-width: 100% !important;
   border-radius: 8px !important;
 }
 
-/* Dark mode styling for Google button */
-[data-theme="dark"] .google-btn-container {
-  background-color: #1e293b;
-  border-radius: 8px;
-}
-
-[data-theme="dark"] .google-btn-container iframe {
-  filter: brightness(0.9) contrast(1.1);
-}
-
-/* RTL language support */
 html[dir="rtl"] .google-btn-wrapper {
   direction: ltr; /* Keep Google button in LTR direction */
 }
