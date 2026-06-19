@@ -25,10 +25,19 @@ html[dir="rtl"] .navbar {
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;  
+  font-size: 24px;
   font-weight: bold;
-  font-size: 20px;
   color: var(--primary);
-  white-space: nowrap;
+}
+
+.logo-img {
+  width: 35px;  
+  height: 35px;
+  object-fit: contain; 
+  border-radius: 20px; 
 }
 
 .nav-link {
