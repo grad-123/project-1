@@ -5,7 +5,6 @@ import { FaSearch } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import axios from "../../api/axiosInstance";
-import logo from "/image-grad.png";
 import "./Navbar.css";
 
 function Navbar() {
@@ -120,7 +119,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="logo">
-        <img src={logo} alt="EduPro Logo" className="logo-img" />E D U P R O
+        E D U P R O
       </div>
 
       <ul className="nav-link">
